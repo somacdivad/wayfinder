@@ -12,17 +12,43 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_NAMES = ("wayfinder", "wayfinder-maintainer")
-VERSION = "1.0.0-rc.8"
+VERSION = "1.0.0-rc.9"
 EXPECTED_DIGESTS = {
-    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/contract.json": "75a0fe4ac106ffb6ad496a38d65addf004f03f128c18fd512232c4631315955b",
-    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/release.json": "677fa5af49c11532d49875bd8d1138a36903668449188e6358f2d0a5947f2284",
-    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder.py": "d0ce8b8e21606bd026ff82b93945cbef3225387b0c47702b688d285c966679d4",
-    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-node.mjs": "fcd01cfd47c98488eb2e85055924630642ee4093c02272bb67ba961d4e084125",
-    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-powershell.ps1": "9b64624f0c837db6082ce241a3f17f3d05614490e4e721d757588c8fefbe0bce",
+    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/contract.json": "3c79c6e1d2eae7c6016d789c9ade75125a2ec1dcc43f458541f9d7c63654bdd9",
+    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/release.json": "1826fa1c1323561001565fe4bd635c0432306ced078320f1eecdad81ff268ffb",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder.py": "f8fe1a0987a37e8a9a43003ede1bcb9eda590c88511daebaafcdd5d13932337a",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-node.mjs": "df0f3c2a000454b2f7aaa8fcf6762b670aab34b9cb721da571fe334ae29f10ac",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-powershell.ps1": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9",
     "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/parity-revision-8-local.json": "28bc61ede21e0b8041c1951b1327c948642d0712170048f17ce2bab9653562ef",
     "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/parity-revision-8-local.md": "840641fd2b2814104a78f7fe0d4106ac70c4688056237003770d7ec7874e97c0",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.json": "6b43c2f0b41e83d76218e363651d6353ab62561426e4c7abf997cb561aa3fd78",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.md": "8a81084ab64a18bac8d59694bc81233035cc0f02434a36d8106dfc0f2cc1c11c",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/candidate-revision-9-local.json": "b7c9b046d2970c308530d2ba05893213fbf81445e96c4b355a9c3863c4fe734a",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/candidate-revision-9-local.md": "99a5ef242b1e96e966d1fe9cff3549565008520451921bc1e9d7abfc3237d264",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/parity-revision-9-local.json": "3643fe1fb86a1c1fa99e7f47489e0f0c4965c56dbe86c6c01622d31887de9d4c",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/parity-revision-9-local.md": "11f3f7436b96c2be98e5efeb8fb2fb29bb373ba8826ea38b0594aeba806c00f5",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/proposed-freeze-revision-9.json": "9baf19c1f17848b7f0b1b12ff0e821472358f2aadde3dafa4f423194cb5e916c",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/proposed-freeze-revision-9.md": "b75d8862b47a16b13c4862643e7551d44777c98348cd9608f5c5aebd1ff8855f",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/freeze-acceptance-revision-9.json": "a934affb933fac7ad994257453afda952b6e81d7852e791f60389ebce4767088",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/freeze-acceptance-revision-9.md": "2f0c4bb8859bb3f7f0356038922678673544ddf45907bcdb680670813a581691",
 }
 TEXT_SUFFIXES = {".abnf", ".json", ".md", ".mjs", ".ps1", ".py", ".sh", ".yaml", ".yml"}
+MUTABLE_POST_MIGRATION_PATHS = {
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/SKILL.md",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/design-record.md",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/workflow.md",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py",
+    "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/conformance/v1/run.py",
+    "plugins/wayfinder/skills/wayfinder/SKILL.md",
+    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/expected/initialize-minimal-golden.json",
+    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/expected/probe-deterministic.json",
+    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/contract.json",
+    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/release.json",
+    "plugins/wayfinder/skills/wayfinder/references/contracts/v1.md",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-node.mjs",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-powershell.ps1",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder.py",
+}
 
 
 def sha256(path: Path) -> str:
@@ -78,7 +104,10 @@ def main() -> int:
         for item in manifest.get("files", []):
             destination = ROOT / item["destinationPath"]
             actual = sha256(destination) if destination.is_file() else "missing"
-            if actual != item["destinationSha256"]:
+            if (
+                item["destinationPath"] not in MUTABLE_POST_MIGRATION_PATHS
+                and actual != item["destinationSha256"]
+            ):
                 failures.append(f"migration destination differs: {item['destinationPath']}")
             if item["status"] == "byte-identical" and item["sourceSha256"] != item["destinationSha256"]:
                 failures.append(f"byte-identical migration entry disagrees: {item['destinationPath']}")

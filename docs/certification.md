@@ -3,7 +3,7 @@
 - **Status:** Bounded matrix incomplete; hosted execution not yet run
 - **Last updated:** 2026-09-14
 
-The current target is the frozen, unactivated `v1-candidate-revision-8`. The exact required matrix contains eight entries:
+The current target is the owner-accepted, frozen, unactivated `v1-candidate-revision-9`. Its local candidate and parity evidence is accepted; hosted certification remains separately unauthorized. The exact required matrix contains eight entries:
 
 | Adapter runtime | macOS | Linux | Windows |
 | --- | --- | --- | --- |

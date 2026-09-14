@@ -7,11 +7,11 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
-const RELEASE_ID = "v1-candidate-revision-8";
+const RELEASE_ID = "v1-candidate-revision-9";
 const RELEASE_STATUS = "unactivated-frozen";
 const CONTRACT_STATUS = "frozen";
 const CONTRACT_VERSION = 1;
-const CANDIDATE_REVISION = 8;
+const CANDIDATE_REVISION = 9;
 const ADAPTER_ID = "node-v1";
 const ADAPTER_PATH = "scripts/adapters/wayfinder-node.mjs";
 const RELEASE_PATH = "assets/contract-v1/release.json";
@@ -218,7 +218,28 @@ const pathKey = value => value.split("/").map(part => part.toLowerCase());
 const keyText = value => pathKey(value).join("/");
 function within(child, parent, allowEqual = true) { const c = keyText(child); const p = keyText(parent); return (allowEqual && c === p) || c.startsWith(`${p}/`); }
 function overlaps(a, b) { return within(a, b) || within(b, a); }
-function lstatKind(target) { try { const stat = fs.lstatSync(target); return stat.isSymbolicLink() ? "symlink" : stat.isDirectory() ? "directory" : stat.isFile() ? "regular-file" : "unsupported-file"; } catch (error) { if (error.code === "ENOENT" || error.code === "ENOTDIR") return "missing"; throw error; } }
+function windowsDirent(target) {
+  if (process.platform !== "win32") return null;
+  try {
+    const base = path.basename(target).toLowerCase();
+    return fs.readdirSync(path.dirname(target), { withFileTypes: true }).find(item => item.name.toLowerCase() === base) ?? null;
+  } catch { return null; }
+}
+function lstatKind(target, dirent = null) {
+  try {
+    const stat = fs.lstatSync(target);
+    if (stat.isSymbolicLink()) return "symlink";
+    const entry = dirent ?? windowsDirent(target);
+    if (process.platform === "win32" && entry?.isSymbolicLink()) {
+      try { fs.readlinkSync(target); return "symlink"; }
+      catch { return "unsupported-file"; }
+    }
+    return stat.isDirectory() ? "directory" : stat.isFile() ? "regular-file" : "unsupported-file";
+  } catch (error) {
+    if (error.code === "ENOENT" || error.code === "ENOTDIR") return "missing";
+    throw error;
+  }
+}
 function physicalDirectory(value, label, exitClass = 3) {
   if (typeof value !== "string" || !value) fail("command.option", `${label} is required`, 2, { field: label });
   let resolved;
@@ -549,10 +570,10 @@ function safeInventoryFile(workspace, relative, limit) {
 
 function buildInventory(workspace, request) {
   const entries = new Map(); const explicit = new Set(request.selections); let totalBytes = 0;
-  const addEntry = (relative, depth) => {
+  const addEntry = (relative, depth, dirent = null) => {
     if (entries.has(relative)) return;
     if (depth > request.limits.maxDepth) fail("inventory.limit-depth", "inventory traversal exceeds maxDepth", 3, { path: relative, expected: request.limits.maxDepth, actual: depth });
-    const target = path.join(workspace, ...relative.split("/")); const kind = lstatKind(target);
+    const target = path.join(workspace, ...relative.split("/")); const kind = lstatKind(target, dirent);
     if (kind === "missing") fail("inventory.selection-missing", "inventory selection is missing", 3, { path: relative });
     if (entries.size + 1 > request.limits.maxEntries) fail("inventory.limit-entries", "inventory exceeds maxEntries", 3, { expected: request.limits.maxEntries, actual: entries.size + 1 });
     const reason = exclusionFor(relative, kind, request.targetRoots, explicit.has(relative) && kind === "regular-file");
@@ -571,9 +592,9 @@ function buildInventory(workspace, request) {
     }
     entries.set(relative, item);
     if (kind === "directory" && !reason) {
-      let names; try { names = fs.readdirSync(target); } catch { fail("inventory.source-race", "directory could not be read", 3, { path: relative }); }
-      names.sort(utf8Compare);
-      for (const name of names) addEntry(`${relative}/${name}`, depth + 1);
+      let children; try { children = fs.readdirSync(target, { withFileTypes: true }); } catch { fail("inventory.source-race", "directory could not be read", 3, { path: relative }); }
+      children.sort((left, right) => utf8Compare(left.name, right.name));
+      for (const child of children) addEntry(`${relative}/${child.name}`, depth + 1, child);
     }
   };
   for (const selection of [...request.selections].sort(utf8Compare)) {

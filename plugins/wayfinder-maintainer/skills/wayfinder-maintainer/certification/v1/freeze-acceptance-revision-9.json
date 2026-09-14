@@ -1,0 +1,25 @@
+{
+  "format": "wayfinder-freeze-acceptance",
+  "schemaVersion": 1,
+  "status": "accepted",
+  "acceptedOn": "2026-09-14",
+  "releaseId": "v1-candidate-revision-9",
+  "candidateRevision": 9,
+  "proposal": {
+    "path": "proposed-freeze-revision-9.json",
+    "sha256": "9baf19c1f17848b7f0b1b12ff0e821472358f2aadde3dafa4f423194cb5e916c"
+  },
+  "decision": {
+    "choice": "Option A",
+    "authorization": "Accept the exact revision-9 frozen bytes and local candidate and parity evidence. Hosted certification and every later tranche require separate explicit authorization."
+  },
+  "boundaries": {
+    "hostedCertification": "not-authorized",
+    "evidencePublication": "not-authorized",
+    "releaseCertificationEntry": "not-authorized",
+    "fullFamilyCertification": "incomplete",
+    "runtimeActivation": "disabled",
+    "liveProjectWork": "not-authorized",
+    "gitCommitOrPush": "not-authorized"
+  }
+}

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import fnmatch
+import ctypes
 import json
 import os
 import platform
@@ -24,7 +25,7 @@ from typing import Any, Iterable
 
 CONTRACT_VERSION = 1
 SCHEMA_VERSION = 1
-CANDIDATE_REVISION = 8
+CANDIDATE_REVISION = 9
 RELEASE_ID = f"v1-candidate-revision-{CANDIDATE_REVISION}"
 CONTRACT_STATUS = "frozen"
 RELEASE_STATUS = "unactivated-frozen"
@@ -1008,9 +1009,14 @@ def _validate_inventory_request(value: Any) -> dict[str, Any]:
 
 
 def _relative_kind(path: Path) -> str:
-    mode = path.lstat().st_mode
+    info = path.lstat()
+    mode = info.st_mode
     if stat.S_ISLNK(mode):
         return "symlink"
+    if stat.S_ISSOCK(mode):
+        return "unsupported-file"
+    if os.name == "nt" and getattr(info, "st_reparse_tag", 0):
+        return "unsupported-file"
     if stat.S_ISREG(mode):
         return "regular-file"
     if stat.S_ISDIR(mode):
@@ -3043,9 +3049,49 @@ def _lock_path(workspace: Path) -> Path:
     return workspace / ".wayfinder/initialize.lock"
 
 
+def _windows_process_alive(
+    pid: int,
+    *,
+    kernel32: Any | None = None,
+    get_last_error: Any | None = None,
+) -> bool:
+    if pid <= 0 or pid > 0xFFFFFFFF:
+        return False
+    if kernel32 is None:
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    if get_last_error is None:
+        get_last_error = ctypes.get_last_error
+    handle_type = ctypes.c_void_p
+    dword_type = ctypes.c_uint32
+    bool_type = ctypes.c_int32
+    kernel32.OpenProcess.argtypes = (dword_type, bool_type, dword_type)
+    kernel32.OpenProcess.restype = handle_type
+    kernel32.WaitForSingleObject.argtypes = (handle_type, dword_type)
+    kernel32.WaitForSingleObject.restype = dword_type
+    kernel32.CloseHandle.argtypes = (handle_type,)
+    kernel32.CloseHandle.restype = bool_type
+    handle = kernel32.OpenProcess(0x00100000, False, pid)
+    if not handle:
+        error = get_last_error()
+        if error == 87:  # ERROR_INVALID_PARAMETER
+            return False
+        return True  # access denied and every other indeterminate failure
+    try:
+        result = kernel32.WaitForSingleObject(handle, 0)
+        if result == 0x00000102:  # WAIT_TIMEOUT
+            return True
+        if result == 0x00000000:  # WAIT_OBJECT_0
+            return False
+        return True  # WAIT_FAILED and every unexpected result are indeterminate
+    finally:
+        kernel32.CloseHandle(handle)
+
+
 def _process_alive(pid: int) -> bool:
     if pid <= 0:
         return False
+    if os.name == "nt":
+        return _windows_process_alive(pid)
     try:
         os.kill(pid, 0)
     except ProcessLookupError:
@@ -3084,8 +3130,9 @@ def _acquire_initialize_lock(workspace: Path, operation_id: str, plan_digest: st
         except WFError:
             raise WFError("lock.manual-recovery", "operation lock is malformed and cannot be reclaimed automatically", exit_class=5, path=str(lock_path)) from None
         owner = current["owner"]
-        alive = owner["host"] == socket.gethostname() and _process_alive(owner["pid"])
-        if not recovery or current["operationId"] != operation_id or current["planSha256"] != plan_digest or owner["host"] != socket.gethostname() or alive:
+        if not recovery or current["operationId"] != operation_id or current["planSha256"] != plan_digest or owner["host"] != socket.gethostname():
+            raise WFError("lock.contention", "another initialization owner holds the operation lock", exit_class=5, path=str(lock_path), actual=current["operationId"])
+        if _process_alive(owner["pid"]):
             raise WFError("lock.contention", "another initialization owner holds the operation lock", exit_class=5, path=str(lock_path), actual=current["operationId"])
         lock_path.unlink()
         _fsync_directory(lock_path.parent)
@@ -3701,8 +3748,7 @@ def command_initialize_recover(workspace_root_arg: str | None, operation_id_arg:
         if lock["operationId"] != operation_id_arg:
             raise WFError("lock.contention", "operation lock belongs to another operation", exit_class=5, actual=lock["operationId"])
         same_host = lock["owner"]["host"] == socket.gethostname()
-        alive = same_host and _process_alive(lock["owner"]["pid"])
-        reclaimable = same_host and not alive
+        reclaimable = same_host and not _process_alive(lock["owner"]["pid"])
         state = {"status": "blocked", "operationId": operation_id_arg, "planSha256": lock["planSha256"], "allowedActions": ["inspect", "rollback"] if reclaimable else ["inspect"], "issues": [{"code": "recovery.lock-only", "message": "interruption occurred after lock acquisition and before durable operation import"}]}
         if action_arg == "inspect":
             return state

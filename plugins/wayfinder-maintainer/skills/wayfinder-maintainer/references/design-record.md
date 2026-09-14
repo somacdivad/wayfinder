@@ -66,7 +66,7 @@ Prefer deterministic scripts for repeatable actions. Keep scripts portable and d
 
 | Workflow | Status | Current decision point |
 | --- | --- | --- |
-| Initialize | Certification-matrix tranche pending approval; runtime disabled | Policy decisions 1–18, Slices 1–5, candidate revision 8, and the bounded Node.js and PowerShell adapter parity tranche are accepted. One of eight exact certification-matrix environments has passing immutable evidence; seven remain unavailable and matrix completion is not claimed. Initialize remains disabled. |
+| Initialize | Candidate revision 9 Windows corrections and local freeze evidence accepted; hosted certification authorized and pending dispatch; runtime disabled | Policy decisions 1–18, Slices 1–5, revision-8 history, and the bounded revision-9 Windows correction are accepted. Revision 9 corrects the process probe and real special-file mechanism while preserving 305 cases and 96-rule coverage. Its local candidate and parity evidence is accepted. The exact hosted matrix is authorized but has not yet produced revision-9 environment evidence or an aggregate. Initialize remains disabled. |
 | Interview | Not started | Pending completion of initialization workflow design. |
 | Update | Not started | Pending completion of initialization and interview workflow design; scope explicitly includes taxonomy evolution. |
 | Validate | Not started | Pending definition of the project-record contract. |
@@ -74,7 +74,7 @@ Prefer deterministic scripts for repeatable actions. Keep scripts portable and d
 
 ## Stub state
 
-The runtime `SKILL.md` is intentionally non-operational. It identifies planned modes and blocks agents from improvising unfinished workflows. Stage 0 through Slice 5, frozen candidate revision 8, and the bounded adapter parity tranche are accepted. The runtime skill contains no maintainer-only directory or routing instructions; those live in the explicit companion skill. The package is not a certified runtime. Certification, runtime routing, and activation remain separate later tranches.
+The runtime `SKILL.md` is intentionally non-operational. It identifies planned modes and blocks agents from improvising unfinished workflows. Stage 0 through Slice 5 and the exact frozen candidate revision 9 with local adapter parity evidence are accepted. The runtime skill contains no maintainer-only directory or routing instructions; those live in the explicit companion skill. The package is not a certified runtime. Hosted certification, runtime routing, and activation remain separate later tranches.
 
 ## Stage 0 + Slice 1 implementation
 
@@ -263,7 +263,7 @@ Evidence: [candidate revision 7 local report](../certification/v1/candidate-revi
 
 ## Next decision
 
-Review the pending bounded certification-matrix tranche described below. Do not begin forward tests, cross-adapter recovery, full-family certification, runtime guidance, activation, or live-project work from either the implementation result or its approval.
+Await a separate decision on whether to reopen the frozen Python adapter and the Windows special-file certification mechanism. The bounded harness corrections are accepted, but an exact hosted rerun remains separately approval-gated and is expected to fail while those two blockers remain. Do not publish evidence, add release certification entries, rerun certification, begin forward tests, cross-adapter recovery, full-family certification, runtime guidance, activation, or live-project work from this acceptance.
 
 ## Candidate revision 8 freeze — accepted
 
@@ -308,7 +308,7 @@ This evidence is maintainer-run on one macOS arm64 host with CPython 3.14.7, Nod
 |---|---|---|
 | Bounded Node.js and PowerShell adapter parity | Accepted 2026-09-14 | The skill owner selected Option A and accepted the bounded adapter parity tranche as implemented, including the disclosed local-only, non-independent, non-environment, and non-full-family evidence limits. No follow-up exception was attached. The later certification matrix, forward tests, cross-adapter recovery, runtime guidance, activation, and live-project work remain separately authorized tranches; this approval begins none of them. |
 
-## Candidate revision 8 bounded certification matrix — pending approval
+## Candidate revision 8 bounded certification matrix — accepted
 
 Implemented on 2026-09-14 as maintainer-only orchestration and partial environment evidence for the exact frozen matrix:
 
@@ -326,7 +326,7 @@ This tranche is partial passing environment evidence, not a completed matrix, in
 
 | Checkpoint | Status | Decision |
 |---|---|---|
-| Bounded certification-matrix orchestration and available evidence | Pending explicit approval | **Option A:** accept the bounded certification-matrix tranche as implemented, preserving one passing environment entry and seven explicitly unavailable entries without a completion claim. **Option B:** request bounded changes. Either choice begins no subsequent tranche. |
+| Bounded certification-matrix orchestration and available evidence | Accepted 2026-09-14 | The skill owner selected Option A and accepted the bounded certification-matrix tranche as implemented, preserving one passing environment entry and seven explicitly unavailable entries without a completion claim. No follow-up exception was attached. Hosted matrix execution, evidence publication, forward tests, cross-adapter recovery, full-family certification, runtime guidance, activation, and live-project work remain separately authorized tranches; this approval begins none of them. |
 
 ## Public repository migration — implementation checkpoint
 
@@ -344,3 +344,99 @@ Authorized on 2026-09-14 as a delivery and packaging tranche separate from certi
 | Checkpoint | Status | Decision |
 |---|---|---|
 | Public two-plugin repository structure and CI route | Published and validated | The owner authorized implementation on 2026-09-14. The public `somacdivad/wayfinder` repository was created and initial commit `6f8a311be0d8c98d557db64ed3263acd4b92ffe3` was published to `main`. The first hosted validation exposed a maintainer-harness path-normalization defect on Linux; a bounded maintainer-only correction preserved all frozen governed and adapter bytes, and ordinary repository validation subsequently passed. The manual certification and evidence-publication workflows were not run. No subsequent certification or activation tranche begins automatically. |
+
+## Candidate revision 8 hosted certification execution — accepted with failed aggregate
+
+Executed on 2026-09-14 as the separately authorized bounded hosted tranche:
+
+- GitHub Actions workflow run `34867347594`, attempt 1, used the exact source commit `12ca21e6642b2357c78cf09aff1842b03c764e36` and all eight fixed revision-8 entries. The run did not include the pre-existing uncommitted approval-record or repository-validator edits.
+- CPython 3.14.7 passed 305/305 cases on macOS and Linux and failed 10 of 305 cases on Windows. Node.js 24.21.0 passed 305/305 on macOS and Linux and failed 4 of 305 cases on Windows. PowerShell 7.6.6 passed 305/305 on Linux and failed 4 of 305 cases on Windows. No runtime, operating-system, or adapter substitution was made.
+- The three Windows entries shared failures in `inventory-special-file`, `inventory-exclusions`, `render-output-symlink-component`, and `initialize-minimal`. The CPython Windows entry additionally failed six interruption and rollback recovery cases. The accepted execution record preserves these observed failures without assigning a root cause.
+- Every environment report binds to the frozen release, contract, fixture index, expected-output set, registered adapter, source commit, workflow run, and exact runtime identity. Passing reports cover both observed case-sensitive and case-insensitive filesystem behavior, and all eight reports record a successful Unicode filename round trip.
+- The strict aggregate rejected the three non-passing Windows reports with `matrix.invalid-entry`, exited 2, and created no aggregate certification JSON or Markdown. Its review-only inventory has SHA-256 `f5b895acd6721657c46969354fcd529f1d0f71bebc846b49361d9ab1aa451086`; the hosted aggregate artifact has SHA-256 `9e5af7d8a7ab046e7632c96ba7acaf25f0c1015e31dea9dd889a5b06f102c327`.
+- The eight entry artifacts and aggregate inventory remain GitHub Actions review evidence with 90-day retention through 2026-12-13. They were not copied into accepted durable evidence, published, added to the release certification registry, or used to claim matrix completion or full-family certification.
+- This tranche changed no frozen contract, fixture, adapter, parity, or accepted historical-evidence bytes; added no runtime guidance; and did not activate Wayfinder, initialize a live project, run forward tests, or perform cross-adapter recovery.
+
+### Hosted certification-execution approval checkpoint
+
+| Checkpoint | Status | Decision |
+|---|---|---|
+| Exact eight-entry hosted execution and strict aggregate result | Accepted 2026-09-14 | The skill owner selected Option A and accepted the authentic hosted execution record as five passing entries, three failing Windows entries, and an unsuccessful strict aggregate. The approval preserves the failures and artifact-review boundary and authorizes no investigation, correction, rerun, evidence publication, release certification entry, full-family claim, runtime guidance, activation, or subsequent tranche. |
+
+## Candidate revision 8 Windows certification investigation and correction — accepted
+
+Investigated and accepted on 2026-09-14 as a bounded correction tranche against source commit `12ca21e6642b2357c78cf09aff1842b03c764e36` and authentic GitHub Actions run `34867347594`, attempt 1:
+
+- Retrieved and inspected all eight authentic entry artifacts, their execution records, the aggregate inventory, and the complete hosted logs as temporary review evidence. Nothing was copied into accepted durable evidence or added to the release certification registry.
+- Established separate causes for every failure group. `inventory-special-file` and `inventory-exclusions` depend on a FIFO fixture created through Unix-only `os.mkfifo`; Windows therefore lacks the requested filesystem node. `render-output-symlink-component` was a harness snapshot-comparison defect caused by platform-specific symbolic-link target spelling. `initialize-minimal` was a harness normalization defect because canonical JSON escapes Windows backslashes. The six CPython recovery failures share a frozen Python-adapter defect: `_process_alive` uses `os.kill(pid, 0)`, which is not a non-mutating Windows process-existence probe and surfaced stale PIDs as `internal.unexpected` before recovery boundaries were reached.
+- Corrected only the maintainer-owned harness where evidence supported it: special-file unavailability now fails explicitly rather than masquerading as a missing selection, rejected render output is compared with its actual pre-invocation snapshot, and canonical JSON workspace paths are normalized using their escaped spelling. The repository validator now recognizes the maintainer runner as a mutable post-migration path.
+- Preserved all frozen contract, fixture, registered-adapter, parity, and accepted historical-evidence bytes. The exact suite remains 305 cases with all 96 normative rules cited. Initialization remains disabled.
+- Focused local checks passed for the four shared cases on Python, Node.js, and PowerShell, and all six listed Python recovery cases passed on macOS. A synthetic Windows JSON-escaping assertion passed. These local checks do not substitute for Windows execution or the pinned Node.js 24.21.0 matrix target.
+- Repository validation passed. The final maintainer doctor passed 29/29 checks under CPython 3.14.7 using the existing portable PowerShell 7.6.6 runtime. Optional PyYAML remained unavailable and the accepted dependency-free checks were used.
+- Two blockers remain intentionally unresolved: Windows cannot construct the harness's FIFO fixture through the selected standard-library mechanism, and correcting Python recovery requires changing the frozen registered adapter. An exact rerun from the accepted worktree is therefore expected to correct the render and golden-normalization failures but still fail the two inventory cases on all Windows entries and the six recovery cases on CPython Windows.
+- No hosted rerun, evidence publication, release-certification entry, forward test, cross-adapter recovery, full-family claim, runtime guidance, activation, live-project initialization, commit, or push was performed.
+
+### Windows investigation/correction approval checkpoint
+
+| Checkpoint | Status | Decision |
+|---|---|---|
+| Bounded Windows certification investigation and maintainer-harness correction | Accepted 2026-09-14 | The skill owner approved the investigation findings and smallest maintainer-only corrections with the disclosed local-test boundary and two remaining Windows blockers. This acceptance records the result only. It does not authorize reopening frozen adapter or contract bytes, committing or pushing the worktree, dispatching the exact hosted rerun, publishing evidence, adding certification entries, claiming full-family certification, adding runtime guidance, or activating Wayfinder. |
+
+## Candidate revision 8 maintainer-efficiency tranche — accepted
+
+Implemented and accepted by the skill owner on 2026-09-14 as a maintainer-only workflow and tooling tranche:
+
+- Added a compact `references/current-state.md` containing the frozen candidate and activation state, accepted package, adapter, parity, matrix, and historical-evidence identities, the current approval boundary, the pending action, and exact routes into this chronological record. The doctor deterministically rejects drift between the compact reference, package facts, accepted evidence, and required chronology anchors.
+- Revised the maintainer skill and workflow for progressive disclosure. Routine work reads the compact state; exact chronology sections are loaded only when prior rationale is relevant; the full record is required when reopening a decision, changing evidence governance, or recording an accepted outcome.
+- Added canonical recipes to resolve and reuse runtime paths, inspect CLI help, batch repeated `--case` and `--category` selections, bound reads, avoid unjustified repeat checks, prefer summary or structured output, and stop at approval boundaries.
+- Added doctor summary, verbose, stable JSON, and quiet-success internal-preflight modes. Focused tests retain repository, package, evidence, and every registered adapter byte and identity check while probing only the selected adapter runtime.
+- Added `describe`/`context` output for canonical paths, candidate identity, conformance counts, adapter registry, runtime requirements, and approval boundaries. Added a dependency-free offline matrix-artifact reviewer that performs no network access or writes, preserves result-set versus aggregate-invocation digest distinctions, validates exact 305-case reports and coverage metadata, summarizes failures by environment, and labels Actions material review-only.
+- Added dependency-free maintainer-tool regressions for doctor modes and failures, quiet preflight, multi-case batching, selected-adapter runtime isolation, runtime diagnostics, context output, artifact review, evidence overwrite refusal, output budgets, and accepted-evidence preservation.
+- Explicitly excluded the bundled skill-creator `quick_validate.py` from canonical Wayfinder verification because it requires PyYAML, which is not a repository dependency. The canonical doctor and repository validator remain authoritative; an already-available PyYAML environment may run the external validator once only as a secondary check.
+- The final routine startup reference set is 12,878 bytes versus 73,565 bytes before the tranche, an 82.49% reduction. Successful doctor output is 29 bytes versus 2,169 bytes, a 98.66% reduction. The representative three-case workflow reduced command output from 7,263 to 2,188 bytes, canonical CLI calls from five to three, and wall time from 4.40 to 1.20 seconds. The initial two failed exploratory setup calls were eliminated in the optimized replay.
+- Eight maintainer-tool regression tests passed. The unchanged revision-8 suite passed 305/305 cases under CPython 3.14.7, the repository validator passed, the final full doctor passed 31/31, and `git diff --check` passed. Optional PyYAML remained unavailable and was not installed.
+- Frozen contract, fixture, registered-adapter, parity, accepted historical-evidence, and accepted certification-evidence bytes remained unchanged. Initialization remains disabled. No hosted rerun, evidence publication, release-certification entry, forward test, cross-adapter recovery, runtime guidance, activation, live-project initialization, commit, or push was performed.
+
+### Maintainer-efficiency approval checkpoint
+
+| Checkpoint | Status | Decision |
+|---|---|---|
+| Bounded maintainer-efficiency workflow and tooling | Accepted 2026-09-14 | The skill owner approved the tranche as implemented, including the compact validated state, efficient canonical recipes, output and preflight changes, offline review command, regression coverage, measurement caveats, and explicit non-PyYAML canonical-validation boundary. This acceptance records the result only. It does not reopen candidate revision 8, authorize correction of either Windows blocker, dispatch a hosted rerun, publish or promote evidence, add certification entries, claim full-family certification, add runtime guidance, activate Wayfinder, initialize a live project, commit, or push. |
+
+## Candidate revision 9 Windows corrections — accepted
+
+Implemented on 2026-09-14 under the owner's explicit Option A reopening authority as one bounded correction tranche:
+
+- Reopened frozen candidate revision 8 and advanced every current identity to `v1-candidate-revision-9` while preserving `frozen`, `unactivated-frozen`, and disabled initialization status.
+- Replaced the Python adapter's Windows `os.kill(pid, 0)` branch with a non-mutating `OpenProcess(SYNCHRONIZE)` plus `WaitForSingleObject(handle, 0)` query through standard-library `ctypes`. PID values outside `1..0xffffffff` are stale without conversion; `WAIT_TIMEOUT` is live; `WAIT_OBJECT_0` is stale; access denial, unexpected open failures, `WAIT_FAILED`, and unexpected wait results are conservatively live or indeterminate; every opened handle is closed exactly once. The POSIX branch is unchanged.
+- Reordered both Python recovery call sites so malformed lock, requested action and operation, plan, and host predicates take precedence over process probing. PID reuse remains a conservative version-1 limitation: a reused live PID blocks reclamation.
+- The maintainer harness continues to use `os.mkfifo` where supported. On Windows it binds a real pathname `AF_UNIX`, `SOCK_STREAM` socket beneath the temporary workspace, retains the socket through adapter execution and assertions, and closes and removes it deterministically. Provider or filesystem unavailability fails the case explicitly.
+- Clarified `WF-INV-003` and `WF-INV-004` without weakening them: actual symbolic links and junctions remain `symlink`; Windows non-link reparse objects are `unsupported-file`, receive `unsupported-special-file`, and are never opened. Python uses non-following mode and reparse metadata, Node combines parent `Dirent`, `lstat`, and documented `readlink`, and PowerShell uses `.NET` `LinkTarget` rather than equating every reparse point with a link. Explicit selection and traversal share each adapter's classification path.
+- The canonical builder rebuilt the digest graph. The exact contract is `3c79c6e1d2eae7c6016d789c9ade75125a2ec1dcc43f458541f9d7c63654bdd9`; release `1826fa1c1323561001565fe4bd635c0432306ced078320f1eecdad81ff268ffb`; fixture index unchanged at `a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6`; expected-output set `9d149d3b3603547b509803b3bfb119b79e40db41f97e848f76554f5dccbf1b94`; Python adapter `f8fe1a0987a37e8a9a43003ede1bcb9eda590c88511daebaafcdd5d13932337a`; Node adapter `df0f3c2a000454b2f7aaa8fcf6762b670aab34b9cb721da571fe334ae29f10ac`; PowerShell adapter `b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9`.
+- The exact suite remains 305 cases citing all 96 normative rules. Focused inventory cases passed on all adapters; the complete Python Apply/recovery category passed 51/51; deterministic maintainer tests passed 18/18; and each complete adapter suite passed 305/305 locally.
+- Canonical exclusive evidence creation produced `candidate-revision-9-local.json` (`b7c9b046d2970c308530d2ba05893213fbf81445e96c4b355a9c3863c4fe734a`) and Markdown (`99a5ef242b1e96e966d1fe9cff3549565008520451921bc1e9d7abfc3237d264`), plus `parity-revision-9-local.json` (`3643fe1fb86a1c1fa99e7f47489e0f0c4965c56dbe86c6c01622d31887de9d4c`) and Markdown (`11f3f7436b96c2be98e5efeb8fb2fb29bb373ba8826ea38b0594aeba806c00f5`). All three result sets agree, and 900 normalized observations agree at `4463448355c7662a09bb2112052179df0e95216e5bd1092968ee4ddc95b6d233`.
+- The exclusive freeze proposal is `proposed-freeze-revision-9.json` (`9baf19c1f17848b7f0b1b12ff0e821472358f2aadde3dafa4f423194cb5e916c`) and Markdown (`b75d8862b47a16b13c4862643e7551d44777c98348cd9608f5c5aebd1ff8855f`). The owner's explicit Option A response is recorded exclusively in `freeze-acceptance-revision-9.json` (`a934affb933fac7ad994257453afda952b6e81d7852e791f60389ebce4767088`) and Markdown (`2f0c4bb8859bb3f7f0356038922678673544ddf45907bcdb680670813a581691`).
+- Local verification used CPython 3.14.7, Node.js 22.22.3, and PowerShell 7.6.6 on macOS. The Win32 branches are deterministically simulated but not executed on a real Windows host, and local Node is not the pinned Node.js 24.21.0 matrix target. AF_UNIX provider/filesystem availability and the exact non-link reparse behavior remain hosted Windows obligations.
+- Every revision-8 evidence file remains byte-for-byte preserved and historical for revision 9, including local candidate and freeze records, accepted parity, accepted macOS matrix evidence, and GitHub Actions run `34867347594`, attempt 1 review material. No aggregate or release-certification entry exists for revision 9.
+- No hosted execution, artifact download or promotion, evidence publication, release-certification entry, forward test, cross-adapter recovery, runtime guidance, activation, live-project work, commit, or push occurred.
+
+### Revision 9 freeze-review checkpoint
+
+| Checkpoint | Status | Decision |
+|---|---|---|
+| Exact revision-9 frozen bytes and local evidence | Accepted 2026-09-14 | The skill owner selected Option A and accepted the exact revision-9 frozen bytes and local candidate and parity evidence. This acceptance records the reviewed outcome only. It does not dispatch hosted certification, publish evidence, add a release-certification entry, claim full-family certification, add runtime guidance, activate Wayfinder, initialize a live project, commit, push, or begin any later tranche. |
+
+## Candidate revision 9 hosted certification execution — authorized
+
+Authorized by the skill owner on 2026-09-14 as one bounded hosted-execution tranche:
+
+- Publish the complete accepted revision-9 worktree to the dedicated `candidate-revision-9-certification` branch without changing `main`.
+- Dispatch the exact eight-entry revision-9 matrix from that branch using CPython 3.14.7, Node.js 24.21.0, and PowerShell 7.6.6 on the accepted operating-system targets.
+- Preserve every resulting Actions artifact as review-only, run the strict aggregate, and report the authentic result without promotion or publication.
+- Do not add a release-certification entry, claim full-family certification from incomplete or failing results, add runtime guidance, activate Wayfinder, initialize a live project, perform forward testing or cross-adapter recovery, or begin any later tranche.
+
+### Revision 9 hosted-execution checkpoint
+
+| Checkpoint | Status | Decision |
+|---|---|---|
+| Exact eight-entry revision-9 hosted execution | Authorized; pending dispatch | The owner explicitly authorized the hosted tranche and separately authorized committing and pushing the complete accepted revision-9 worktree to the dedicated certification branch. Execution results have not yet been observed or accepted. |

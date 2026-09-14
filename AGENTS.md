@@ -3,7 +3,7 @@
 ## Scope and status
 
 - This repository contains two plugin packages: `plugins/wayfinder` for runtime use and `plugins/wayfinder-maintainer` for maintenance and certification.
-- Wayfinder is currently `v1-candidate-revision-8`: a frozen semantic contract and an unactivated release.
+- Wayfinder is currently `v1-candidate-revision-9`: an owner-accepted frozen semantic contract with accepted local evidence and an unactivated release awaiting separately authorized hosted certification.
 - A public repository, installable plugin metadata, or a green workflow does not activate Wayfinder or establish full-family certification.
 
 ## Start with the maintainer record

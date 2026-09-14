@@ -9,7 +9,7 @@ Treat the repository's project record as durable, version-controlled knowledge r
 
 ## Status
 
-Wayfinder is being designed incrementally. Stage 0 through Slice 5 and candidate revision 8 are accepted. Revision 8 is the frozen version-1 parity target, but its workflows are not ready for use because adapter parity, certification, runtime guidance, and activation remain incomplete. Do not improvise an unfinished workflow or treat this stub as authorization to change a project record.
+Wayfinder is being designed incrementally. Stage 0 through Slice 5 and candidate revision 8 are accepted. Candidate revision 9 contains the approved bounded Windows corrections and is frozen pending owner review. Its workflows are not ready for use because revision-9 hosted certification, runtime guidance, and activation remain incomplete. Do not improvise an unfinished workflow or treat this stub as authorization to change a project record.
 
 Planned workflows:
 

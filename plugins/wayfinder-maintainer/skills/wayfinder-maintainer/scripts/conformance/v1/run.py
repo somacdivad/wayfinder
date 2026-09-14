@@ -12,6 +12,7 @@ import os
 import platform
 import random
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
@@ -232,8 +233,35 @@ def make_source_tree(workspace: Path) -> None:
     (outside / "outside.txt").write_bytes(b"outside\n")
     (sources / "link-file").symlink_to("a.md")
     (sources / "link-dir").symlink_to(outside, target_is_directory=True)
-    if hasattr(os, "mkfifo"):
-        os.mkfifo(sources / "named-pipe")
+def create_special_file_fixture(path: Path, *, windows: bool | None = None) -> socket.socket | None:
+    use_windows = os.name == "nt" if windows is None else windows
+    if not use_windows and hasattr(os, "mkfifo"):
+        os.mkfifo(path)
+        return None
+    if not use_windows:
+        raise CaseFailure("unsupported special-file fixture is unavailable: os.mkfifo is not provided by this runtime")
+    if not hasattr(socket, "AF_UNIX"):
+        raise CaseFailure("unsupported special-file fixture is unavailable: Windows AF_UNIX is not provided")
+    live_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        live_socket.bind(str(path))
+        try:
+            os.lstat(path)
+        except OSError:
+            raise CaseFailure("Windows AF_UNIX bind did not create a pathname socket")
+        return live_socket
+    except Exception as exc:
+        live_socket.close()
+        path.unlink(missing_ok=True)
+        if isinstance(exc, CaseFailure):
+            raise
+        raise CaseFailure(f"unsupported special-file fixture is unavailable: Windows AF_UNIX bind failed: {exc}") from exc
+
+
+def cleanup_special_file_fixture(path: Path, live_socket: socket.socket | None) -> None:
+    if live_socket is not None:
+        live_socket.close()
+    path.unlink(missing_ok=True)
 
 
 def invoke_inventory(
@@ -805,6 +833,19 @@ def inventory_case(skill_root: Path, adapter: Path, case: dict[str, Any], tempor
     workspace.mkdir()
     make_source_tree(workspace)
     case_id = case["id"]
+    fixture_path = workspace / "sources/named-pipe"
+    live_socket = None
+    if case_id in {"inventory-special-file", "inventory-exclusions"}:
+        live_socket = create_special_file_fixture(fixture_path)
+    try:
+        _inventory_case_body(skill_root, adapter, case, workspace)
+    finally:
+        if case_id in {"inventory-special-file", "inventory-exclusions"}:
+            cleanup_special_file_fixture(fixture_path, live_socket)
+
+
+def _inventory_case_body(skill_root: Path, adapter: Path, case: dict[str, Any], workspace: Path) -> None:
+    case_id = case["id"]
     request = source_request()
     if case_id == "inventory-files-roots":
         request["selections"] = ["sources/a.md", "sources/nested"]
@@ -867,7 +908,12 @@ def inventory_case(skill_root: Path, adapter: Path, case: dict[str, Any], tempor
             raise CaseFailure("symlink traversal escaped the source tree")
     elif case_id == "inventory-special-file":
         entry = inventory["entries"][0]
-        if entry["type"] != "unsupported-file" or entry["exclusion"] != "unsupported-special-file":
+        if (
+            entry["type"] != "unsupported-file"
+            or entry["included"]
+            or entry["exclusion"] != "unsupported-special-file"
+            or any(entry[field] is not None for field in ("byteLength", "sha256", "content", "markdown"))
+        ):
             raise CaseFailure("special file classification differs")
     elif case_id == "inventory-exclusions":
         reasons = {entry["exclusion"] for entry in inventory["entries"] if entry["exclusion"]}
@@ -1259,6 +1305,7 @@ def render_case(skill_root: Path, adapter: Path, case: dict[str, Any], temporary
         outside = temporary / "outside"
         outside.mkdir()
         (output / "linked").symlink_to(outside, target_is_directory=True)
+    before_output = snapshot(output)
     request = {**base_generation_request("render"), "documents": documents}
     before_workspace = snapshot(workspace)
     completed, result = invoke_generate(local_adapter, workspace, request, output_root=output)
@@ -1266,8 +1313,7 @@ def render_case(skill_root: Path, adapter: Path, case: dict[str, Any], temporary
     if snapshot(workspace) != before_workspace:
         raise CaseFailure("render changed its workspace")
     if case["exit"] != 0:
-        allowed_output = {"render-output-symlink-component": [{"path": "linked", "kind": "symlink", "target": str(temporary / "outside")}]}.get(case_id, [])
-        if case_id != "render-output-exists" and snapshot(output) != allowed_output:
+        if case_id != "render-output-exists" and snapshot(output) != before_output:
             raise CaseFailure("rejected render wrote output")
         return
     if case_id == "render-all-kinds":
@@ -1827,7 +1873,8 @@ def initialize_case(skill_root: Path, adapter: Path, case: dict[str, Any], tempo
         )
         normalized_plan = plan_raw
         for spelling in workspace_spellings:
-            normalized_plan = normalized_plan.replace(spelling.encode("utf-8"), workspace_marker)
+            json_spelling = json.dumps(spelling, ensure_ascii=False)[1:-1].encode("utf-8")
+            normalized_plan = normalized_plan.replace(json_spelling, workspace_marker)
         normalized_plan = normalized_plan.replace(plan["contractSha256"].encode("ascii"), b"<CONTRACT_SHA256>")
         preview_raw = (bundle / "preview.md").read_bytes()
         normalized_preview = preview_raw
@@ -2389,6 +2436,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--write-evidence", action="store_true")
     parser.add_argument("--case", action="append", dest="case_ids")
     parser.add_argument("--category", action="append", dest="categories")
+    parser.add_argument("--output", choices=("summary", "verbose", "json"), default="verbose")
     parser.add_argument("--observations", type=Path)
     parser.add_argument("--differential-mode", action="store_true")
     args = parser.parse_args(argv)
@@ -2440,10 +2488,12 @@ def main(argv: list[str]) -> int:
         try:
             execute_case(skill_root, adapter, case)
             results.append({"id": case["id"], "category": case["category"], "rules": case["rules"], "status": "passed"})
-            print(f"PASS {case['id']}")
+            if args.output == "verbose":
+                print(f"PASS {case['id']}")
         except Exception as exc:
             results.append({"id": case["id"], "category": case["category"], "rules": case["rules"], "status": "failed", "detail": str(exc)})
-            print(f"FAIL {case['id']}: {exc}")
+            if args.output != "json":
+                print(f"FAIL {case['id']}: {exc}")
     failed = [result for result in results if result["status"] == "failed"]
     if args.observations is not None:
         args.observations.parent.mkdir(parents=True, exist_ok=True)
@@ -2455,9 +2505,13 @@ def main(argv: list[str]) -> int:
         print(f"evidence-markdown={markdown_path}")
     elif args.write_evidence:
         print("evidence=not-written-failed-suite")
-    else:
+    elif args.output == "verbose":
         print("evidence=not-written")
-    print(f"summary passed={len(results) - len(failed)} failed={len(failed)} total={len(results)}")
+    summary = {"passed": len(results) - len(failed), "failed": len(failed), "total": len(results)}
+    if args.output == "json":
+        print(json.dumps({"ok": not failed, "results": results, "summary": summary}, sort_keys=True, separators=(",", ":")))
+    else:
+        print(f"summary passed={summary['passed']} failed={summary['failed']} total={summary['total']}")
     return 1 if failed else 0
 
 

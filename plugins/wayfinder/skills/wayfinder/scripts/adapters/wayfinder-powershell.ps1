@@ -250,7 +250,7 @@ function Test-WfSymlink {
     param([string]$Path)
     try {
         $item = Get-Item -LiteralPath $Path -Force -ErrorAction Stop
-        return [bool]($item.Attributes -band [IO.FileAttributes]::ReparsePoint)
+        return $null -ne $item.LinkTarget
     } catch { return $false }
 }
 
@@ -463,7 +463,10 @@ function Get-WfFileType {
     param([string]$Path)
     try {
         $item = Get-Item -LiteralPath $Path -Force -ErrorAction Stop
-        if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { return 'symlink' }
+        if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+            if ($null -ne $item.LinkTarget) { return 'symlink' }
+            return 'unsupported-file'
+        }
         $unixStat = $item.PSObject.Properties['UnixStat']
         if ($null -ne $unixStat -and $null -ne $unixStat.Value) {
             switch ($unixStat.Value.ItemType.ToString()) {

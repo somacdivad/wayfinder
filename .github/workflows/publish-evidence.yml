@@ -53,7 +53,7 @@ jobs:
       - name: Create draft evidence release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EVIDENCE_TAG: evidence-v1-candidate-revision-8-${{ inputs.matrix_sha256 }}
+          EVIDENCE_TAG: evidence-v1-candidate-revision-9-${{ inputs.matrix_sha256 }}
         shell: bash
         run: |
           gh release create "$EVIDENCE_TAG" \

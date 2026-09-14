@@ -1,0 +1,203 @@
+{
+  "format": "wayfinder-freeze-proposal",
+  "schemaVersion": 1,
+  "status": "proposed",
+  "decision": "dual-layer-package-status-and-maintainer-record",
+  "candidate": {
+    "releaseId": "v1-candidate-revision-9",
+    "candidateRevision": 9,
+    "contractVersion": 1,
+    "contractStatus": "frozen",
+    "releaseStatus": "unactivated-frozen",
+    "contractSha256": "3c79c6e1d2eae7c6016d789c9ade75125a2ec1dcc43f458541f9d7c63654bdd9",
+    "releaseSha256": "1826fa1c1323561001565fe4bd635c0432306ced078320f1eecdad81ff268ffb",
+    "adapters": [
+      {
+        "id": "python-reference-v1",
+        "path": "scripts/adapters/wayfinder.py",
+        "sha256": "f8fe1a0987a37e8a9a43003ede1bcb9eda590c88511daebaafcdd5d13932337a"
+      },
+      {
+        "id": "node-v1",
+        "path": "scripts/adapters/wayfinder-node.mjs",
+        "sha256": "df0f3c2a000454b2f7aaa8fcf6762b670aab34b9cb721da571fe334ae29f10ac"
+      },
+      {
+        "id": "powershell-v1",
+        "path": "scripts/adapters/wayfinder-powershell.ps1",
+        "sha256": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9"
+      }
+    ],
+    "fixtureIndexSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6",
+    "expectedOutputsSha256": "9d149d3b3603547b509803b3bfb119b79e40db41f97e848f76554f5dccbf1b94"
+  },
+  "ruleCoverage": {
+    "normativeRules": 96,
+    "coveredRules": 96,
+    "conformanceCases": 305,
+    "caseCountIsSemanticProof": false
+  },
+  "expectedOutputReview": [
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/catalog-golden.json",
+      "status": "reviewed-against-contract",
+      "rules": [
+        "WF-JSON-005",
+        "WF-GEN-002",
+        "WF-GEN-003"
+      ]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/initialize-apply-golden.json",
+      "status": "reviewed-against-contract",
+      "rules": [
+        "WF-JOURNAL-001",
+        "WF-PUBLISH-001",
+        "WF-COMPLETE-001",
+        "WF-RECEIPT-001"
+      ]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/initialize-minimal-golden.json",
+      "status": "reviewed-against-contract",
+      "rules": [
+        "WF-PLAN-001",
+        "WF-PLAN-002",
+        "WF-PLAN-004"
+      ]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/inventory-golden.json",
+      "status": "reviewed-against-contract",
+      "rules": [
+        "WF-INV-003",
+        "WF-INV-005",
+        "WF-INV-006",
+        "WF-INV-007"
+      ]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/probe-deterministic.json",
+      "status": "reviewed-against-contract",
+      "rules": [
+        "WF-PKG-001",
+        "WF-PKG-004",
+        "WF-PROBE-002",
+        "WF-PROBE-003"
+      ]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/render-brief.md",
+      "status": "reviewed-against-contract",
+      "rules": [
+        "WF-TPL-001"
+      ]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/result-envelope-fields.json",
+      "status": "reviewed-against-contract",
+      "rules": [
+        "WF-CMD-001"
+      ]
+    }
+  ],
+  "invalidation": {
+    "triggers": [
+      "governed-byte-change",
+      "semantic-change",
+      "cross-artifact-disagreement"
+    ],
+    "requiredActions": [
+      "reopen-candidate",
+      "advance-candidate-revision",
+      "invalidate-affected-evidence",
+      "rerun-every-adapter"
+    ]
+  },
+  "certificationMatrix": {
+    "status": "required-future-evidence",
+    "requiredFilesystemBehaviors": [
+      "case-sensitive",
+      "case-insensitive"
+    ],
+    "requiredEntries": [
+      {
+        "adapterId": "python-reference-v1",
+        "runtimeImplementation": "CPython",
+        "runtimeVersion": "3.14.7",
+        "operatingSystemFamily": "macOS",
+        "evidenceStatus": "missing"
+      },
+      {
+        "adapterId": "python-reference-v1",
+        "runtimeImplementation": "CPython",
+        "runtimeVersion": "3.14.7",
+        "operatingSystemFamily": "Linux",
+        "evidenceStatus": "missing"
+      },
+      {
+        "adapterId": "python-reference-v1",
+        "runtimeImplementation": "CPython",
+        "runtimeVersion": "3.14.7",
+        "operatingSystemFamily": "Windows",
+        "evidenceStatus": "missing"
+      },
+      {
+        "adapterId": "node-v1",
+        "runtimeImplementation": "Node.js",
+        "runtimeVersion": "24.21.0",
+        "operatingSystemFamily": "macOS",
+        "evidenceStatus": "missing"
+      },
+      {
+        "adapterId": "node-v1",
+        "runtimeImplementation": "Node.js",
+        "runtimeVersion": "24.21.0",
+        "operatingSystemFamily": "Linux",
+        "evidenceStatus": "missing"
+      },
+      {
+        "adapterId": "node-v1",
+        "runtimeImplementation": "Node.js",
+        "runtimeVersion": "24.21.0",
+        "operatingSystemFamily": "Windows",
+        "evidenceStatus": "missing"
+      },
+      {
+        "adapterId": "powershell-v1",
+        "runtimeImplementation": "PowerShell",
+        "runtimeVersion": "7.6.6",
+        "operatingSystemFamily": "Windows",
+        "evidenceStatus": "missing"
+      },
+      {
+        "adapterId": "powershell-v1",
+        "runtimeImplementation": "PowerShell",
+        "runtimeVersion": "7.6.6",
+        "operatingSystemFamily": "Linux",
+        "evidenceStatus": "missing"
+      }
+    ]
+  },
+  "evidence": {
+    "classification": "local-candidate-and-parity",
+    "localReport": "candidate-revision-9-local.json",
+    "localReportSha256": "b7c9b046d2970c308530d2ba05893213fbf81445e96c4b355a9c3863c4fe734a",
+    "resultSetSha256": "08da07adb4576cb776193478e66ff9ac568e987c93fe9f4becb547973e38e0ce",
+    "parityReport": "parity-revision-9-local.json",
+    "parityReportSha256": "3643fe1fb86a1c1fa99e7f47489e0f0c4965c56dbe86c6c01622d31887de9d4c",
+    "normalizedInvocationsSha256": "4463448355c7662a09bb2112052179df0e95216e5bd1092968ee4ddc95b6d233",
+    "missing": [
+      "independent-review-evidence",
+      "cross-platform-matrix-evidence",
+      "pinned-node-24.21.0-environment-evidence",
+      "windows-environment-evidence",
+      "full-family-certification"
+    ]
+  },
+  "runtimeActivation": "disabled",
+  "approval": {
+    "status": "pending",
+    "requiredChoice": "Option A"
+  }
+}

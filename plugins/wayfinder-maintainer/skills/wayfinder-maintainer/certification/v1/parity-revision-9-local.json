@@ -1,0 +1,77 @@
+{
+  "format": "wayfinder-local-parity-evidence",
+  "schemaVersion": 1,
+  "scope": "bounded-adapter-parity-candidate-revision-9",
+  "status": "passing-local-parity-not-certification",
+  "generatedAt": "2026-09-14T19:26:09Z",
+  "package": {
+    "releaseId": "v1-candidate-revision-9",
+    "releaseSha256": "1826fa1c1323561001565fe4bd635c0432306ced078320f1eecdad81ff268ffb",
+    "contractVersion": 1,
+    "contractSha256": "3c79c6e1d2eae7c6016d789c9ade75125a2ec1dcc43f458541f9d7c63654bdd9",
+    "fixtureIndexSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6"
+  },
+  "adapters": [
+    {
+      "id": "python-reference-v1",
+      "path": "scripts/adapters/wayfinder.py",
+      "sha256": "f8fe1a0987a37e8a9a43003ede1bcb9eda590c88511daebaafcdd5d13932337a",
+      "observedEnvironment": {
+        "pythonImplementation": "CPython",
+        "pythonVersion": "3.14.7",
+        "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+        "filesystemEncoding": "utf-8",
+        "executable": "/Users/davidamos/.local/share/uv/python/cpython-3.14.7-macos-aarch64-none/bin/python3.14"
+      },
+      "caseCount": 305,
+      "resultsSha256": "9bf38f3733d1b98aa747a707d901f87b27e302e57f06e4594c94825599d24be3"
+    },
+    {
+      "id": "node-v1",
+      "path": "scripts/adapters/wayfinder-node.mjs",
+      "sha256": "df0f3c2a000454b2f7aaa8fcf6762b670aab34b9cb721da571fe334ae29f10ac",
+      "observedEnvironment": {
+        "implementation": "Node.js",
+        "version": "22.22.3",
+        "platform": "darwin",
+        "architecture": "arm64"
+      },
+      "caseCount": 305,
+      "resultsSha256": "9bf38f3733d1b98aa747a707d901f87b27e302e57f06e4594c94825599d24be3"
+    },
+    {
+      "id": "powershell-v1",
+      "path": "scripts/adapters/wayfinder-powershell.ps1",
+      "sha256": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9",
+      "observedEnvironment": {
+        "implementation": "PowerShell",
+        "version": "7.6.6",
+        "platform": "Unix"
+      },
+      "caseCount": 305,
+      "resultsSha256": "9bf38f3733d1b98aa747a707d901f87b27e302e57f06e4594c94825599d24be3"
+    }
+  ],
+  "agreement": {
+    "caseResultsEqual": true,
+    "normalizedInvocationCount": 900,
+    "normalizedInvocationsSha256": "4463448355c7662a09bb2112052179df0e95216e5bd1092968ee4ddc95b6d233",
+    "normalizations": [
+      "physical temporary roots",
+      "adapter and probe environment identity",
+      "contract-open command data and human diagnostic prose",
+      "adapter-bound journal and receipt audit digests"
+    ],
+    "governedDataAuthority": "The common 305-case suite separately asserts every frozen command-data projection, golden byte artifact, mutation outcome, and stateful filesystem invariant."
+  },
+  "summary": {
+    "total": 305,
+    "passed": 305,
+    "failed": 0
+  },
+  "limitations": [
+    "This is maintainer-run local adapter parity evidence, not independent validation.",
+    "It is not an environment entry or full-family certification.",
+    "The later certification matrix, forward tests, cross-adapter recovery tranche, runtime guidance, activation, live-project work, and Git operations remain unperformed."
+  ]
+}

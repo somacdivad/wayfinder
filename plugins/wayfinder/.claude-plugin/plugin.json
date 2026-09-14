@@ -1,6 +1,6 @@
 {
   "name": "wayfinder",
-  "version": "1.0.0-rc.8",
+  "version": "1.0.0-rc.9",
   "description": "Build, maintain, validate, and selectively consult a durable repository-owned project record.",
   "author": {
     "name": "David Amos",

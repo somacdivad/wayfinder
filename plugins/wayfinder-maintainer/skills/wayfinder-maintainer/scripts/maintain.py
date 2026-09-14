@@ -43,6 +43,7 @@ CONFORMANCE_RUNNER = COMPANION_ROOT / "scripts/conformance/v1/run.py"
 PACKAGE_BUILDER = COMPANION_ROOT / "scripts/conformance/v1/build_package.py"
 CERTIFICATION_ROOT = COMPANION_ROOT / "certification/v1"
 HISTORICAL_HASHES = CERTIFICATION_ROOT / "historical-sha256.json"
+CURRENT_STATE_PATH = COMPANION_ROOT / "references/current-state.md"
 TEXT_SUFFIXES = {".abnf", ".json", ".md", ".mjs", ".ps1", ".py", ".yaml", ".yml"}
 RELEASE_ID_PATTERN = r"^v1-candidate-revision-[1-9][0-9]*$"
 RELEASE_STATUS = "unactivated-frozen"
@@ -58,21 +59,63 @@ MATRIX_TARGETS = (
     ("powershell-v1", "PowerShell", "7.6.6", "Linux"),
 )
 ACCEPTED_MATRIX_BINDINGS = {
-    "releaseId": "v1-candidate-revision-8",
-    "releaseSha256": "677fa5af49c11532d49875bd8d1138a36903668449188e6358f2d0a5947f2284",
+    "releaseId": "v1-candidate-revision-9",
+    "releaseSha256": "1826fa1c1323561001565fe4bd635c0432306ced078320f1eecdad81ff268ffb",
     "contractVersion": 1,
-    "contractSha256": "75a0fe4ac106ffb6ad496a38d65addf004f03f128c18fd512232c4631315955b",
+    "contractSha256": "3c79c6e1d2eae7c6016d789c9ade75125a2ec1dcc43f458541f9d7c63654bdd9",
     "fixtureIndexSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6",
-    "expectedOutputsSha256": "c0fad6a47eff844f27135620e07210d081f19fab88aaa962cf5f0a6fb563ed7e",
+    "expectedOutputsSha256": "9d149d3b3603547b509803b3bfb119b79e40db41f97e848f76554f5dccbf1b94",
 }
 ACCEPTED_ADAPTER_DIGESTS = {
-    "python-reference-v1": "d0ce8b8e21606bd026ff82b93945cbef3225387b0c47702b688d285c966679d4",
-    "node-v1": "fcd01cfd47c98488eb2e85055924630642ee4093c02272bb67ba961d4e084125",
-    "powershell-v1": "9b64624f0c837db6082ce241a3f17f3d05614490e4e721d757588c8fefbe0bce",
+    "python-reference-v1": "f8fe1a0987a37e8a9a43003ede1bcb9eda590c88511daebaafcdd5d13932337a",
+    "node-v1": "df0f3c2a000454b2f7aaa8fcf6762b670aab34b9cb721da571fe334ae29f10ac",
+    "powershell-v1": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9",
 }
 ACCEPTED_PARITY_EVIDENCE_DIGESTS = {
     "parity-revision-8-local.json": "28bc61ede21e0b8041c1951b1327c948642d0712170048f17ce2bab9653562ef",
     "parity-revision-8-local.md": "840641fd2b2814104a78f7fe0d4106ac70c4688056237003770d7ec7874e97c0",
+}
+ACCEPTED_MATRIX_EVIDENCE_DIGESTS = {
+    "matrix-revision-8-python-reference-v1-macos-20260914T125208Z.json": "6b43c2f0b41e83d76218e363651d6353ab62561426e4c7abf997cb561aa3fd78",
+    "matrix-revision-8-python-reference-v1-macos-20260914T125208Z.md": "8a81084ab64a18bac8d59694bc81233035cc0f02434a36d8106dfc0f2cc1c11c",
+}
+CURRENT_LOCAL_EVIDENCE_DIGESTS = {
+    "candidate-revision-9-local.json": "b7c9b046d2970c308530d2ba05893213fbf81445e96c4b355a9c3863c4fe734a",
+    "candidate-revision-9-local.md": "99a5ef242b1e96e966d1fe9cff3549565008520451921bc1e9d7abfc3237d264",
+    "parity-revision-9-local.json": "3643fe1fb86a1c1fa99e7f47489e0f0c4965c56dbe86c6c01622d31887de9d4c",
+    "parity-revision-9-local.md": "11f3f7436b96c2be98e5efeb8fb2fb29bb373ba8826ea38b0594aeba806c00f5",
+    "proposed-freeze-revision-9.json": "9baf19c1f17848b7f0b1b12ff0e821472358f2aadde3dafa4f423194cb5e916c",
+    "proposed-freeze-revision-9.md": "b75d8862b47a16b13c4862643e7551d44777c98348cd9608f5c5aebd1ff8855f",
+    "freeze-acceptance-revision-9.json": "a934affb933fac7ad994257453afda952b6e81d7852e791f60389ebce4767088",
+    "freeze-acceptance-revision-9.md": "2f0c4bb8859bb3f7f0356038922678673544ddf45907bcdb680670813a581691",
+}
+RUNTIME_REQUIREMENTS = {
+    "python-reference-v1": ("CPython", "3.14.7", "none; invoke maintain.py with the selected interpreter"),
+    "node-v1": ("Node.js", "24.21.0", "WAYFINDER_NODE_RUNTIME"),
+    "powershell-v1": ("PowerShell", "7.6.6", "WAYFINDER_POWERSHELL_RUNTIME"),
+}
+CURRENT_APPROVAL_BOUNDARY = (
+    "The owner authorized the bounded candidate-revision-9 hosted certification tranche and publication "
+    "of the exact accepted worktree to a dedicated certification branch. Revision-8 evidence remains "
+    "historical. No evidence publication, release-certification entry, forward test, cross-adapter "
+    "recovery, runtime guidance, activation, live-project initialization, or other commit or push is authorized."
+)
+CURRENT_PENDING_ACTION = (
+    "Publish the exact accepted revision-9 worktree to the authorized certification branch, dispatch the "
+    "eight-entry hosted matrix, preserve artifacts as review-only, and report the strict aggregate result."
+)
+FREEZE_ACCEPTANCE_AUTHORIZATION = (
+    "Accept the exact revision-9 frozen bytes and local candidate and parity evidence. "
+    "Hosted certification and every later tranche require separate explicit authorization."
+)
+FREEZE_ACCEPTANCE_BOUNDARIES = {
+    "hostedCertification": "not-authorized",
+    "evidencePublication": "not-authorized",
+    "releaseCertificationEntry": "not-authorized",
+    "fullFamilyCertification": "incomplete",
+    "runtimeActivation": "disabled",
+    "liveProjectWork": "not-authorized",
+    "gitCommitOrPush": "not-authorized",
 }
 
 
@@ -105,6 +148,142 @@ def expected_outputs_sha256(contract: dict[str, Any]) -> str:
     return canonical_sha256(outputs)
 
 
+def _relative(path: Path) -> str:
+    return str(path.relative_to(REPOSITORY_ROOT)) if path.is_relative_to(REPOSITORY_ROOT) else str(path)
+
+
+def current_context() -> dict[str, Any]:
+    contract_path = SKILL_ROOT / "assets/contract-v1/contract.json"
+    release_path = SKILL_ROOT / "assets/contract-v1/release.json"
+    cases_path = CONFORMANCE_ROOT / "cases.json"
+    contract = load_json(contract_path)
+    release = load_json(release_path)
+    cases = load_json(cases_path)["cases"]
+    counts = Counter(case["category"] for case in cases)
+    registry = []
+    for adapter in release["adapters"]:
+        implementation, version, override = RUNTIME_REQUIREMENTS[adapter["id"]]
+        registry.append({
+            "id": adapter["id"],
+            "path": adapter["path"],
+            "sha256": adapter["sha256"],
+            "runtime": {"implementation": implementation, "requiredVersion": version, "overrideVariable": override},
+        })
+    return {
+        "format": "wayfinder-maintainer-context",
+        "schemaVersion": 1,
+        "candidate": {
+            "releaseId": release["releaseId"],
+            "candidateRevision": contract["candidateRevision"],
+            "contractStatus": contract["status"],
+            "releaseStatus": release["status"],
+            "activation": "disabled",
+        },
+        "bindings": {
+            **ACCEPTED_MATRIX_BINDINGS,
+            "adapters": ACCEPTED_ADAPTER_DIGESTS,
+            "acceptedParityEvidence": ACCEPTED_PARITY_EVIDENCE_DIGESTS,
+            "acceptedMatrixEvidence": ACCEPTED_MATRIX_EVIDENCE_DIGESTS,
+            "currentLocalEvidence": CURRENT_LOCAL_EVIDENCE_DIGESTS,
+            "historicalEvidenceIndex": _relative(HISTORICAL_HASHES),
+        },
+        "conformance": {"caseCount": len(cases), "byCategory": dict(sorted(counts.items()))},
+        "adapterRegistry": registry,
+        "paths": {
+            "repositoryRoot": str(REPOSITORY_ROOT),
+            "runtimeSkillRoot": str(SKILL_ROOT),
+            "maintainerSkillRoot": str(COMPANION_ROOT),
+            "maintainerCommand": str(Path(__file__).resolve()),
+            "conformanceRunner": str(CONFORMANCE_RUNNER),
+            "designRecord": str(COMPANION_ROOT / "references/design-record.md"),
+            "workflow": str(COMPANION_ROOT / "references/workflow.md"),
+            "certificationRoot": str(CERTIFICATION_ROOT),
+        },
+        "approvalBoundary": CURRENT_APPROVAL_BOUNDARY,
+        "pendingAction": CURRENT_PENDING_ACTION,
+    }
+
+
+def current_state_markdown() -> str:
+    context = current_context()
+    candidate = context["candidate"]
+    bindings = context["bindings"]
+    adapters = context["adapterRegistry"]
+    adapter_text = ", ".join(f"`{item['id']}` `{item['sha256']}`" for item in adapters)
+    parity_text = ", ".join(
+        f"`{name}` `{digest}`" for name, digest in sorted(bindings["acceptedParityEvidence"].items())
+    )
+    matrix_text = ", ".join(
+        f"`{name}` `{digest}`" for name, digest in sorted(bindings["acceptedMatrixEvidence"].items())
+    )
+    local_text = ", ".join(
+        f"`{name}` `{digest}`" for name, digest in sorted(bindings["currentLocalEvidence"].items())
+    )
+    lines = [
+        "# Wayfinder current maintainer state",
+        "",
+        "> Compact routing reference. `maintain.py doctor` validates these facts against the package, accepted evidence, and chronological record.",
+        "",
+        "## Current identity",
+        "",
+        f"- Candidate: `{candidate['releaseId']}` (contract `{candidate['contractStatus']}`, release `{candidate['releaseStatus']}`).",
+        "- Activation: **disabled**. The runtime skill remains non-operational.",
+        f"- Contract: `{bindings['contractSha256']}`.",
+        f"- Release: `{bindings['releaseSha256']}`.",
+        f"- Fixture index: `{bindings['fixtureIndexSha256']}`; expected-output set: `{bindings['expectedOutputsSha256']}`.",
+        f"- Registered adapters: {adapter_text}.",
+        f"- Historical revision-8 accepted parity evidence: {parity_text}.",
+        f"- Historical revision-8 accepted macOS matrix evidence: {matrix_text}.",
+        f"- Accepted revision-9 local evidence, proposal, and freeze acceptance: {local_text}.",
+        f"- Accepted historical evidence is hash-pinned by [`historical-sha256.json`](../certification/v1/historical-sha256.json).",
+        "",
+        "## Approval boundary",
+        "",
+        CURRENT_APPROVAL_BOUNDARY,
+        "",
+        "## Pending action and design-record routes",
+        "",
+        CURRENT_PENDING_ACTION,
+        "",
+        "Read only the relevant exact section of the [chronological design record](design-record.md):",
+        "",
+        "- `## Candidate revision 8 freeze — accepted` for frozen identity and invalidation rules.",
+        "- `## Candidate revision 8 adapter parity — accepted` for adapter and parity authority.",
+        "- `## Candidate revision 8 bounded certification matrix — accepted` for matrix requirements.",
+        "- `## Candidate revision 8 hosted certification execution — accepted with failed aggregate` for hosted evidence bindings.",
+        "- `## Candidate revision 8 Windows certification investigation and correction — accepted` for current blockers.",
+        "- `## Candidate revision 8 maintainer-efficiency tranche — accepted` for the current maintainer workflow and tooling baseline.",
+        "- `## Candidate revision 9 Windows corrections — accepted` for the current implementation and approval boundary.",
+        "- `## Candidate revision 9 hosted certification execution — authorized` for the active bounded hosted tranche.",
+        "",
+        "Read the full record before reopening a decision, changing evidence governance, or recording an accepted outcome.",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def describe_command(output_format: str) -> int:
+    context = current_context()
+    if output_format == "json":
+        print(json.dumps(context, sort_keys=True, separators=(",", ":")))
+        return 0
+    candidate = context["candidate"]
+    print("# Wayfinder maintainer context\n")
+    print(f"- Candidate: `{candidate['releaseId']}`; contract `{candidate['contractStatus']}`; release `{candidate['releaseStatus']}`; activation `{candidate['activation']}`.")
+    print(f"- Cases: `{context['conformance']['caseCount']}`.")
+    print(f"- Repository: `{context['paths']['repositoryRoot']}`.")
+    print(f"- Maintainer command: `{context['paths']['maintainerCommand']}`.")
+    print("\n## Adapter registry\n")
+    for adapter in context["adapterRegistry"]:
+        runtime = adapter["runtime"]
+        print(f"- `{adapter['id']}` — `{adapter['sha256']}` — {runtime['implementation']} `{runtime['requiredVersion']}`; override `{runtime['overrideVariable']}`.")
+    print("\n## Approval boundary\n")
+    print(context["approvalBoundary"])
+    print("\n## Pending action\n")
+    print(context["pendingAction"])
+    return 0
+
+
 def freeze_proposal_issues(
     proposal: dict[str, Any],
     contract: dict[str, Any],
@@ -124,7 +303,6 @@ def freeze_proposal_issues(
     if proposal.get("decision") != "dual-layer-package-status-and-maintainer-record":
         issues.append("accepted representation")
     candidate = proposal.get("candidate", {})
-    python_adapter = next((item for item in release.get("adapters", []) if item.get("id") == "python-reference-v1"), {})
     cases_path = CONFORMANCE_ROOT / "cases.json"
     freeze_evidence_path = CERTIFICATION_ROOT / f"candidate-revision-{contract['candidateRevision']}-local.json"
     freeze_evidence = load_json(freeze_evidence_path)
@@ -136,9 +314,10 @@ def freeze_proposal_issues(
         "releaseStatus": release["status"],
         "contractSha256": sha256(SKILL_ROOT / "assets/contract-v1/contract.json"),
         "releaseSha256": freeze_evidence["package"]["releaseSha256"],
-        "pythonAdapterId": python_adapter.get("id"),
-        "pythonAdapterClassification": "implementation-under-test",
-        "pythonAdapterSha256": python_adapter.get("sha256"),
+        "adapters": [
+            {"id": item["id"], "path": item["path"], "sha256": item["sha256"]}
+            for item in release.get("adapters", [])
+        ],
         "fixtureIndexSha256": sha256(cases_path),
         "expectedOutputsSha256": expected_outputs_sha256(contract),
     }
@@ -188,7 +367,7 @@ def freeze_proposal_issues(
     if proposal.get("runtimeActivation") != "disabled" or proposal.get("approval") != {"status": "pending", "requiredChoice": "Option A"}:
         issues.append("approval boundary")
     evidence = proposal.get("evidence", {})
-    if evidence.get("classification") != "local-python-only" or not evidence.get("missing"):
+    if evidence.get("classification") != "local-candidate-and-parity" or not evidence.get("missing"):
         issues.append("evidence boundary")
     local_report = evidence.get("localReport")
     if local_report is not None:
@@ -199,6 +378,19 @@ def freeze_proposal_issues(
             report = load_json(report_path)
             if evidence.get("resultSetSha256") != report.get("resultsDigest") or report.get("package", {}).get("contractSha256") != expected_candidate["contractSha256"]:
                 issues.append("local evidence binding")
+    parity_report = evidence.get("parityReport")
+    if parity_report is not None:
+        report_path = CERTIFICATION_ROOT / parity_report
+        if not report_path.is_file() or evidence.get("parityReportSha256") != sha256(report_path):
+            issues.append("parity evidence report")
+        else:
+            report = load_json(report_path)
+            if (
+                report.get("package", {}).get("releaseSha256") != expected_candidate["releaseSha256"]
+                or report.get("agreement", {}).get("normalizedInvocationCount") != 900
+                or evidence.get("normalizedInvocationsSha256") != report.get("agreement", {}).get("normalizedInvocationsSha256")
+            ):
+                issues.append("parity evidence binding")
     return issues
 
 
@@ -236,18 +428,10 @@ def freeze_acceptance_issues(
         issues.append("proposal binding")
     if acceptance.get("decision") != {
         "choice": "Option A",
-        "authorization": (
-            "Accept revision 8 as the frozen version-1 parity target. "
-            "Later Node.js and PowerShell implementation requires a separate explicit request."
-        ),
+        "authorization": FREEZE_ACCEPTANCE_AUTHORIZATION,
     }:
         issues.append("decision boundary")
-    if acceptance.get("boundaries") != {
-        "parityImplementation": "not-started",
-        "environmentCertification": "incomplete",
-        "fullFamilyCertification": "incomplete",
-        "runtimeActivation": "disabled",
-    }:
+    if acceptance.get("boundaries") != FREEZE_ACCEPTANCE_BOUNDARIES:
         issues.append("authorization boundaries")
     return issues
 
@@ -348,7 +532,45 @@ def text_profile_failures(roots: Iterable[Path]) -> list[str]:
     return failures
 
 
-def doctor() -> int:
+def _emit_doctor(checks: list[tuple[str, bool, str]], output_mode: str, yaml_available: bool) -> int:
+    failures = [(name, detail) for name, passed, detail in checks if not passed]
+    summary = {"passed": len(checks) - len(failures), "failed": len(failures), "total": len(checks)}
+    if output_mode == "json":
+        print(json.dumps({
+            "format": "wayfinder-maintainer-doctor",
+            "schemaVersion": 1,
+            "ok": not failures,
+            "optionalPyYAML": "available" if yaml_available else "unavailable-dependency-free-checks-used",
+            "checks": [
+                {"name": name, "status": "passed" if passed else "failed", "detail": detail}
+                for name, passed, detail in checks
+            ],
+            "summary": summary,
+        }, sort_keys=True, separators=(",", ":")))
+    elif output_mode == "verbose":
+        print(f"INFO optional-pyyaml={'available' if yaml_available else 'unavailable; dependency-free checks used'}")
+        for name, passed, detail in checks:
+            suffix = f": {detail}" if detail else ""
+            print(f"{'PASS' if passed else 'FAIL'} {name}{suffix}")
+        print(f"summary passed={summary['passed']} failed={summary['failed']} total={summary['total']}")
+    elif output_mode == "summary":
+        for name, detail in failures:
+            print(f"FAIL {name}{': ' + detail if detail else ''}")
+        if failures:
+            print(f"summary passed={summary['passed']} failed={summary['failed']} total={summary['total']}")
+        else:
+            print(f"OK doctor passed={summary['passed']} total={summary['total']}")
+    elif output_mode == "quiet":
+        for name, detail in failures:
+            print(f"FAIL {name}{': ' + detail if detail else ''}")
+        if failures:
+            print(f"summary passed={summary['passed']} failed={summary['failed']} total={summary['total']}")
+    else:
+        raise ValueError(f"unknown doctor output mode: {output_mode}")
+    return 1 if failures else 0
+
+
+def doctor(output_mode: str = "summary", selected_adapter: str | None = None) -> int:
     checks: list[tuple[str, bool, str]] = []
 
     def add(name: str, passed: bool, detail: str = "") -> None:
@@ -356,9 +578,7 @@ def doctor() -> int:
 
     add("python-version", sys.version_info >= (3, 11), f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
     if sys.version_info < (3, 11):
-        for name, passed, detail in checks:
-            print(f"{'PASS' if passed else 'FAIL'} {name}{': ' + detail if detail else ''}")
-        return 1
+        return _emit_doctor(checks, output_mode, importlib.util.find_spec("yaml") is not None)
 
     try:
         contract = load_json(SKILL_ROOT / "assets/contract-v1/contract.json")
@@ -414,6 +634,23 @@ def doctor() -> int:
             "allow_implicit_invocation: false" in companion_config
             and 'Use $wayfinder-maintainer' in companion_config,
         )
+        design_text = (COMPANION_ROOT / "references/design-record.md").read_text(encoding="utf-8")
+        required_current_anchors = (
+            "## Candidate revision 8 freeze — accepted",
+            "## Candidate revision 8 adapter parity — accepted",
+            "## Candidate revision 8 bounded certification matrix — accepted",
+            "## Candidate revision 8 hosted certification execution — accepted with failed aggregate",
+            "## Candidate revision 8 Windows certification investigation and correction — accepted",
+            "## Candidate revision 8 maintainer-efficiency tranche — accepted",
+            "## Candidate revision 9 Windows corrections — accepted",
+            "## Candidate revision 9 hosted certification execution — authorized",
+        )
+        current_state_matches = (
+            CURRENT_STATE_PATH.is_file()
+            and CURRENT_STATE_PATH.read_text(encoding="utf-8") == current_state_markdown()
+            and all(anchor in design_text for anchor in required_current_anchors)
+        )
+        add("current-state-drift", current_state_matches, _relative(CURRENT_STATE_PATH))
 
         freeze_path = CERTIFICATION_ROOT / f"proposed-freeze-revision-{revision}.json"
         if freeze_path.exists():
@@ -436,7 +673,7 @@ def doctor() -> int:
             mutations.append(mutation)
             add("freeze-proposal-mutations", all(freeze_proposal_issues(item, contract, release, cases) for item in mutations), f"mutations={len(mutations)}")
         else:
-            add("freeze-proposal", False, str(freeze_path.relative_to(REPOSITORY_ROOT)))
+            add("freeze-proposal", True, "not yet generated")
 
         acceptance_path = CERTIFICATION_ROOT / f"freeze-acceptance-revision-{revision}.json"
         if acceptance_path.exists() and freeze_path.exists():
@@ -463,7 +700,7 @@ def doctor() -> int:
                 f"mutations={len(acceptance_mutations)}",
             )
         else:
-            add("freeze-acceptance", False, str(acceptance_path.relative_to(REPOSITORY_ROOT)))
+            add("freeze-acceptance", True, "pending owner review")
 
         current_evidence = CERTIFICATION_ROOT / f"candidate-revision-{revision}-local.json"
         if current_evidence.exists():
@@ -503,13 +740,28 @@ def doctor() -> int:
     try:
         release = load_json(SKILL_ROOT / "assets/contract-v1/release.json")
         probe_failures: list[str] = []
+        runtime_details: list[str] = []
         for adapter in release["adapters"]:
-            adapter_path = SKILL_ROOT / adapter["path"]
-            probe = run_adapter(adapter_path, ["probe"], capture=True)
-            result = json.loads(probe.stdout) if probe.stdout else {}
-            if probe.returncode != 0 or result.get("ok") is not True:
-                probe_failures.append(f"{adapter['id']}: {(probe.stderr or result.get('code', '')).strip()}")
-        add("adapter-probes", not probe_failures, "; ".join(probe_failures))
+            adapter_id = adapter["id"]
+            if selected_adapter is not None and adapter_id != selected_adapter:
+                continue
+            adapter_file = SKILL_ROOT / adapter["path"]
+            implementation, required_version, override = RUNTIME_REQUIREMENTS[adapter_id]
+            try:
+                observation = _runtime_observation(adapter_id)
+                identity = observation["executableIdentity"]
+                runtime_details.append(
+                    f"{adapter_id}: request={identity['requested']} resolved={identity['resolvedPath']} "
+                    f"observed={observation['implementation']} {observation['version']} "
+                    f"required={implementation} {required_version} override={override}"
+                )
+                probe = run_adapter(adapter_file, ["probe"], capture=True)
+                result = json.loads(probe.stdout) if probe.stdout else {}
+                if probe.returncode != 0 or result.get("ok") is not True:
+                    probe_failures.append(f"{adapter_id}: {(probe.stderr or result.get('code', '')).strip()}")
+            except Exception as exc:
+                probe_failures.append(f"{adapter_id}: {exc}; override={override}")
+        add("adapter-probes", not probe_failures, "; ".join(probe_failures or runtime_details))
     except Exception as exc:
         add("adapter-probes", False, str(exc))
 
@@ -550,8 +802,8 @@ def doctor() -> int:
         ]
         parity = load_json(CERTIFICATION_ROOT / "parity-revision-8-local.json")
         parity_bound = (
-            parity.get("package", {}).get("releaseSha256") == ACCEPTED_MATRIX_BINDINGS["releaseSha256"]
-            and parity.get("package", {}).get("contractSha256") == ACCEPTED_MATRIX_BINDINGS["contractSha256"]
+            parity.get("package", {}).get("releaseSha256") == "677fa5af49c11532d49875bd8d1138a36903668449188e6358f2d0a5947f2284"
+            and parity.get("package", {}).get("contractSha256") == "75a0fe4ac106ffb6ad496a38d65addf004f03f128c18fd512232c4631315955b"
             and parity.get("agreement", {}).get("normalizedInvocationCount") == 900
             and parity.get("agreement", {}).get("normalizedInvocationsSha256")
             == "4463448355c7662a09bb2112052179df0e95216e5bd1092968ee4ddc95b6d233"
@@ -559,6 +811,43 @@ def doctor() -> int:
         add("accepted-parity-evidence", not mismatches and parity_bound, ", ".join(mismatches))
     except Exception as exc:
         add("accepted-parity-evidence", False, str(exc))
+
+    try:
+        revision = load_json(SKILL_ROOT / "assets/contract-v1/contract.json")["candidateRevision"]
+        current_parity_path = CERTIFICATION_ROOT / f"parity-revision-{revision}-local.json"
+        if current_parity_path.is_file():
+            current_parity = load_json(current_parity_path)
+            current_adapters = {item["id"]: item["sha256"] for item in current_parity.get("adapters", [])}
+            current_parity_bound = (
+                current_parity.get("package", {}).get("releaseSha256") == ACCEPTED_MATRIX_BINDINGS["releaseSha256"]
+                and current_parity.get("package", {}).get("contractSha256") == ACCEPTED_MATRIX_BINDINGS["contractSha256"]
+                and current_adapters == ACCEPTED_ADAPTER_DIGESTS
+                and current_parity.get("summary") == {"total": 305, "passed": 305, "failed": 0}
+                and current_parity.get("agreement", {}).get("normalizedInvocationCount") == 900
+            )
+            add("current-local-parity", current_parity_bound, _relative(current_parity_path))
+        else:
+            add("current-local-parity", True, "not yet generated")
+    except Exception as exc:
+        add("current-local-parity", False, str(exc))
+
+    try:
+        mismatches = [
+            name for name, digest in CURRENT_LOCAL_EVIDENCE_DIGESTS.items()
+            if not (CERTIFICATION_ROOT / name).is_file() or sha256(CERTIFICATION_ROOT / name) != digest
+        ]
+        add("current-local-evidence", not mismatches, ", ".join(mismatches))
+    except Exception as exc:
+        add("current-local-evidence", False, str(exc))
+
+    try:
+        mismatches = [
+            name for name, digest in ACCEPTED_MATRIX_EVIDENCE_DIGESTS.items()
+            if not (CERTIFICATION_ROOT / name).is_file() or sha256(CERTIFICATION_ROOT / name) != digest
+        ]
+        add("accepted-certification-evidence", not mismatches, ", ".join(mismatches))
+    except Exception as exc:
+        add("accepted-certification-evidence", False, str(exc))
 
     caches = sorted(str(path.relative_to(REPOSITORY_ROOT)) for path in SKILL_ROOT.parent.rglob("__pycache__"))
     pycs = sorted(str(path.relative_to(REPOSITORY_ROOT)) for path in SKILL_ROOT.parent.rglob("*.pyc"))
@@ -586,14 +875,7 @@ def doctor() -> int:
             frontmatter_failures.append(f"{root.name}: {exc}")
     add("skill-frontmatter", not frontmatter_failures, "; ".join(frontmatter_failures))
 
-    yaml_available = importlib.util.find_spec("yaml") is not None
-    print(f"INFO optional-pyyaml={'available' if yaml_available else 'unavailable; dependency-free checks used'}")
-    for name, passed, detail in checks:
-        suffix = f": {detail}" if detail else ""
-        print(f"{'PASS' if passed else 'FAIL'} {name}{suffix}")
-    failures = sum(not passed for _, passed, _ in checks)
-    print(f"summary passed={len(checks) - failures} failed={failures} total={len(checks)}")
-    return 1 if failures else 0
+    return _emit_doctor(checks, output_mode, importlib.util.find_spec("yaml") is not None)
 
 
 def adapter_path(adapter_id: str) -> Path:
@@ -604,8 +886,8 @@ def adapter_path(adapter_id: str) -> Path:
     return SKILL_ROOT / matches[0]["path"]
 
 
-def test_command(case_ids: list[str], categories: list[str], selected_adapter: str) -> int:
-    if doctor() != 0:
+def test_command(case_ids: list[str], categories: list[str], selected_adapter: str, output_mode: str = "summary") -> int:
+    if doctor("quiet", selected_adapter=selected_adapter) != 0:
         print("maintainer doctor failed; conformance run not started", file=sys.stderr)
         return 1
     try:
@@ -613,7 +895,7 @@ def test_command(case_ids: list[str], categories: list[str], selected_adapter: s
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2
-    arguments: list[str] = ["--adapter", str(selected_path)]
+    arguments: list[str] = ["--adapter", str(selected_path), "--output", output_mode]
     for case_id in case_ids:
         arguments.extend(["--case", case_id])
     for category in categories:
@@ -622,7 +904,7 @@ def test_command(case_ids: list[str], categories: list[str], selected_adapter: s
 
 
 def evidence_command(output: Path) -> int:
-    if doctor() != 0:
+    if doctor("quiet") != 0:
         print("maintainer doctor failed; evidence run not started", file=sys.stderr)
         return 1
     if output.is_symlink():
@@ -639,7 +921,174 @@ def evidence_command(output: Path) -> int:
     completed = run_python(CONFORMANCE_RUNNER, ["--write-evidence", "--evidence-dir", str(output)])
     if completed.returncode != 0:
         return completed.returncode
-    return doctor()
+    return doctor("quiet")
+
+
+def freeze_proposal_command(output: Path) -> int:
+    if doctor("quiet") != 0:
+        print("maintainer doctor failed; freeze proposal not created", file=sys.stderr)
+        return 1
+    output = output.resolve()
+    contract = load_json(SKILL_ROOT / "assets/contract-v1/contract.json")
+    release = load_json(SKILL_ROOT / "assets/contract-v1/release.json")
+    cases = load_json(CONFORMANCE_ROOT / "cases.json")
+    revision = contract["candidateRevision"]
+    local_name = f"candidate-revision-{revision}-local.json"
+    parity_name = f"parity-revision-{revision}-local.json"
+    local_path = CERTIFICATION_ROOT / local_name
+    parity_path = CERTIFICATION_ROOT / parity_name
+    if not local_path.is_file() or not parity_path.is_file():
+        print("passing local candidate and parity reports are required", file=sys.stderr)
+        return 1
+    local = load_json(local_path)
+    parity = load_json(parity_path)
+    historical = load_json(CERTIFICATION_ROOT / "proposed-freeze-revision-8.json")
+    proposal = {
+        "format": "wayfinder-freeze-proposal", "schemaVersion": 1, "status": "proposed",
+        "decision": "dual-layer-package-status-and-maintainer-record",
+        "candidate": {
+            "releaseId": release["releaseId"], "candidateRevision": revision,
+            "contractVersion": contract["contractVersion"], "contractStatus": contract["status"],
+            "releaseStatus": release["status"],
+            "contractSha256": sha256(SKILL_ROOT / "assets/contract-v1/contract.json"),
+            "releaseSha256": sha256(SKILL_ROOT / "assets/contract-v1/release.json"),
+            "adapters": [{"id": item["id"], "path": item["path"], "sha256": item["sha256"]} for item in release["adapters"]],
+            "fixtureIndexSha256": sha256(CONFORMANCE_ROOT / "cases.json"),
+            "expectedOutputsSha256": expected_outputs_sha256(contract),
+        },
+        "ruleCoverage": {"normativeRules": 96, "coveredRules": 96, "conformanceCases": len(cases["cases"]), "caseCountIsSemanticProof": False},
+        "expectedOutputReview": historical["expectedOutputReview"],
+        "invalidation": historical["invalidation"],
+        "certificationMatrix": {
+            "status": "required-future-evidence", "requiredFilesystemBehaviors": ["case-sensitive", "case-insensitive"],
+            "requiredEntries": [
+                {"adapterId": adapter_id, "runtimeImplementation": implementation, "runtimeVersion": version, "operatingSystemFamily": family, "evidenceStatus": "missing"}
+                for adapter_id, implementation, version, family in MATRIX_TARGETS
+            ],
+        },
+        "evidence": {
+            "classification": "local-candidate-and-parity", "localReport": local_name,
+            "localReportSha256": sha256(local_path), "resultSetSha256": local["resultsDigest"],
+            "parityReport": parity_name, "parityReportSha256": sha256(parity_path),
+            "normalizedInvocationsSha256": parity["agreement"]["normalizedInvocationsSha256"],
+            "missing": ["independent-review-evidence", "cross-platform-matrix-evidence", "pinned-node-24.21.0-environment-evidence", "windows-environment-evidence", "full-family-certification"],
+        },
+        "runtimeActivation": "disabled", "approval": {"status": "pending", "requiredChoice": "Option A"},
+    }
+    issues = freeze_proposal_issues(proposal, contract, release, cases)
+    if issues:
+        print("freeze proposal is invalid: " + ", ".join(issues), file=sys.stderr)
+        return 1
+    stem = f"proposed-freeze-revision-{revision}"
+    json_path, markdown_path = output / f"{stem}.json", output / f"{stem}.md"
+    if any(path.exists() or path.is_symlink() for path in (json_path, markdown_path)):
+        print("freeze proposal target already exists", file=sys.stderr)
+        return 2
+    markdown = "\n".join([
+        f"# Wayfinder candidate revision {revision} proposed freeze packet", "",
+        "- **Status:** Proposed; pending explicit owner approval", f"- **Prepared:** {dt.date.today().isoformat()}",
+        f"- **Release:** `{release['releaseId']}`", "- **Contract status:** Frozen pending owner review",
+        "- **Release status:** Unactivated frozen", "- **Runtime activation:** Disabled", "",
+        "## Correction scope", "",
+        "Revision 9 reopens revision 8 only for the approved Windows process-existence and unsupported-special-file corrections. The version-1 safety meaning is preserved.", "",
+        "## Exact identity", "",
+        f"- Contract SHA-256: `{proposal['candidate']['contractSha256']}`",
+        f"- Release SHA-256: `{proposal['candidate']['releaseSha256']}`",
+        f"- Fixture-index SHA-256: `{proposal['candidate']['fixtureIndexSha256']}`",
+        f"- Expected-output-set SHA-256: `{proposal['candidate']['expectedOutputsSha256']}`",
+        *[f"- {item['id']} SHA-256: `{item['sha256']}`" for item in proposal["candidate"]["adapters"]], "",
+        "## Local evidence", "",
+        f"- Candidate report: `{local_name}` (`{proposal['evidence']['localReportSha256']}`), 305/305.",
+        f"- Parity report: `{parity_name}` (`{proposal['evidence']['parityReportSha256']}`), all three adapters 305/305 with 900 normalized observations agreeing.",
+        "- Node.js 22.22.3 was used locally and is not the pinned Node.js 24.21.0 matrix runtime.",
+        "- No Windows or hosted matrix result is claimed; every revision-9 matrix entry remains missing.", "",
+        "## Approval checkpoint", "",
+        "- **Option A:** Accept the exact revision-9 frozen bytes and local evidence. This does not dispatch hosted certification, publish evidence, add certification entries, or activate Wayfinder.",
+        "- **Option B:** Request changes and leave revision 9 unaccepted.", "",
+    ]).encode("utf-8")
+    raw = (json.dumps(proposal, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    output.mkdir(parents=True, exist_ok=True)
+    published: list[Path] = []
+    try:
+        for path, payload in ((json_path, raw), (markdown_path, markdown)):
+            with path.open("xb") as handle:
+                handle.write(payload); handle.flush(); os.fsync(handle.fileno())
+            published.append(path)
+    except Exception:
+        for path in published:
+            path.unlink(missing_ok=True)
+        raise
+    print(f"freeze-proposal-json={json_path}")
+    print(f"freeze-proposal-markdown={markdown_path}")
+    return 0
+
+
+def freeze_acceptance_command(output: Path, accept_option_a: bool) -> int:
+    if not accept_option_a:
+        print("freeze acceptance requires --accept-option-a after explicit owner approval", file=sys.stderr)
+        return 2
+    if doctor("quiet") != 0:
+        print("maintainer doctor failed; freeze acceptance not created", file=sys.stderr)
+        return 1
+    output = output.resolve()
+    contract = load_json(SKILL_ROOT / "assets/contract-v1/contract.json")
+    release = load_json(SKILL_ROOT / "assets/contract-v1/release.json")
+    revision = contract["candidateRevision"]
+    proposal_path = CERTIFICATION_ROOT / f"proposed-freeze-revision-{revision}.json"
+    if not proposal_path.is_file():
+        print("validated revision-scoped freeze proposal is required", file=sys.stderr)
+        return 1
+    proposal = load_json(proposal_path)
+    cases = load_json(CONFORMANCE_ROOT / "cases.json")
+    proposal_issues = freeze_proposal_issues(proposal, contract, release, cases)
+    if proposal_issues:
+        print("freeze proposal is invalid: " + ", ".join(proposal_issues), file=sys.stderr)
+        return 1
+    acceptance = {
+        "format": "wayfinder-freeze-acceptance",
+        "schemaVersion": 1,
+        "status": "accepted",
+        "acceptedOn": dt.date.today().isoformat(),
+        "releaseId": release["releaseId"],
+        "candidateRevision": revision,
+        "proposal": {"path": proposal_path.name, "sha256": sha256(proposal_path)},
+        "decision": {"choice": "Option A", "authorization": FREEZE_ACCEPTANCE_AUTHORIZATION},
+        "boundaries": FREEZE_ACCEPTANCE_BOUNDARIES,
+    }
+    issues = freeze_acceptance_issues(acceptance, proposal_path, contract, release)
+    if issues:
+        print("freeze acceptance is invalid: " + ", ".join(issues), file=sys.stderr)
+        return 1
+    stem = f"freeze-acceptance-revision-{revision}"
+    json_path, markdown_path = output / f"{stem}.json", output / f"{stem}.md"
+    if any(path.exists() or path.is_symlink() for path in (json_path, markdown_path)):
+        print("freeze acceptance target already exists", file=sys.stderr)
+        return 2
+    markdown = "\n".join([
+        f"# Wayfinder version-1 freeze acceptance — revision {revision}", "",
+        "- **Status:** Accepted", f"- **Accepted:** {acceptance['acceptedOn']}",
+        "- **Choice:** Option A", f"- **Release:** `{release['releaseId']}`",
+        "- **Contract status:** Frozen", "- **Release status:** Unactivated frozen",
+        "- **Runtime activation:** Disabled", "",
+        f"The owner accepted the exact candidate revision {revision} frozen bytes and local candidate and parity evidence after reviewing the complete [freeze packet](proposed-freeze-revision-{revision}.md).", "",
+        f"The accepted proposal JSON is bound at `{acceptance['proposal']['sha256']}`. The acceptance records the local evidence and exact bytes only. Hosted certification, evidence publication, a release-certification entry, full-family certification, runtime guidance or activation, live-project work, commits, and pushes remain unauthorized.", "",
+        "Any governed-byte or semantic change reopens the candidate, advances its revision, invalidates affected evidence, and requires every adapter to rerun.", "",
+    ]).encode("utf-8")
+    raw = (json.dumps(acceptance, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    output.mkdir(parents=True, exist_ok=True)
+    published: list[Path] = []
+    try:
+        for path, payload in ((json_path, raw), (markdown_path, markdown)):
+            with path.open("xb") as handle:
+                handle.write(payload); handle.flush(); os.fsync(handle.fileno())
+            published.append(path)
+    except Exception:
+        for path in published:
+            path.unlink(missing_ok=True)
+        raise
+    print(f"freeze-acceptance-json={json_path}")
+    print(f"freeze-acceptance-markdown={markdown_path}")
+    return 0
 
 
 def _parity_normalize(value: Any, adapter_ids: set[str], adapter_digests: set[str]) -> Any:
@@ -752,7 +1201,7 @@ def _differences(left: Any, right: Any, limit: int = 50) -> list[str]:
 
 
 def parity_command(output: Path) -> int:
-    if doctor() != 0:
+    if doctor("quiet") != 0:
         print("maintainer doctor failed; parity run not started", file=sys.stderr)
         return 1
     if output.is_symlink():
@@ -1338,7 +1787,7 @@ def matrix_entry_command(adapter_id: str, operating_system_family: str, output: 
     report = {
         "format": "wayfinder-environment-certification-evidence",
         "schemaVersion": 1,
-        "scope": "bounded-certification-matrix-candidate-revision-8",
+        "scope": "bounded-certification-matrix-candidate-revision-9",
         "status": "passing-environment-entry-not-full-family-certification" if passed else "failing-environment-entry",
         "generatedAt": generated_at.isoformat().replace("+00:00", "Z"),
         "target": {
@@ -1384,7 +1833,7 @@ def matrix_entry_command(adapter_id: str, operating_system_family: str, output: 
         "limitations": limitations,
     }
     timestamp = generated_at.strftime("%Y%m%dT%H%M%SZ")
-    stem = f"matrix-revision-8-{adapter_id}-{operating_system_family.lower()}-{timestamp}"
+    stem = f"matrix-revision-9-{adapter_id}-{operating_system_family.lower()}-{timestamp}"
     json_path = output / f"{stem}.json"
     markdown_path = output / f"{stem}.md"
     if json_path.exists() or json_path.is_symlink() or markdown_path.exists() or markdown_path.is_symlink():
@@ -1491,7 +1940,7 @@ def matrix_aggregate_command(entries: list[Path], output: Path) -> int:
         return 2
     output = output.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    stem = "matrix-revision-8-aggregate"
+    stem = "matrix-revision-9-aggregate"
     json_path = output / f"{stem}.json"
     markdown_path = output / f"{stem}.md"
     if json_path.exists() or json_path.is_symlink() or markdown_path.exists() or markdown_path.is_symlink():
@@ -1513,7 +1962,7 @@ def matrix_aggregate_command(entries: list[Path], output: Path) -> int:
     report = {
         "format": "wayfinder-certification-matrix-evidence",
         "schemaVersion": 1,
-        "scope": "bounded-certification-matrix-candidate-revision-8",
+        "scope": "bounded-certification-matrix-candidate-revision-9",
         "status": "passing-bounded-matrix-not-full-family-certification",
         "generatedAt": generated_at,
         "package": ACCEPTED_MATRIX_BINDINGS,
@@ -1531,7 +1980,7 @@ def matrix_aggregate_command(entries: list[Path], output: Path) -> int:
     json_raw = (json.dumps(report, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
     json_digest = hashlib.sha256(json_raw).hexdigest()
     markdown_lines = [
-        "# Wayfinder candidate revision 8 bounded certification matrix",
+        "# Wayfinder candidate revision 9 bounded certification matrix",
         "",
         "- **Status:** Passing bounded matrix; not full-family certification",
         f"- **Generated:** {generated_at}",
@@ -1556,6 +2005,193 @@ def matrix_aggregate_command(entries: list[Path], output: Path) -> int:
         "matrixSha256": aggregate_digest,
     })
     return 0
+
+
+def _review_matrix_report(path: Path, report: dict[str, Any]) -> tuple[tuple[str, str, str, str] | None, list[str]]:
+    issues: list[str] = []
+    if report.get("format") != "wayfinder-environment-certification-evidence" or report.get("schemaVersion") != 1:
+        return None, [f"{path}: report identity"]
+    target_value = report.get("target", {})
+    target = (
+        target_value.get("adapterId"), target_value.get("runtimeImplementation"),
+        target_value.get("runtimeVersion"), target_value.get("operatingSystemFamily"),
+    )
+    if target not in MATRIX_TARGETS:
+        issues.append(f"{path}: target is not required")
+    package = report.get("package", {})
+    expected_adapter_path = next(
+        (item["path"] for item in load_json(SKILL_ROOT / "assets/contract-v1/release.json")["adapters"] if item["id"] == target[0]),
+        "",
+    )
+    expected_package = {
+        **ACCEPTED_MATRIX_BINDINGS,
+        "adapterId": target[0],
+        "adapterPath": expected_adapter_path,
+        "adapterSha256": ACCEPTED_ADAPTER_DIGESTS.get(target[0]),
+    }
+    if package != expected_package:
+        issues.append(f"{path}: package or registered-adapter binding differs")
+    case_index = load_json(CONFORMANCE_ROOT / "cases.json")["cases"]
+    results = report.get("results")
+    expected_ids = [case["id"] for case in case_index]
+    if not isinstance(results, list) or len(results) != 305 or [item.get("id") for item in results] != expected_ids:
+        issues.append(f"{path}: result set is not the exact ordered 305-case suite")
+        results = results if isinstance(results, list) else []
+    elif report.get("resultSetSha256") != _matrix_result_set_sha256(package, results):
+        issues.append(f"{path}: result-set digest differs")
+    summary = report.get("summary", {})
+    passed = sum(item.get("status") == "passed" for item in results)
+    failed = len(results) - passed
+    expected_by_category = dict(sorted(Counter(case["category"] for case in case_index).items()))
+    expected_negative = [case["id"] for case in case_index if case["exit"] != 0]
+    negative_passed = sum(
+        item.get("id") in set(expected_negative) and item.get("status") == "passed" for item in results
+    )
+    negative = summary.get("negativeAndMutationCases", {})
+    interruptions = summary.get("interruptionBoundaryCases", {})
+    interruption_ids = ("apply-failure-boundary-matrix", "apply-rollback-boundary-matrix", "apply-rollback-interrupted")
+    if (
+        summary.get("total") != len(results)
+        or summary.get("passed") != passed
+        or summary.get("failed") != failed
+        or summary.get("completeRegisteredSuite") is not True
+        or summary.get("byCategory") != expected_by_category
+        or negative != {
+            "required": len(expected_negative),
+            "passed": negative_passed,
+            "caseIdsSha256": canonical_sha256(expected_negative),
+        }
+        or set(interruptions) != set(interruption_ids)
+    ):
+        issues.append(f"{path}: coverage metadata differs")
+    invocations = report.get("invocations")
+    if (
+        not isinstance(invocations, dict)
+        or set(invocations) != {"count", "sha256"}
+        or not isinstance(invocations.get("count"), int)
+        or not re.fullmatch(r"[0-9a-f]{64}", str(invocations.get("sha256", "")))
+        or invocations.get("sha256") == report.get("resultSetSha256")
+    ):
+        issues.append(f"{path}: aggregate invocation digest metadata is missing or conflated with results")
+    provenance = report.get("executionProvenance", {})
+    for name in ("sourceRepository", "sourceCommit", "workflowRunId", "workflowRunAttempt"):
+        if provenance.get(name) in {None, "", "unavailable"}:
+            issues.append(f"{path}: execution provenance {name} is unavailable")
+    return target if target in MATRIX_TARGETS else None, issues
+
+
+def matrix_review_command(artifact_dir: Path, output_format: str) -> int:
+    root = artifact_dir.resolve()
+    if not root.is_dir() or artifact_dir.is_symlink():
+        _print_maintainer_result(False, "matrix.review-invalid-input", {"artifactDirectory": str(artifact_dir)})
+        return 2
+    reports: dict[tuple[str, str, str, str], tuple[Path, dict[str, Any]]] = {}
+    statuses: list[tuple[Path, dict[str, Any]]] = []
+    issues: list[str] = []
+    for path in sorted(root.rglob("*.json")):
+        if path.is_symlink():
+            issues.append(f"{path}: symbolic JSON input")
+            continue
+        try:
+            value = load_json(path)
+        except Exception as exc:
+            issues.append(f"{path}: {exc}")
+            continue
+        if value.get("format") == "wayfinder-environment-certification-evidence":
+            target, report_issues = _review_matrix_report(path, value)
+            issues.extend(report_issues)
+            if target is not None:
+                if target in reports:
+                    issues.append(f"duplicate matrix report: {_matrix_target_id(target)}")
+                else:
+                    reports[target] = (path, value)
+        elif value.get("format") == "wayfinder-matrix-execution-status":
+            statuses.append((path, value))
+    missing = [target for target in MATRIX_TARGETS if target not in reports]
+    if missing:
+        issues.append("missing matrix reports: " + ", ".join(_matrix_target_id(target) for target in missing))
+    status_by_target: dict[tuple[str, str], tuple[Path, dict[str, Any]]] = {}
+    for path, status in statuses:
+        key = (status.get("adapterId"), status.get("operatingSystemFamily"))
+        if status.get("format") != "wayfinder-matrix-execution-status" or status.get("schemaVersion") != 1:
+            issues.append(f"{path}: execution status identity")
+        if key in status_by_target:
+            issues.append(f"duplicate execution status: {key}")
+        status_by_target[key] = (path, status)
+    failing: dict[str, list[str]] = {}
+    sources: set[tuple[str, str, str]] = set()
+    for target, (report_path, report) in reports.items():
+        status_pair = status_by_target.get((target[0], target[3]))
+        if status_pair is None:
+            issues.append(f"{report_path}: matching execution status is missing")
+            continue
+        status_path, execution = status_pair
+        provenance = report.get("executionProvenance", {})
+        source_binding = (
+            str(execution.get("sourceCommit")), str(execution.get("workflowRunId")), str(execution.get("workflowRunAttempt"))
+        )
+        sources.add(source_binding)
+        if source_binding != (
+            str(provenance.get("sourceCommit")), str(provenance.get("workflowRunId")), str(provenance.get("workflowRunAttempt"))
+        ):
+            issues.append(f"{status_path}: source/run binding differs from report")
+        try:
+            command_result = json.loads(execution.get("stdout", ""))
+        except Exception as exc:
+            issues.append(f"{status_path}: maintainer result is not JSON: {exc}")
+            command_result = {}
+        data = command_result.get("data", {}) if isinstance(command_result, dict) else {}
+        if data.get("jsonSha256") != sha256(report_path):
+            issues.append(f"{report_path}: report hash differs from execution status")
+        markdown_name = Path(str(data.get("markdown", ""))).name
+        markdown_matches = [path for path in root.rglob(markdown_name) if path.is_file() and not path.is_symlink()] if markdown_name else []
+        if len(markdown_matches) != 1 or data.get("markdownSha256") != sha256(markdown_matches[0]):
+            issues.append(f"{report_path}: Markdown report hash differs or is unavailable")
+        failed_ids = [item["id"] for item in report.get("results", []) if item.get("status") != "passed"]
+        if failed_ids:
+            failing[_matrix_target_id(target)] = failed_ids
+    if len(sources) != 1:
+        issues.append("matrix reports do not share one exact source commit/workflow run/attempt")
+    result = {
+        "format": "wayfinder-matrix-artifact-review",
+        "schemaVersion": 1,
+        "ok": not issues,
+        "classification": "GitHub Actions material; review-only; not accepted evidence",
+        "artifactDirectory": str(root),
+        "sourceRunBindings": [
+            {"sourceCommit": source, "workflowRunId": run, "workflowRunAttempt": attempt}
+            for source, run, attempt in sorted(sources)
+        ],
+        "reports": len(reports),
+        "executionStatuses": len(statuses),
+        "registeredAdapters": ACCEPTED_ADAPTER_DIGESTS,
+        "failingCasesByEnvironment": failing,
+        "issues": issues,
+        "writesPerformed": False,
+        "promotionPerformed": False,
+    }
+    if output_format == "json":
+        print(json.dumps(result, sort_keys=True, separators=(",", ":")))
+    elif output_format == "markdown":
+        print("# Wayfinder matrix artifact review\n")
+        print(f"- Status: {'valid review material' if not issues else 'invalid'}.")
+        print("- Classification: GitHub Actions material; review-only; not accepted evidence.")
+        print(f"- Reports: {len(reports)}; execution statuses: {len(statuses)}.")
+        print("- Writes or promotion: none.")
+        if failing:
+            print("\n## Failing cases by environment\n")
+            for environment, case_ids in sorted(failing.items()):
+                print(f"- `{environment}`: {', '.join(f'`{case_id}`' for case_id in case_ids)}")
+        if issues:
+            print("\n## Review issues\n")
+            for issue in issues:
+                print(f"- {issue}")
+    else:
+        print(
+            f"{'OK' if not issues else 'FAIL'} matrix-review reports={len(reports)} statuses={len(statuses)} "
+            f"failing-environments={len(failing)} issues={len(issues)} review-only=true writes=0"
+        )
+    return 0 if not issues else 2
 
 
 def expect_command(expected_exit: int, expected_code: str, command: list[str]) -> int:
@@ -1590,7 +2226,7 @@ def expect_command(expected_exit: int, expected_code: str, command: list[str]) -
 
 
 def handoff_command(objective: str, exclusions: list[str]) -> int:
-    if doctor() != 0:
+    if doctor("quiet") != 0:
         print("maintainer doctor failed; handoff not generated", file=sys.stderr)
         return 1
     contract_path = SKILL_ROOT / "assets/contract-v1/contract.json"
@@ -1612,8 +2248,8 @@ def handoff_command(objective: str, exclusions: list[str]) -> int:
     print(f"- Conformance cases: `{len(cases)}` ({', '.join(f'{key}={value}' for key, value in sorted(counts.items()))})")
     print(f"- Runtime status: {release['status']}; activation disabled")
     print("\nRequired preparation\n")
-    print("1. Read the repository instructions, `$wayfinder-maintainer`, and its maintainer design record.")
-    print("2. Run `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py doctor` with Python 3.11+ before editing.")
+    print("1. Read the repository instructions, `$wayfinder-maintainer`, and `references/current-state.md`; load only routed chronology unless governance changes.")
+    print("2. Resolve runtimes once and run `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py doctor --verbose` with Python 3.11+ before editing.")
     print("3. Preserve historical evidence and use the maintainer command's `test` and `evidence` subcommands for verification.")
     if exclusions:
         print("\nExplicit exclusions\n")
@@ -1624,24 +2260,50 @@ def handoff_command(objective: str, exclusions: list[str]) -> int:
 
 
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Offline, dependency-free maintenance commands for the frozen Wayfinder candidate.",
+        epilog=(
+            "Examples:\n"
+            "  maintain.py doctor --verbose\n"
+            "  maintain.py test --adapter python-reference-v1 --case package-valid --case inventory-files-roots\n"
+            "  maintain.py describe --format json\n"
+            "  maintain.py matrix-review --artifact-dir downloaded --format markdown"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
-    subparsers.add_parser("doctor")
-    test_parser = subparsers.add_parser("test")
-    test_parser.add_argument("--case", action="append", default=[])
-    test_parser.add_argument("--category", action="append", default=[])
-    test_parser.add_argument("--adapter", default="python-reference-v1")
-    evidence_parser = subparsers.add_parser("evidence")
+    doctor_parser = subparsers.add_parser("doctor", help="Check maintainer, package, adapter, and evidence integrity.")
+    doctor_modes = doctor_parser.add_mutually_exclusive_group()
+    doctor_modes.add_argument("--summary", action="store_const", dest="output_mode", const="summary", help="Emit failures and one compact summary (default).")
+    doctor_modes.add_argument("--verbose", action="store_const", dest="output_mode", const="verbose", help="Emit every canonical doctor check and runtime diagnostic.")
+    doctor_modes.add_argument("--json", action="store_const", dest="output_mode", const="json", help="Emit stable compact JSON.")
+    doctor_parser.set_defaults(output_mode="summary")
+    test_parser = subparsers.add_parser("test", help="Run the full or focused unchanged conformance suite.")
+    test_parser.add_argument("--case", action="append", default=[], help="Select one case; repeat in the same invocation to batch cases.")
+    test_parser.add_argument("--category", action="append", default=[], help="Select one category; repeat to batch categories.")
+    test_parser.add_argument("--adapter", default="python-reference-v1", choices=sorted(ACCEPTED_ADAPTER_DIGESTS), help="Registered adapter to validate.")
+    test_parser.add_argument("--output", choices=("summary", "verbose", "json"), default="summary", help="Conformance output mode (default: summary).")
+    describe_parser = subparsers.add_parser("describe", aliases=["context"], help="Show canonical paths, identities, runtimes, cases, and approval boundary.")
+    describe_parser.add_argument("--format", choices=("markdown", "json"), default="markdown")
+    evidence_parser = subparsers.add_parser("evidence", help="Create new local evidence without overwrite.")
     evidence_parser.add_argument("--output", type=Path, required=True)
-    parity_parser = subparsers.add_parser("parity")
+    freeze_proposal_parser = subparsers.add_parser("freeze-proposal", help="Create a revision-scoped freeze proposal without overwrite.")
+    freeze_proposal_parser.add_argument("--output", type=Path, required=True)
+    freeze_acceptance_parser = subparsers.add_parser("freeze-acceptance", help="Record an explicitly approved revision-scoped freeze without overwrite.")
+    freeze_acceptance_parser.add_argument("--output", type=Path, required=True)
+    freeze_acceptance_parser.add_argument("--accept-option-a", action="store_true", help="Confirm that the owner explicitly accepted Option A.")
+    parity_parser = subparsers.add_parser("parity", help="Run full registered-adapter parity and create a new report.")
     parity_parser.add_argument("--output", type=Path, required=True)
-    matrix_entry_parser = subparsers.add_parser("matrix-entry")
+    matrix_entry_parser = subparsers.add_parser("matrix-entry", help="Run one exact certification-matrix entry.")
     matrix_entry_parser.add_argument("--adapter", required=True, choices=sorted(ACCEPTED_ADAPTER_DIGESTS))
     matrix_entry_parser.add_argument("--os-family", required=True, choices=["macOS", "Linux", "Windows"])
     matrix_entry_parser.add_argument("--output", type=Path, required=True)
-    matrix_aggregate_parser = subparsers.add_parser("matrix-aggregate")
+    matrix_aggregate_parser = subparsers.add_parser("matrix-aggregate", help="Create an aggregate only from eight passing exact entries.")
     matrix_aggregate_parser.add_argument("--entry", type=Path, action="append", default=[])
     matrix_aggregate_parser.add_argument("--output", type=Path, required=True)
+    matrix_review_parser = subparsers.add_parser("matrix-review", help="Read and verify an already-downloaded Actions artifact directory without writes or network access.")
+    matrix_review_parser.add_argument("--artifact-dir", type=Path, required=True)
+    matrix_review_parser.add_argument("--format", choices=("summary", "markdown", "json"), default="summary")
     expect_parser = subparsers.add_parser("expect")
     expect_parser.add_argument("--exit", dest="expected_exit", type=int, required=True)
     expect_parser.add_argument("--code", dest="expected_code", required=True)
@@ -1652,17 +2314,25 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "doctor":
-        return doctor()
+        return doctor(args.output_mode)
     if args.command == "test":
-        return test_command(args.case, args.category, args.adapter)
+        return test_command(args.case, args.category, args.adapter, args.output)
+    if args.command in {"describe", "context"}:
+        return describe_command(args.format)
     if args.command == "evidence":
         return evidence_command(args.output)
+    if args.command == "freeze-proposal":
+        return freeze_proposal_command(args.output)
+    if args.command == "freeze-acceptance":
+        return freeze_acceptance_command(args.output, args.accept_option_a)
     if args.command == "parity":
         return parity_command(args.output)
     if args.command == "matrix-entry":
         return matrix_entry_command(args.adapter, args.os_family, args.output)
     if args.command == "matrix-aggregate":
         return matrix_aggregate_command(args.entry, args.output)
+    if args.command == "matrix-review":
+        return matrix_review_command(args.artifact_dir, args.format)
     if args.command == "expect":
         return expect_command(args.expected_exit, args.expected_code, args.target)
     if args.command == "handoff":

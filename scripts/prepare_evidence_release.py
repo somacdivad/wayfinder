@@ -21,7 +21,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     aggregates = []
-    for path in args.input.rglob("matrix-revision-8-aggregate.json"):
+    for path in args.input.rglob("matrix-revision-9-aggregate.json"):
         payload = json.loads(path.read_text(encoding="utf-8"))
         if payload.get("format") == "wayfinder-certification-matrix-evidence":
             aggregates.append((path, payload))
@@ -51,7 +51,7 @@ def main() -> int:
     report = {
         "format": "wayfinder-evidence-release-manifest",
         "schemaVersion": 1,
-        "candidate": "v1-candidate-revision-8",
+        "candidate": "v1-candidate-revision-9",
         "sourceCommit": args.expected_commit,
         "matrixSha256": args.expected_matrix_sha256,
         "aggregateReportSha256": sha256(aggregate_path),
