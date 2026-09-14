@@ -17,11 +17,11 @@
 
 ## Approval boundary
 
-The owner authorized the bounded candidate-revision-9 hosted certification tranche and publication of the exact accepted worktree to a dedicated certification branch. Revision-8 evidence remains historical. No evidence publication, release-certification entry, forward test, cross-adapter recovery, runtime guidance, activation, live-project initialization, or other commit or push is authorized.
+The owner accepted the exact candidate-revision-9 maintainer-only Windows correction and separately authorized a full eight-entry hosted rerun. Acceptance preserves all frozen governed, registered-adapter, and accepted-evidence bytes and does not itself certify Windows or the adapter family, promote evidence, add a release-certification entry, activate Wayfinder, begin forward testing or cross-adapter recovery, add runtime guidance, or initialize a live project. Hosted execution must use one exact published source commit. The owner subsequently clarified that the authorized publication scope is every modified and untracked path present in the candidate-revision-9 certification worktree at the start of the hosted tranche.
 
 ## Pending action and design-record routes
 
-Publish the exact accepted revision-9 worktree to the authorized certification branch, dispatch the eight-entry hosted matrix, preserve artifacts as review-only, and report the strict aggregate result.
+Publish the complete owner-authorized dirty worktree as one exact commit on candidate-revision-9-certification, dispatch the full eight-entry hosted rerun from that commit, preserve outputs as review-only, and report the strict aggregate.
 
 Read only the relevant exact section of the [chronological design record](design-record.md):
 
@@ -32,6 +32,9 @@ Read only the relevant exact section of the [chronological design record](design
 - `## Candidate revision 8 Windows certification investigation and correction — accepted` for current blockers.
 - `## Candidate revision 8 maintainer-efficiency tranche — accepted` for the current maintainer workflow and tooling baseline.
 - `## Candidate revision 9 Windows corrections — accepted` for the current implementation and approval boundary.
-- `## Candidate revision 9 hosted certification execution — authorized` for the active bounded hosted tranche.
+- `## Candidate revision 9 hosted certification execution — accepted with failed aggregate` for the accepted bounded hosted result.
+- `## Candidate revision 9 maintainer reliability and efficiency — accepted` for the accepted maintainer-only tranche.
+- `## Candidate revision 9 Windows failure investigation — accepted` for the active correction authority and unresolved hosted obligations.
+- `## Candidate revision 9 maintainer-only Windows correction — accepted` for the accepted correction and authorized hosted-rerun boundary.
 
 Read the full record before reopening a decision, changing evidence governance, or recording an accepted outcome.

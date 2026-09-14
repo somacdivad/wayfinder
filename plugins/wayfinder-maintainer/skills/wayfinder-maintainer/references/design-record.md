@@ -66,7 +66,7 @@ Prefer deterministic scripts for repeatable actions. Keep scripts portable and d
 
 | Workflow | Status | Current decision point |
 | --- | --- | --- |
-| Initialize | Candidate revision 9 Windows corrections and local freeze evidence accepted; hosted certification authorized and pending dispatch; runtime disabled | Policy decisions 1–18, Slices 1–5, revision-8 history, and the bounded revision-9 Windows correction are accepted. Revision 9 corrects the process probe and real special-file mechanism while preserving 305 cases and 96-rule coverage. Its local candidate and parity evidence is accepted. The exact hosted matrix is authorized but has not yet produced revision-9 environment evidence or an aggregate. Initialize remains disabled. |
+| Initialize | Candidate revision 9 Windows corrections, local freeze evidence, and failed hosted execution accepted; runtime disabled | Policy decisions 1–18, Slices 1–5, revision-8 history, and the bounded revision-9 Windows correction are accepted. Revision 9 corrects the process probe and real special-file mechanism while preserving 305 cases and 96-rule coverage. Its local candidate and parity evidence is accepted. The hosted execution record is accepted as five passing entries, three failing Windows entries, and no strict aggregate. Initialize remains disabled. |
 | Interview | Not started | Pending completion of initialization workflow design. |
 | Update | Not started | Pending completion of initialization and interview workflow design; scope explicitly includes taxonomy evolution. |
 | Validate | Not started | Pending definition of the project-record contract. |
@@ -426,7 +426,7 @@ Implemented on 2026-09-14 under the owner's explicit Option A reopening authorit
 |---|---|---|
 | Exact revision-9 frozen bytes and local evidence | Accepted 2026-09-14 | The skill owner selected Option A and accepted the exact revision-9 frozen bytes and local candidate and parity evidence. This acceptance records the reviewed outcome only. It does not dispatch hosted certification, publish evidence, add a release-certification entry, claim full-family certification, add runtime guidance, activate Wayfinder, initialize a live project, commit, push, or begin any later tranche. |
 
-## Candidate revision 9 hosted certification execution — authorized
+## Candidate revision 9 hosted certification execution — accepted with failed aggregate
 
 Authorized by the skill owner on 2026-09-14 as one bounded hosted-execution tranche:
 
@@ -435,8 +435,82 @@ Authorized by the skill owner on 2026-09-14 as one bounded hosted-execution tran
 - Preserve every resulting Actions artifact as review-only, run the strict aggregate, and report the authentic result without promotion or publication.
 - Do not add a release-certification entry, claim full-family certification from incomplete or failing results, add runtime guidance, activate Wayfinder, initialize a live project, perform forward testing or cross-adapter recovery, or begin any later tranche.
 
+Executed on 2026-09-14 within that authority:
+
+- Published the complete accepted revision-9 worktree only to `candidate-revision-9-certification` at commit `b39203656049ad536ca690086e746ec860d7ba46`; `main` was not changed. GitHub Actions run `34890622679`, attempt 1, executed from that exact branch and commit.
+- Five fixed entries passed 305/305: CPython 3.14.7 on macOS and Linux, Node.js 24.21.0 on macOS and Linux, and PowerShell 7.6.6 on Linux. All 213 required negative and mutation cases and the three interruption-boundary cases passed in each reported entry.
+- All three Windows entries completed the 305-case suite and failed three cases each: CPython 3.14.7, Node.js 24.21.0, and PowerShell 7.6.6 each passed 302/305. Their result-set hashes are respectively `895a6ba36ae707dc2da20dec246c466bbfe47e686f2ebc0748587010a01fa5fb`, `ff624bf9193be656809dd7e740af091ed8c96cc8af44d991896fad39e619fd04`, and `cdf25748fa2f1db5b521fa6bb019cc7b8ecb90a3f69c2221885a43ca6465f320`. The workflow log exposes counts and report bindings but not the individual failed case identifiers; the reports were not downloaded under the tranche's explicit exclusion, so no case identity is inferred here.
+- The strict aggregate rejected the three non-passing Windows reports with `matrix.invalid-entry`, exited 2, and created no aggregate certification JSON or Markdown. The review-only incomplete-inventory artifact is 697 bytes with SHA-256 `4e25093e7a7aad827cf81e5d85c07031183642caa86c263298259d66d642b9b1`.
+- The eight review-only entry artifacts have SHA-256 digests: Node Linux `d1652b1a4dbdbc683eac6adc1e06c77f5c79f70e88ebb62139e5319f8a430e43`; Node macOS `5dca75bb8b1bcf92d8d50557bf8621fe6be4d0633e528a308147cf0261edd4ea`; Node Windows `ef07e9e2de54c76b1aff0efd0e7ccbad1065629240043cb6a8932db2f8188d2d`; PowerShell Linux `b93a28b86d09d0365a0f0e287b19090b2f1877cf1a4de59ac43940e32f1f30b0`; PowerShell Windows `cdb2c56d2c339c3a4b5a3e26242e15c805a351f664053393afcb36a0b2819c47`; Python Linux `1441b5e582c1fbe0e5f8039abf038ff3d0ceb6c2f45af26ea4174445b3108304`; Python macOS `64c9196a7f9ef6a11068b55c50b0928467ef8ca0da16aca24cebbe80ac0e70d5`; Python Windows `74a839b603a839b6a105cceb96884d2ac26aae26321745affb2b963464450c9b`. GitHub reports expiry on 2026-12-13.
+- No hosted artifact was downloaded, promoted, copied into durable accepted evidence, published, or added to the release certification registry. No investigation, correction, rerun, full-family claim, runtime guidance, activation, live-project initialization, forward test, or cross-adapter recovery occurred. The owner explicitly accepted the authentic execution record on 2026-09-14; acceptance preserves the failures and review-only artifact boundary and authorizes no later tranche.
+
 ### Revision 9 hosted-execution checkpoint
 
 | Checkpoint | Status | Decision |
 |---|---|---|
-| Exact eight-entry revision-9 hosted execution | Authorized; pending dispatch | The owner explicitly authorized the hosted tranche and separately authorized committing and pushing the complete accepted revision-9 worktree to the dedicated certification branch. Execution results have not yet been observed or accepted. |
+| Exact eight-entry revision-9 hosted execution | Accepted 2026-09-14 | The skill owner accepted run `34890622679`, attempt 1, exactly as five passing entries, three failing Windows entries, and no strict aggregate. Acceptance preserves the failures and review-only artifact boundary and authorizes no artifact download or promotion, investigation, correction, rerun, evidence publication, release-certification entry, full-family claim, runtime guidance, activation, or later tranche. |
+
+## Candidate revision 9 maintainer reliability and efficiency — accepted
+
+Authorized by the skill owner on 2026-09-14 as one bounded maintainer-only implementation tranche after a session-performance retrospective:
+
+- Consolidate mutable candidate, evidence, activation, and tranche status in `references/current-state.md`; keep root repository instructions and the runtime stub stable and route maintainers through the compact state.
+- Add an explicit action-authorization gate and failure classification protocol before authentication, downloads, hosted dispatch, publication, destructive work, and other consequential external actions.
+- Add a canonical no-bytecode maintainer regression command, exact design-record section retrieval, mode-aware handoff scaffolding, bounded matrix failure details, GitHub annotations and job summaries, explicit workflow run identity, and uploaded-artifact digest reporting.
+- Add regression coverage and a selectively loaded session-audit template. Measure representative workflows by calls, failures, elapsed time, reference and output bytes, authentication prompts, generated files, and validator reruns.
+- Preserve the exact frozen revision-9 contract, fixture index, expected outputs, registered adapters, and every accepted evidence file. Do not download or promote hosted artifacts, dispatch or rerun hosted certification, create or publish evidence, add a release-certification entry, claim full-family certification, activate Wayfinder, initialize a live project, commit, push, or begin another tranche.
+
+Implemented on 2026-09-14 within that authority:
+
+- Updated the root repository instructions, runtime status stub, maintainer skill and workflow, current-state routing, maintainer command and regression tests, repository validator, hosted entry wrapper, and certification workflow. Added the selectively loaded session-audit template. The runtime status edit removes stale candidate chronology without adding operational guidance; it does not change the digest-bound contract or registered adapters.
+- `maintain.py self-test` discovers all maintainer-owned regression modules, uses isolated no-bytecode controls, refuses pre-existing or newly generated repository bytecode, and supports summary, verbose, and JSON output. The canonical run passed 26/26 tests with zero bytecode artifacts.
+- `record-section` retrieves one exact level-two chronology section. For the representative implementation workflow, the previous root, maintainer skill, current state, workflow, and full chronology totaled 106,653 bytes; the same set with the exact 2,124-byte routed section totaled 24,692 bytes, a 76.85% reduction. Doctor summary was 29 bytes and 1.29 seconds; self-test summary was 33 bytes and 2.37 seconds on the local host.
+- Matrix-entry output now includes every failed case ID, up to 25 structured 512-character diagnostics, and an explicit truncation count. The hosted wrapper emits bounded GitHub error annotations and a job-summary table. The workflow has an explicit branch/SHA run name, non-canceling concurrency, and records the SHA-256 digest returned for every uploaded entry and aggregate artifact.
+- Mode-aware handoffs distinguish investigation, implementation, hosted review, and acceptance recording. The workflow documents public metadata and failed-log inspection before an explicitly authorized exact artifact download, prohibits opportunistic OAuth, and requires failure classification after unsuccessful calls.
+- Repository validation passed, the workflow parsed as YAML, `git diff --check` passed, and the canonical doctor passed 33/33 with CPython 3.14.7, local Node.js 22.22.3, and PowerShell 7.6.6. Local Node remains different from the pinned Node.js 24.21.0 matrix target.
+- The frozen contract, fixture index, expected-output set, all registered adapters, and every accepted evidence file remain unchanged. No artifact was downloaded or promoted; no hosted workflow was dispatched or rerun; no evidence, release-certification entry, full-family claim, activation, live-project work, commit, or push occurred.
+
+### Maintainer reliability checkpoint
+
+| Checkpoint | Status | Decision |
+|---|---|---|
+| Candidate revision 9 maintainer reliability and efficiency | Accepted 2026-09-14 | The skill owner accepted the exact maintainer-only changes and local verification. Acceptance records this outcome only and does not authorize artifact download or promotion, hosted investigation, correction or rerun, evidence creation or publication, a release-certification entry, a full-family claim, activation, live-project work, commit, push, or another tranche. |
+
+## Candidate revision 9 Windows failure investigation — accepted
+
+Investigated and accepted by the skill owner on 2026-09-14 against exact source commit `b39203656049ad536ca690086e746ec860d7ba46`, GitHub Actions run `34890622679`, attempt 1:
+
+- The three Windows entries each failed `inventory-special-file`, `inventory-exclusions`, and `initialize-minimal`. The five macOS/Linux entries passed 305/305, while the Windows Python process correction succeeded across all 51 Apply cases, including both failure-boundary matrices and interrupted rollback.
+- The two inventory failures occurred before adapter invocation because hosted CPython 3.14.7 did not expose `socket.AF_UNIX`. No pathname socket existed or remained live through assertions, so the shared harness capability assumption—not adapter behavior—was observed to fail.
+- `initialize-minimal` completed adapter execution and matched the normalized preview, all six payload hashes, bundle inventory, and mutation snapshots. Only the normalized plan differed because root replacement left the Windows separator in the descendant absolute `recordRoot`. The accepted correction is structural normalization of environment-bound plan fields without modifying the frozen golden projection.
+- The offline matrix reviewer found all eight authentic reports and all nine failed observations, and direct hashes matched the attempt-1 bindings. Its three Markdown-binding errors came from applying POSIX `Path.name` semantics to recorded Windows paths. The accepted correction resolves basenames from either separator while preserving missing, ambiguous, malformed, and hash-mismatch rejection.
+- The owner authorized Option 1 as a maintainer-only correction: dependency-free native Winsock fixture creation, structural plan normalization, cross-host reviewer path resolution, focused regression tests, complete local adapter suites, local parity, repository validation, and integrity checks. Authentic Windows behavior remains unverified pending a separately authorized hosted execution.
+- This authority excludes any frozen contract, release, fixture, expected-output, adapter, registry, manifest, workflow, package-version, governed-byte, or accepted-evidence change; any weakening or waiver; evidence creation or promotion; hosted dispatch or rerun; candidate advancement, certification, release, activation, forward testing, cross-adapter recovery, runtime guidance, live-project work, or Git staging, commit, or push.
+
+### Revision 9 Windows investigation checkpoint
+
+| Checkpoint | Status | Decision |
+|---|---|---|
+| Candidate revision 9 Windows failure investigation | Accepted 2026-09-14; correction authorized | The owner accepted the exact investigation findings and authorized only the bounded maintainer correction described above. The correction itself remains pending review and is not accepted by this record. A hosted-execution tranche remains separately approval-gated. |
+
+## Candidate revision 9 maintainer-only Windows correction — accepted
+
+Implemented and accepted by the skill owner on 2026-09-14 as the exact bounded correction authorized by the preceding investigation:
+
+- Replaced the Windows fixture's dependency on CPython `socket.AF_UNIX` with dependency-free `ctypes` interop against `Ws2_32.dll`. The harness declares every Winsock signature, uses a pointer-sized `SOCKET`, initializes Winsock 2.2, binds a null-terminated UTF-8 pathname through the SDK-compatible `SOCKADDR_UN`, verifies the pathname with non-following metadata, and retains explicit socket, Winsock, and pathname ownership through adapter invocation and assertions.
+- Cleanup closes each acquired socket and successful Winsock registration exactly once, removes only an owned pathname, handles partial initialization and assertion failures, and reports stable fail-closed diagnostics. POSIX continues to use the existing FIFO fixture. No fallback object, skipped case, conditional pass, or adapter-classification change was introduced.
+- `initialize-minimal` now parses and normalizes the plan structurally. Only the temporary physical `workspace.workspaceRoot`, its manifest-bound descendant `workspace.recordRoot`, and the pre-existing contract test marker are changed before canonical serialization. Non-path strings remain byte-semantically unchanged, and malformed, unsafe, outside, or inconsistent record roots fail closed. The frozen golden remains unchanged and retains normalized plan SHA-256 `4663f40f76f135f381feb6a216bf44482d521dfba4c826d937736585fbb3595f`.
+- The offline matrix reviewer derives report basenames from either path separator, searches only inside the supplied artifact directory, requires one non-symbolic unambiguous match, binds the recorded JSON basename to the report under review, and still verifies actual JSON and Markdown SHA-256 digests. Empty, malformed, missing, ambiguous, and mismatched paths remain rejected.
+- Focused maintainer logic verification passed 36/36 with no repository bytecode. The three focused conformance cases passed 3/3 for Python, Node.js, and PowerShell; all three complete local suites passed 305/305; and 900 normalized observations agreed at `4463448355c7662a09bb2112052179df0e95216e5bd1092968ee4ddc95b6d233`.
+- Repository validation and `git diff --check` passed. The canonical doctor passed 33/33 before and after correction. The authentic review-only attempt-1 artifact directory validated all eight reports and execution statuses with zero binding issues while preserving the genuine three failed Windows cases per adapter and the failed strict aggregate.
+- Contract `3c79c6e1d2eae7c6016d789c9ade75125a2ec1dcc43f458541f9d7c63654bdd9`, release `1826fa1c1323561001565fe4bd635c0432306ced078320f1eecdad81ff268ffb`, fixture index `a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6`, expected-output set `9d149d3b3603547b509803b3bfb119b79e40db41f97e848f76554f5dccbf1b94`, all three registered adapters, and every accepted evidence file remain unchanged.
+- The macOS tests verify maintainer ownership and normalization logic but do not verify actual Windows AF_UNIX reparse metadata, adapter classification of the live socket, Node.js metadata-only `readlink` behavior, hosted pathname encoding and length behavior, or cleanup on the hosted Windows image. The old hosted execution remains historical and cannot certify corrected source.
+- No hosted run, evidence creation or promotion, candidate revision, certification claim, release entry, activation, forward test, cross-adapter recovery, runtime guidance, live-project work, staging, commit, or push occurred during the correction or this acceptance record.
+- In the same owner response that accepted the correction, the owner separately authorized a full eight-entry hosted rerun. Per the new-session boundary, that hosted execution was not begun here. It must use one exact published source commit; the publication scope must first be resolved against the broader pre-existing dirty worktree.
+- At the start of the separately authorized hosted tranche, the owner resolved that publication boundary as all modified and untracked paths then present in the `candidate-revision-9-certification` worktree. This authorizes one exact commit and push containing that complete set for the eight-entry rerun; it does not authorize evidence promotion or any excluded later tranche.
+
+### Revision 9 maintainer-only Windows correction checkpoint
+
+| Checkpoint | Status | Decision |
+|---|---|---|
+| Candidate revision 9 maintainer-only Windows correction | Accepted 2026-09-14; full eight-entry hosted rerun authorized | The owner accepted the exact correction packet and authorized a separate hosted-execution tranche for all eight entries. Acceptance makes no Windows or full-family certification claim and does not itself publish source, dispatch Actions, promote evidence, add a release-certification entry, activate Wayfinder, or begin a later tranche. |

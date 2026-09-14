@@ -24,6 +24,12 @@ assert SPEC and SPEC.loader
 maintain = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(maintain)
 
+RUN_MATRIX_SCRIPT = maintain.REPOSITORY_ROOT / "scripts/run_matrix_entry.py"
+RUN_MATRIX_SPEC = importlib.util.spec_from_file_location("wayfinder_run_matrix_entry", RUN_MATRIX_SCRIPT)
+assert RUN_MATRIX_SPEC and RUN_MATRIX_SPEC.loader
+run_matrix_entry = importlib.util.module_from_spec(RUN_MATRIX_SPEC)
+RUN_MATRIX_SPEC.loader.exec_module(run_matrix_entry)
+
 
 def capture(function, *args):
     stream = io.StringIO()
@@ -123,6 +129,81 @@ class ContextTests(unittest.TestCase):
             for name, digest in collection.items():
                 self.assertEqual(maintain.sha256(maintain.CERTIFICATION_ROOT / name), digest)
 
+    def test_exact_record_section_and_missing_heading(self) -> None:
+        code, output = capture(maintain.record_section_command, "Candidate revision 9 Windows corrections — accepted")
+        self.assertEqual(code, 0, output)
+        self.assertTrue(output.startswith("## Candidate revision 9 Windows corrections — accepted\n"))
+        self.assertNotIn("## Candidate revision 9 hosted certification execution", output)
+        code, output = capture(maintain.record_section_command, "not a real heading")
+        self.assertEqual(code, 2)
+        self.assertIn("not found", output)
+
+
+class OperationalEfficiencyTests(unittest.TestCase):
+    def test_self_test_discovers_all_modules_without_bytecode(self) -> None:
+        completed = subprocess.CompletedProcess([], 0, stdout="", stderr="Ran 21 tests in 1.0s\n\nOK\n")
+        with (
+            mock.patch.object(maintain, "repository_bytecode_artifacts", side_effect=[[], []]),
+            mock.patch.object(maintain.subprocess, "run", return_value=completed) as run,
+        ):
+            code, output = capture(maintain.self_test_command, "json")
+        self.assertEqual(code, 0, output)
+        self.assertEqual(json.loads(output)["tests"], 21)
+        command = run.call_args.args[0]
+        self.assertEqual(command[1:4], ["-m", "unittest", "discover"])
+        self.assertIn("test_*.py", command)
+        self.assertEqual(run.call_args.kwargs["env"]["PYTHONDONTWRITEBYTECODE"], "1")
+
+    def test_self_test_refuses_preexisting_bytecode(self) -> None:
+        with mock.patch.object(maintain, "repository_bytecode_artifacts", return_value=["scripts/__pycache__"]):
+            code, output = capture(maintain.self_test_command, "summary")
+        self.assertEqual(code, 1)
+        self.assertIn("bytecode-present", output)
+
+    def test_failure_summary_is_exact_and_bounded(self) -> None:
+        results = [
+            {"id": f"case-{index}", "category": "inventory", "rules": ["WF-INV-003"], "status": "failed", "detail": "x" * 600}
+            for index in range(30)
+        ]
+        value = maintain._matrix_failure_summary(results)
+        self.assertEqual(value["failedCaseIds"], [f"case-{index}" for index in range(30)])
+        self.assertEqual(len(value["failedCases"]), 25)
+        self.assertEqual(value["failureDetailsTruncated"], 5)
+        self.assertEqual(len(value["failedCases"][0]["detail"]), 512)
+
+    def test_mode_aware_handoff_omits_mutating_commands_for_investigation(self) -> None:
+        with mock.patch.object(maintain, "doctor", return_value=0):
+            code, output = capture(maintain.handoff_command, "investigation", "Inspect a failure", [])
+        self.assertEqual(code, 0, output)
+        self.assertIn("Kind: `investigation`", output)
+        for command in ("maintain.py evidence", "maintain.py freeze", "maintain.py parity"):
+            self.assertNotIn(command, output)
+
+    def test_github_failure_annotations_and_summary(self) -> None:
+        result = {
+            "ok": False,
+            "code": "matrix.entry-failed",
+            "data": {
+                "failedCaseIds": ["inventory-special-file"],
+                "failedCases": [{"id": "inventory-special-file", "category": "inventory", "rules": ["WF-INV-003"], "detail": "socket unavailable"}],
+                "failureDetailsTruncated": 0,
+            },
+        }
+        with tempfile.TemporaryDirectory() as raw:
+            summary = Path(raw) / "summary.md"
+            with mock.patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(summary)}):
+                code, output = capture(run_matrix_entry.report_failures, result, "python-windows")
+            self.assertIsNone(code)
+            text = summary.read_text(encoding="utf-8")
+        self.assertIn("::error title=Wayfinder case inventory-special-file::socket unavailable", output)
+        self.assertIn("`inventory-special-file`", text)
+        self.assertIn("WF-INV-003", text)
+
+    def test_certification_workflow_has_identity_summary_and_artifact_digests(self) -> None:
+        workflow = (maintain.REPOSITORY_ROOT / ".github/workflows/certify.yml").read_text(encoding="utf-8")
+        for token in ("run-name:", "GITHUB_STEP_SUMMARY", "artifact-digest", "cancel-in-progress: false"):
+            self.assertIn(token, workflow)
+
 
 class MatrixReviewTests(unittest.TestCase):
     def _write_artifacts(self, root: Path, failing_target: tuple[str, str, str, str] | None = None) -> None:
@@ -206,6 +287,68 @@ class MatrixReviewTests(unittest.TestCase):
         self.assertIn(maintain._matrix_target_id(failing), value["failingCasesByEnvironment"])
         self.assertEqual(value["classification"], "GitHub Actions material; review-only; not accepted evidence")
         self.assertEqual(before, after)
+
+    def _rewrite_recorded_paths(self, root: Path, render) -> None:
+        for status_path in root.glob("execution-*.json"):
+            status = json.loads(status_path.read_text(encoding="utf-8"))
+            command = json.loads(status["stdout"])
+            command["data"]["json"] = render(Path(command["data"]["json"]).name)
+            command["data"]["markdown"] = render(Path(command["data"]["markdown"]).name)
+            status["stdout"] = json.dumps(command, sort_keys=True, separators=(",", ":")) + "\n"
+            status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8", newline="\n")
+
+    def test_offline_review_accepts_host_independent_report_basenames(self) -> None:
+        renderings = (
+            lambda name: f"/home/runner/work/output/{name}",
+            lambda name: f"D:\\a\\wayfinder\\output\\{name}",
+            lambda name: f"\\\\server\\share\\output\\{name}",
+            lambda name: f"D:\\a/wayfinder\\output/{name}",
+        )
+        for render in renderings:
+            with self.subTest(render=render("entry.json")), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                self._write_artifacts(root)
+                self._rewrite_recorded_paths(root, render)
+                code, output = capture(maintain.matrix_review_command, root, "json")
+                self.assertEqual(code, 0, output)
+
+    def test_offline_review_rejects_missing_ambiguous_and_malformed_paths(self) -> None:
+        for mode in ("missing", "ambiguous", "malformed"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                self._write_artifacts(root)
+                status_path = root / "execution-entry-0.json"
+                status = json.loads(status_path.read_text(encoding="utf-8"))
+                command = json.loads(status["stdout"])
+                markdown = Path(command["data"]["markdown"])
+                if mode == "missing":
+                    markdown.unlink()
+                elif mode == "ambiguous":
+                    duplicate = root / "duplicate" / markdown.name
+                    duplicate.parent.mkdir()
+                    duplicate.write_bytes(markdown.read_bytes())
+                else:
+                    command["data"]["markdown"] = ""
+                    status["stdout"] = json.dumps(command, sort_keys=True, separators=(",", ":")) + "\n"
+                    status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8", newline="\n")
+                code, output = capture(maintain.matrix_review_command, root, "json")
+                self.assertEqual(code, 2)
+                issues = json.loads(output)["issues"]
+                self.assertTrue(any("Markdown report" in issue for issue in issues), issues)
+
+    def test_offline_review_rejects_report_hash_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            self._write_artifacts(root)
+            status_path = root / "execution-entry-0.json"
+            status = json.loads(status_path.read_text(encoding="utf-8"))
+            command = json.loads(status["stdout"])
+            command["data"]["markdownSha256"] = "0" * 64
+            status["stdout"] = json.dumps(command, sort_keys=True, separators=(",", ":")) + "\n"
+            status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8", newline="\n")
+            code, output = capture(maintain.matrix_review_command, root, "json")
+        self.assertEqual(code, 2)
+        self.assertTrue(any("Markdown report hash differs" in issue for issue in json.loads(output)["issues"]))
 
 
 class EvidenceTests(unittest.TestCase):

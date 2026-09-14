@@ -1,10 +1,15 @@
 name: Candidate revision 9 bounded matrix
+run-name: Candidate revision 9 bounded matrix • ${{ github.ref_name }} • ${{ github.sha }}
 
 on:
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: wayfinder-revision-9-matrix-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   entry:
@@ -85,6 +90,7 @@ jobs:
           --os-family "${{ matrix.os_family }}"
           --output "certification-output/${{ matrix.id }}"
       - name: Upload authentic entry output
+        id: upload_entry
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
@@ -92,6 +98,12 @@ jobs:
           path: certification-output/${{ matrix.id }}/
           if-no-files-found: warn
           retention-days: 90
+      - name: Record entry artifact provenance
+        if: always()
+        shell: bash
+        run: |
+          echo "- Artifact: \`wayfinder-${{ matrix.id }}-v1-candidate-revision-9-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Artifact SHA-256: \`${{ steps.upload_entry.outputs.artifact-digest }}\`" >> "$GITHUB_STEP_SUMMARY"
 
   aggregate:
     name: Strict aggregate
@@ -119,6 +131,7 @@ jobs:
         continue-on-error: true
         run: python scripts/aggregate_matrix.py --input downloaded --output aggregate-output
       - name: Upload aggregate or incomplete inventory
+        id: upload_aggregate
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
@@ -126,6 +139,12 @@ jobs:
           path: aggregate-output/
           if-no-files-found: error
           retention-days: 90
+      - name: Record aggregate artifact provenance
+        if: always()
+        run: |
+          echo "## Aggregate artifact" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Artifact: \`wayfinder-matrix-aggregate-v1-candidate-revision-9-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Artifact SHA-256: \`${{ steps.upload_aggregate.outputs.artifact-digest }}\`" >> "$GITHUB_STEP_SUMMARY"
       - name: Require complete aggregate
         if: steps.aggregate.outcome != 'success'
         run: exit 1

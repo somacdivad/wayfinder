@@ -8,6 +8,7 @@ import importlib.util
 import json
 import os
 import socket
+import stat
 import subprocess
 import sys
 import tempfile
@@ -40,14 +41,17 @@ finally:
 
 
 class FakeCall:
-    def __init__(self, result):
+    def __init__(self, result, side_effect=None):
         self.result = result
+        self.side_effect = side_effect
         self.calls = []
         self.argtypes = None
         self.restype = None
 
     def __call__(self, *args):
         self.calls.append(args)
+        if self.side_effect is not None:
+            self.side_effect(*args)
         return self.result
 
 
@@ -143,49 +147,182 @@ class RecoveryPrecedenceTests(unittest.TestCase):
 
 
 class SpecialFileTests(unittest.TestCase):
+    class FakeWinsock:
+        def __init__(self, path: Path, *, bind_result=0, create_path=True, error=10047):
+            def bind_side_effect(_handle, address, length):
+                native = ctypes.cast(address, ctypes.POINTER(runner._SockaddrUn)).contents
+                self.bound_family = native.sun_family
+                self.bound_path = bytes(native.sun_path).split(b"\0", 1)[0]
+                self.bound_length = length
+                if bind_result == 0 and create_path:
+                    path.touch()
+
+            self.bound_family = None
+            self.bound_path = None
+            self.bound_length = None
+            self.WSAStartup = FakeCall(0)
+            self.WSACleanup = FakeCall(0)
+            self.WSAGetLastError = FakeCall(error)
+            self.socket = FakeCall(1234)
+            self.bind = FakeCall(bind_result, bind_side_effect)
+            self.closesocket = FakeCall(0)
+
     def test_local_socket_or_fifo_is_unsupported(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             path = Path(raw) / "special"
-            live = runner.create_special_file_fixture(path, windows=False)
+            fixture = runner.create_special_file_fixture(path, windows=False)
             try:
+                self.assertTrue(stat.S_ISFIFO(os.lstat(path).st_mode))
                 self.assertEqual(adapter._relative_kind(path), "unsupported-file")
             finally:
-                runner.cleanup_special_file_fixture(path, live)
+                runner.cleanup_special_file_fixture(path, fixture)
             self.assertFalse(path.exists())
 
-    def test_windows_socket_lifetime_and_explicit_failure(self) -> None:
-        class FakeSocket:
-            def __init__(self, fail=False):
-                self.fail = fail
-                self.closed = False
-
-            def bind(self, value):
-                if self.fail:
-                    raise OSError("provider unavailable")
-                Path(value).touch()
-
-            def close(self):
-                self.closed = True
-
+    def test_mocked_windows_native_ownership_lifetime_and_exact_cleanup(self) -> None:
+        """Maintainer logic verification only; this is not real Windows conformance."""
         with tempfile.TemporaryDirectory() as raw:
             path = Path(raw) / "special"
-            fake = FakeSocket()
-            with mock.patch.object(runner.socket, "socket", return_value=fake):
-                live = runner.create_special_file_fixture(path, windows=True)
-            self.assertIs(live, fake)
+            native = self.FakeWinsock(path)
+            fixture = runner.create_special_file_fixture(path, windows=True, winsock=native)
             self.assertTrue(path.exists())
-            self.assertFalse(fake.closed)
-            runner.cleanup_special_file_fixture(path, live)
-            self.assertTrue(fake.closed)
+            self.assertFalse(fixture.closed)
+            self.assertEqual(native.bound_family, runner._AF_UNIX)
+            self.assertEqual(native.bound_path, str(path).encode("utf-8"))
+            self.assertEqual(native.bound_length, ctypes.sizeof(runner._SockaddrUn))
+            self.assertEqual(native.WSAStartup.calls[0][0], 0x0202)
+            self.assertEqual(native.socket.calls, [(runner._AF_UNIX, runner._SOCK_STREAM, 0)])
+            self.assertEqual(native.closesocket.calls, [])
+            self.assertEqual(native.WSACleanup.calls, [])
+            runner.cleanup_special_file_fixture(path, fixture)
+            runner.cleanup_special_file_fixture(path, fixture)
+            self.assertEqual(native.closesocket.calls, [(1234,)])
+            self.assertEqual(native.WSACleanup.calls, [()])
             self.assertFalse(path.exists())
+
+    def test_mocked_windows_bind_and_metadata_failures_clean_partial_state(self) -> None:
+        """Maintainer logic verification only; this is not real Windows conformance."""
+        for bind_result, create_path, diagnostic in (
+            (-1, False, "bind returned SOCKET_ERROR (Winsock error 10047)"),
+            (0, False, "bound pathname metadata is unavailable"),
+        ):
+            with self.subTest(diagnostic=diagnostic), tempfile.TemporaryDirectory() as raw:
+                path = Path(raw) / "special"
+                native = self.FakeWinsock(path, bind_result=bind_result, create_path=create_path)
+                with self.assertRaises(runner.CaseFailure) as raised:
+                    runner.create_special_file_fixture(path, windows=True, winsock=native)
+                self.assertIn(diagnostic, str(raised.exception))
+                self.assertEqual(native.closesocket.calls, [(1234,)])
+                self.assertEqual(native.WSACleanup.calls, [()])
+                self.assertFalse(path.exists())
+
+    def test_mocked_windows_bind_failure_does_not_remove_unowned_path(self) -> None:
+        """Maintainer logic verification only; this is not real Windows conformance."""
+        with tempfile.TemporaryDirectory() as raw:
+            path = Path(raw) / "preexisting"
+            path.write_text("owner data", encoding="utf-8")
+            native = self.FakeWinsock(path, bind_result=-1, create_path=False)
+            with self.assertRaisesRegex(runner.CaseFailure, "bind returned SOCKET_ERROR"):
+                runner.create_special_file_fixture(path, windows=True, winsock=native)
+            self.assertEqual(path.read_text(encoding="utf-8"), "owner data")
+            self.assertEqual(native.closesocket.calls, [(1234,)])
+            self.assertEqual(native.WSACleanup.calls, [()])
+
+    def test_mocked_windows_fixture_survives_assertion_scope_and_cleans_on_failure(self) -> None:
+        """Maintainer logic verification only; this is not real Windows conformance."""
+        with tempfile.TemporaryDirectory() as raw:
+            acquired = {}
+            original_create = runner.create_special_file_fixture
+
+            def acquire(path):
+                native = self.FakeWinsock(path)
+                fixture = original_create(path, windows=True, winsock=native)
+                acquired.update(path=path, native=native, fixture=fixture)
+                return fixture
+
+            def fail_inside_scope(*_args):
+                self.assertTrue(acquired["path"].exists())
+                self.assertEqual(acquired["native"].closesocket.calls, [])
+                self.assertEqual(acquired["native"].WSACleanup.calls, [])
+                raise runner.CaseFailure("synthetic adapter assertion failure")
+
+            temporary = Path(raw) / "case"
+            temporary.mkdir()
+            with (
+                mock.patch.object(runner, "make_source_tree", side_effect=lambda workspace: (workspace / "sources").mkdir()),
+                mock.patch.object(runner, "create_special_file_fixture", side_effect=acquire),
+                mock.patch.object(runner, "_inventory_case_body", side_effect=fail_inside_scope),
+                self.assertRaisesRegex(runner.CaseFailure, "synthetic adapter assertion failure"),
+            ):
+                runner.inventory_case(Path("skill"), Path("adapter"), {"id": "inventory-special-file"}, temporary)
+            self.assertEqual(acquired["native"].closesocket.calls, [(1234,)])
+            self.assertEqual(acquired["native"].WSACleanup.calls, [()])
+            self.assertFalse(acquired["path"].exists())
+
+    def test_mocked_windows_signatures_and_path_limit_diagnostic_are_stable(self) -> None:
+        """Maintainer logic verification only; this is not real Windows conformance."""
         with tempfile.TemporaryDirectory() as raw:
             path = Path(raw) / "special"
-            fake = FakeSocket(fail=True)
-            with mock.patch.object(runner.socket, "socket", return_value=fake):
-                with self.assertRaises(runner.CaseFailure):
-                    runner.create_special_file_fixture(path, windows=True)
-            self.assertTrue(fake.closed)
-            self.assertFalse(path.exists())
+            native = self.FakeWinsock(path)
+            fixture = runner.create_special_file_fixture(path, windows=True, winsock=native)
+            try:
+                self.assertEqual(native.socket.restype, runner._SOCKET)
+                self.assertEqual(native.bind.argtypes[1], ctypes.POINTER(runner._Sockaddr))
+                self.assertEqual(native.WSAStartup.argtypes[1], ctypes.POINTER(runner._WSAData))
+            finally:
+                fixture.close()
+        too_long = Path("C:/") / ("x" * 108)
+        native = self.FakeWinsock(too_long)
+        with self.assertRaises(runner.CaseFailure) as raised:
+            runner.create_special_file_fixture(too_long, windows=True, winsock=native)
+        self.assertEqual(
+            str(raised.exception),
+            f"Windows AF_UNIX fixture setup failed: pathname UTF-8 length {len(str(too_long).encode('utf-8'))} exceeds 107-byte limit",
+        )
+        self.assertEqual(native.WSAStartup.calls, [])
+
+
+class InitializePlanNormalizationTests(unittest.TestCase):
+    @staticmethod
+    def plan(workspace: str, record: str, manifest_record: str = "record") -> dict:
+        return {
+            "contractSha256": "a" * 64,
+            "format": "wayfinder-initialize-plan",
+            "manifest": {"recordRoot": manifest_record},
+            "note": r"literal backslashes C:\not\a\path-field and JSON \"escaping\"",
+            "workspace": {"workspaceRoot": workspace, "recordRoot": record},
+        }
+
+    def test_posix_spaces_unicode_json_escaping_and_repeatability(self) -> None:
+        workspace = "/tmp/Way finder/naïve"
+        plan = self.plan(workspace, workspace + "/record")
+        first = runner.normalize_initialize_plan(plan, workspace)
+        second = runner.normalize_initialize_plan(plan, workspace)
+        self.assertEqual(first, second)
+        value = json.loads(first)
+        self.assertEqual(value["workspace"], {
+            "workspaceRoot": "/private<WORKSPACE>",
+            "recordRoot": "/private<WORKSPACE>/record",
+        })
+        self.assertEqual(value["note"], plan["note"])
+        self.assertEqual(value["contractSha256"], "<CONTRACT_SHA256>")
+
+    def test_windows_drive_letter_descendant_and_non_path_backslashes(self) -> None:
+        workspace = "D:\\a folder\\naïve\\workspace"
+        plan = self.plan(workspace, workspace + "\\record")
+        normalized = json.loads(runner.normalize_initialize_plan(plan, workspace))
+        self.assertEqual(normalized["workspace"]["workspaceRoot"], "/private<WORKSPACE>")
+        self.assertEqual(normalized["workspace"]["recordRoot"], "/private<WORKSPACE>/record")
+        self.assertEqual(normalized["note"], plan["note"])
+
+    def test_outside_or_inconsistent_record_root_fails_closed(self) -> None:
+        for workspace, record in (
+            ("/tmp/workspace", "/tmp/other/record"),
+            ("D:\\workspace", "D:\\other\\record"),
+        ):
+            with self.subTest(workspace=workspace), self.assertRaisesRegex(
+                runner.CaseFailure, "recordRoot is not the manifest-bound descendant"
+            ):
+                runner.normalize_initialize_plan(self.plan(workspace, record), workspace)
 
     def test_node_and_powershell_non_link_reparse_rules_are_executable(self) -> None:
         node = os.environ["WAYFINDER_NODE_RUNTIME"]

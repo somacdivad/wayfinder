@@ -23,6 +23,9 @@ Routine maintenance does not require the full chronological record. Read the exa
 - Batch focused cases in one invocation: `maintain.py test --case ID --case ID`. Select one adapter with `--adapter ID`; an unavailable unrelated runtime does not block that focused run.
 - Prefer summary or JSON output. Use verbose output when per-check or per-case detail is required.
 - Bound parallel read output and keep chunks non-overlapping. Do not repeat a successful check unless inputs changed, scope increased, or a failure creates a new risk.
+- Reuse resolved runtime paths, command help, `describe`, and unchanged pre-edit hashes within one uninterrupted session. Refresh them after compaction, tool reset, checkout change, or a relevant file edit.
+- Use `maintain.py self-test` for maintainer regressions; it discovers every maintainer-owned `test_*.py` module without leaving bytecode in the repository. Do not invoke individual test modules as the canonical regression run.
+- Use `maintain.py record-section --heading HEADING` for one exact design-record section instead of broad ad hoc chronology reads.
 - Use `maintain.py matrix-review --artifact-dir DIR` only on already-downloaded artifacts. It is offline, read-only, and cannot accept or publish evidence.
 - Use `maintain.py freeze-proposal --output DIR` only after the revision-scoped candidate and parity reports pass; it exclusively creates a pending proposal and never records owner acceptance.
 - Use `maintain.py freeze-acceptance --output DIR --accept-option-a` only after the owner explicitly accepts Option A; it binds the exact proposal and exclusively creates the acceptance record without authorizing later work.
@@ -30,6 +33,8 @@ Routine maintenance does not require the full chronological record. Read the exa
 ## Authority and stopping rules
 
 Keep every change inside the user's authorization. Passing a tranche does not authorize parity, freeze, hosted execution, publication, activation, Git mutation, external access, or live project-record changes. Never hand-edit, overwrite, relabel, promote, or infer acceptance of evidence.
+
+Before authentication, artifact download, hosted dispatch, publication, destructive work, or another consequential external action, explicitly check the exact action and target against the active authorization and exclusions. Use the least-powerful applicable tool. If a call fails, classify the failure before choosing a materially different next action; refresh interface documentation after reset, compaction, or an interface error and never retry through a prohibited route merely to obtain diagnostics.
 
 Run `maintain.py doctor --verbose` as the canonical full post-edit doctor after relevant focused and complete-suite checks. Stop when the authorized deliverable and approval packet are complete, when a required runtime is unavailable, or before any separately approval-gated action. Present material behavior or contract changes for explicit approval and record only an accepted outcome.
 

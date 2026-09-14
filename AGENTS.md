@@ -1,16 +1,24 @@
 # Wayfinder repository instructions
 
-## Scope and status
+## Scope
 
 - This repository contains two plugin packages: `plugins/wayfinder` for runtime use and `plugins/wayfinder-maintainer` for maintenance and certification.
-- Wayfinder is currently `v1-candidate-revision-9`: an owner-accepted frozen semantic contract with accepted local evidence and an unactivated release awaiting separately authorized hosted certification.
+- `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/current-state.md` is the sole authority for the current candidate, evidence, activation, and authorized-tranche status. Do not duplicate that mutable status here.
 - A public repository, installable plugin metadata, or a green workflow does not activate Wayfinder or establish full-family certification.
 
-## Start with the maintainer record
+## Maintenance routing
 
-- For changes to Wayfinder itself, read `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/SKILL.md`, its `references/design-record.md`, and `references/workflow.md` before editing.
+- For changes to Wayfinder itself, first read the complete maintainer `SKILL.md` and `references/current-state.md`.
+- Read `references/workflow.md` when changing, testing, certifying, publishing, or activating Wayfinder. Read only design-record sections routed by current state or the maintainer skill; read the complete chronology only when reopening an accepted decision, changing evidence governance, or recording an accepted outcome.
+- Treat current state as the default boundary. A later explicit owner instruction may authorize a named bounded tranche; quote its scope and exclusions before acting, and do not infer authority for a later tranche.
 - Run the canonical maintainer doctor with Python 3.11 or newer before and after maintenance work.
 - Preserve accepted evidence and frozen governed bytes. Never overwrite or relabel an evidence file.
+
+## Tool and authorization discipline
+
+- Before network mutation, authentication, artifact download, publication, dispatch, destructive work, or another consequential external action, verify the exact action and target against the active tranche. Explicit exclusions always win.
+- After a tool reset, session compaction, or interface error, refresh the tool documentation and current state before another action. Classify a failed call as interface, sandbox/network, authentication, authorization, external-state, truncation, incomplete-discovery, or side-effect contamination; do not repeat the same path without a materially different reason.
+- Resolve runtimes and inspect command help once per uninterrupted session and reuse them while the executable and checkout remain unchanged. Parallelize only independent read-only work.
 
 ## Repository boundaries
 

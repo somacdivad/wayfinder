@@ -5,12 +5,16 @@ from __future__ import annotations
 
 import argparse
 import copy
+import ctypes
 import datetime as dt
 import hashlib
 import json
+import ntpath
 import os
 import platform
+import posixpath
 import random
+import re
 import shutil
 import socket
 import subprocess
@@ -233,35 +237,219 @@ def make_source_tree(workspace: Path) -> None:
     (outside / "outside.txt").write_bytes(b"outside\n")
     (sources / "link-file").symlink_to("a.md")
     (sources / "link-dir").symlink_to(outside, target_is_directory=True)
-def create_special_file_fixture(path: Path, *, windows: bool | None = None) -> socket.socket | None:
+
+
+_AF_UNIX = 1
+_SOCK_STREAM = 1
+_UNIX_PATH_MAX = 108
+_SOCKET_ERROR = -1
+_SOCKET = ctypes.c_uint64 if ctypes.sizeof(ctypes.c_void_p) == 8 else ctypes.c_uint32
+_INVALID_SOCKET = _SOCKET(-1).value
+
+
+class _Sockaddr(ctypes.Structure):
+    _fields_ = [("sa_family", ctypes.c_ushort), ("sa_data", ctypes.c_char * 14)]
+
+
+class _SockaddrUn(ctypes.Structure):
+    _fields_ = [("sun_family", ctypes.c_ushort), ("sun_path", ctypes.c_char * _UNIX_PATH_MAX)]
+
+
+if ctypes.sizeof(ctypes.c_void_p) == 8:
+    _WSADATA_FIELDS = [
+        ("wVersion", ctypes.c_ushort),
+        ("wHighVersion", ctypes.c_ushort),
+        ("iMaxSockets", ctypes.c_ushort),
+        ("iMaxUdpDg", ctypes.c_ushort),
+        ("lpVendorInfo", ctypes.c_void_p),
+        ("szDescription", ctypes.c_char * 257),
+        ("szSystemStatus", ctypes.c_char * 129),
+    ]
+else:
+    _WSADATA_FIELDS = [
+        ("wVersion", ctypes.c_ushort),
+        ("wHighVersion", ctypes.c_ushort),
+        ("szDescription", ctypes.c_char * 257),
+        ("szSystemStatus", ctypes.c_char * 129),
+        ("iMaxSockets", ctypes.c_ushort),
+        ("iMaxUdpDg", ctypes.c_ushort),
+        ("lpVendorInfo", ctypes.c_void_p),
+    ]
+
+
+class _WSAData(ctypes.Structure):
+    _fields_ = _WSADATA_FIELDS
+
+
+def _configure_winsock(winsock: Any) -> Any:
+    winsock.WSAStartup.argtypes = [ctypes.c_ushort, ctypes.POINTER(_WSAData)]
+    winsock.WSAStartup.restype = ctypes.c_int
+    winsock.WSACleanup.argtypes = []
+    winsock.WSACleanup.restype = ctypes.c_int
+    winsock.WSAGetLastError.argtypes = []
+    winsock.WSAGetLastError.restype = ctypes.c_int
+    winsock.socket.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
+    winsock.socket.restype = _SOCKET
+    winsock.bind.argtypes = [_SOCKET, ctypes.POINTER(_Sockaddr), ctypes.c_int]
+    winsock.bind.restype = ctypes.c_int
+    winsock.closesocket.argtypes = [_SOCKET]
+    winsock.closesocket.restype = ctypes.c_int
+    return winsock
+
+
+def _load_winsock() -> Any:
+    win_dll = getattr(ctypes, "WinDLL", None)
+    if win_dll is None:
+        raise CaseFailure("Windows AF_UNIX fixture setup failed: ctypes WinDLL is unavailable")
+    return _configure_winsock(win_dll("Ws2_32.dll", use_last_error=False))
+
+
+class SpecialFileFixture:
+    def __init__(
+        self,
+        path: Path,
+        winsock: Any | None = None,
+        socket_handle: int | None = None,
+        winsock_started: bool = False,
+        pathname_owned: bool = False,
+    ) -> None:
+        self.path = path
+        self.winsock = winsock
+        self.socket_handle = socket_handle
+        self.winsock_started = winsock_started
+        self.pathname_owned = pathname_owned
+        self.closed = False
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        self.closed = True
+        failures: list[str] = []
+        if self.socket_handle is not None:
+            handle = self.socket_handle
+            self.socket_handle = None
+            if self.winsock.closesocket(handle) == _SOCKET_ERROR:
+                failures.append(f"closesocket Winsock error {self.winsock.WSAGetLastError()}")
+        if self.winsock_started:
+            self.winsock_started = False
+            if self.winsock.WSACleanup() == _SOCKET_ERROR:
+                failures.append(f"WSACleanup Winsock error {self.winsock.WSAGetLastError()}")
+        if self.pathname_owned:
+            self.pathname_owned = False
+            try:
+                self.path.unlink()
+            except FileNotFoundError:
+                pass
+            except OSError as exc:
+                failures.append(f"pathname removal failed: {exc}")
+        if failures:
+            raise CaseFailure("special-file fixture cleanup failed: " + "; ".join(failures))
+
+
+def create_special_file_fixture(
+    path: Path,
+    *,
+    windows: bool | None = None,
+    winsock: Any | None = None,
+) -> SpecialFileFixture:
     use_windows = os.name == "nt" if windows is None else windows
     if not use_windows and hasattr(os, "mkfifo"):
         os.mkfifo(path)
-        return None
+        return SpecialFileFixture(path=path, pathname_owned=True)
     if not use_windows:
         raise CaseFailure("unsupported special-file fixture is unavailable: os.mkfifo is not provided by this runtime")
-    if not hasattr(socket, "AF_UNIX"):
-        raise CaseFailure("unsupported special-file fixture is unavailable: Windows AF_UNIX is not provided")
-    live_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    native = _configure_winsock(winsock) if winsock is not None else _load_winsock()
+    fixture = SpecialFileFixture(path=path, winsock=native)
     try:
-        live_socket.bind(str(path))
+        encoded_path = str(path).encode("utf-8")
+        if b"\0" in encoded_path:
+            raise CaseFailure("Windows AF_UNIX fixture setup failed: pathname contains NUL")
+        if len(encoded_path) >= _UNIX_PATH_MAX:
+            raise CaseFailure(
+                f"Windows AF_UNIX fixture setup failed: pathname UTF-8 length {len(encoded_path)} exceeds 107-byte limit"
+            )
+        startup_result = native.WSAStartup(0x0202, ctypes.byref(_WSAData()))
+        if startup_result != 0:
+            raise CaseFailure(f"Windows AF_UNIX fixture setup failed: WSAStartup returned {startup_result}")
+        fixture.winsock_started = True
+        handle = native.socket(_AF_UNIX, _SOCK_STREAM, 0)
+        if handle == _INVALID_SOCKET:
+            raise CaseFailure(
+                f"Windows AF_UNIX fixture setup failed: socket returned INVALID_SOCKET (Winsock error {native.WSAGetLastError()})"
+            )
+        fixture.socket_handle = handle
+        address = _SockaddrUn()
+        address.sun_family = _AF_UNIX
+        address.sun_path = encoded_path
+        result = native.bind(
+            handle,
+            ctypes.cast(ctypes.byref(address), ctypes.POINTER(_Sockaddr)),
+            ctypes.sizeof(address),
+        )
+        if result == _SOCKET_ERROR:
+            raise CaseFailure(
+                f"Windows AF_UNIX fixture setup failed: bind returned SOCKET_ERROR (Winsock error {native.WSAGetLastError()})"
+            )
+        fixture.pathname_owned = True
         try:
             os.lstat(path)
-        except OSError:
-            raise CaseFailure("Windows AF_UNIX bind did not create a pathname socket")
-        return live_socket
+        except OSError as exc:
+            raise CaseFailure(f"Windows AF_UNIX fixture setup failed: bound pathname metadata is unavailable: {exc}") from exc
+        return fixture
     except Exception as exc:
-        live_socket.close()
-        path.unlink(missing_ok=True)
+        try:
+            fixture.close()
+        except CaseFailure as cleanup_exc:
+            raise CaseFailure(f"{exc}; {cleanup_exc}") from exc
         if isinstance(exc, CaseFailure):
             raise
-        raise CaseFailure(f"unsupported special-file fixture is unavailable: Windows AF_UNIX bind failed: {exc}") from exc
+        raise CaseFailure(f"Windows AF_UNIX fixture setup failed: {exc}") from exc
 
 
-def cleanup_special_file_fixture(path: Path, live_socket: socket.socket | None) -> None:
-    if live_socket is not None:
-        live_socket.close()
-    path.unlink(missing_ok=True)
+def cleanup_special_file_fixture(path: Path, fixture: SpecialFileFixture) -> None:
+    if fixture.path != path:
+        raise CaseFailure("special-file fixture cleanup failed: owned pathname differs")
+    fixture.close()
+
+
+def normalize_initialize_plan(plan: dict[str, Any], workspace: Path | str) -> bytes:
+    projected = copy.deepcopy(plan)
+    workspace_binding = projected.get("workspace")
+    manifest = projected.get("manifest")
+    if not isinstance(workspace_binding, dict) or not isinstance(manifest, dict):
+        raise CaseFailure("minimal plan workspace binding is malformed")
+    workspace_root = workspace_binding.get("workspaceRoot")
+    record_root = workspace_binding.get("recordRoot")
+    manifest_record = manifest.get("recordRoot")
+    if not all(isinstance(value, str) and value for value in (workspace_root, record_root, manifest_record)):
+        raise CaseFailure("minimal plan workspace paths are malformed")
+    supplied = str(workspace)
+    windows_style = bool(re.match(r"^(?:[A-Za-z]:[\\/]|\\\\)", workspace_root))
+    path_module = ntpath if windows_style else posixpath
+    if not path_module.isabs(workspace_root) or not path_module.isabs(record_root):
+        raise CaseFailure("minimal plan workspace paths are not absolute")
+    workspace_spellings = {supplied}
+    if not windows_style:
+        workspace_spellings.add(str(Path(supplied).resolve()))
+    if workspace_root not in workspace_spellings:
+        raise CaseFailure("minimal plan workspaceRoot differs from the temporary physical workspace")
+    if manifest_record == ".":
+        expected_record = workspace_root
+        canonical_record = "/private<WORKSPACE>"
+    else:
+        components = manifest_record.split("/")
+        if any(not component or component in {".", ".."} or "\\" in component for component in components):
+            raise CaseFailure("minimal plan manifest recordRoot is unsafe")
+        expected_record = path_module.join(workspace_root, *components)
+        canonical_record = "/private<WORKSPACE>/" + "/".join(components)
+    if path_module.normpath(record_root) != path_module.normpath(expected_record):
+        raise CaseFailure("minimal plan recordRoot is not the manifest-bound descendant of workspaceRoot")
+    workspace_binding["workspaceRoot"] = "/private<WORKSPACE>"
+    workspace_binding["recordRoot"] = canonical_record
+    if not isinstance(projected.get("contractSha256"), str):
+        raise CaseFailure("minimal plan contract binding is malformed")
+    projected["contractSha256"] = "<CONTRACT_SHA256>"
+    return json.dumps(projected, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
 def invoke_inventory(
@@ -834,14 +1022,14 @@ def inventory_case(skill_root: Path, adapter: Path, case: dict[str, Any], tempor
     make_source_tree(workspace)
     case_id = case["id"]
     fixture_path = workspace / "sources/named-pipe"
-    live_socket = None
+    fixture = None
     if case_id in {"inventory-special-file", "inventory-exclusions"}:
-        live_socket = create_special_file_fixture(fixture_path)
+        fixture = create_special_file_fixture(fixture_path)
     try:
         _inventory_case_body(skill_root, adapter, case, workspace)
     finally:
         if case_id in {"inventory-special-file", "inventory-exclusions"}:
-            cleanup_special_file_fixture(fixture_path, live_socket)
+            cleanup_special_file_fixture(fixture_path, fixture)
 
 
 def _inventory_case_body(skill_root: Path, adapter: Path, case: dict[str, Any], workspace: Path) -> None:
@@ -1871,11 +2059,7 @@ def initialize_case(skill_root: Path, adapter: Path, case: dict[str, Any], tempo
         workspace_spellings = sorted(
             {str(workspace), str(workspace.resolve())}, key=len, reverse=True
         )
-        normalized_plan = plan_raw
-        for spelling in workspace_spellings:
-            json_spelling = json.dumps(spelling, ensure_ascii=False)[1:-1].encode("utf-8")
-            normalized_plan = normalized_plan.replace(json_spelling, workspace_marker)
-        normalized_plan = normalized_plan.replace(plan["contractSha256"].encode("ascii"), b"<CONTRACT_SHA256>")
+        normalized_plan = normalize_initialize_plan(plan, workspace)
         preview_raw = (bundle / "preview.md").read_bytes()
         normalized_preview = preview_raw
         for spelling in workspace_spellings:

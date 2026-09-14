@@ -95,14 +95,17 @@ RUNTIME_REQUIREMENTS = {
     "powershell-v1": ("PowerShell", "7.6.6", "WAYFINDER_POWERSHELL_RUNTIME"),
 }
 CURRENT_APPROVAL_BOUNDARY = (
-    "The owner authorized the bounded candidate-revision-9 hosted certification tranche and publication "
-    "of the exact accepted worktree to a dedicated certification branch. Revision-8 evidence remains "
-    "historical. No evidence publication, release-certification entry, forward test, cross-adapter "
-    "recovery, runtime guidance, activation, live-project initialization, or other commit or push is authorized."
+    "The owner accepted the exact candidate-revision-9 maintainer-only Windows correction and separately authorized a full "
+    "eight-entry hosted rerun. Acceptance preserves all frozen governed, registered-adapter, and accepted-evidence bytes and "
+    "does not itself certify Windows or the adapter family, promote evidence, add a release-certification entry, activate "
+    "Wayfinder, begin forward testing or cross-adapter recovery, add runtime guidance, or initialize a live project. Hosted "
+    "execution must use one exact published source commit. The owner subsequently clarified that the authorized publication "
+    "scope is every modified and untracked path present in the candidate-revision-9 certification worktree at the start of "
+    "the hosted tranche."
 )
 CURRENT_PENDING_ACTION = (
-    "Publish the exact accepted revision-9 worktree to the authorized certification branch, dispatch the "
-    "eight-entry hosted matrix, preserve artifacts as review-only, and report the strict aggregate result."
+    "Publish the complete owner-authorized dirty worktree as one exact commit on candidate-revision-9-certification, dispatch "
+    "the full eight-entry hosted rerun from that commit, preserve outputs as review-only, and report the strict aggregate."
 )
 FREEZE_ACCEPTANCE_AUTHORIZATION = (
     "Accept the exact revision-9 frozen bytes and local candidate and parity evidence. "
@@ -254,7 +257,10 @@ def current_state_markdown() -> str:
         "- `## Candidate revision 8 Windows certification investigation and correction — accepted` for current blockers.",
         "- `## Candidate revision 8 maintainer-efficiency tranche — accepted` for the current maintainer workflow and tooling baseline.",
         "- `## Candidate revision 9 Windows corrections — accepted` for the current implementation and approval boundary.",
-        "- `## Candidate revision 9 hosted certification execution — authorized` for the active bounded hosted tranche.",
+        "- `## Candidate revision 9 hosted certification execution — accepted with failed aggregate` for the accepted bounded hosted result.",
+        "- `## Candidate revision 9 maintainer reliability and efficiency — accepted` for the accepted maintainer-only tranche.",
+        "- `## Candidate revision 9 Windows failure investigation — accepted` for the active correction authority and unresolved hosted obligations.",
+        "- `## Candidate revision 9 maintainer-only Windows correction — accepted` for the accepted correction and authorized hosted-rerun boundary.",
         "",
         "Read the full record before reopening a decision, changing evidence governance, or recording an accepted outcome.",
         "",
@@ -443,6 +449,71 @@ def command_environment(cache_root: str) -> dict[str, str]:
     return environment
 
 
+def repository_bytecode_artifacts() -> list[str]:
+    artifacts: list[str] = []
+    for path in REPOSITORY_ROOT.rglob("*"):
+        if ".git" in path.parts:
+            continue
+        if path.name == "__pycache__" or (path.is_file() and path.suffix == ".pyc"):
+            artifacts.append(str(path.relative_to(REPOSITORY_ROOT)))
+    return sorted(artifacts)
+
+
+def self_test_command(output_format: str) -> int:
+    before = repository_bytecode_artifacts()
+    if before:
+        result = {"ok": False, "code": "self-test.bytecode-present", "artifacts": before}
+        print(json.dumps(result, sort_keys=True, separators=(",", ":")) if output_format == "json" else f"FAIL self-test bytecode-present: {', '.join(before)}")
+        return 1
+    with tempfile.TemporaryDirectory(prefix="wayfinder-maintainer-cache-") as cache_root:
+        completed = subprocess.run(
+            [
+                sys.executable, "-m", "unittest", "discover",
+                "-s", str(COMPANION_ROOT / "scripts"), "-p", "test_*.py", "-v",
+            ],
+            cwd=REPOSITORY_ROOT,
+            env=command_environment(cache_root),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+    combined = completed.stdout + completed.stderr
+    match = re.search(r"Ran ([0-9]+) tests?", combined)
+    discovered = int(match.group(1)) if match else 0
+    after = repository_bytecode_artifacts()
+    ok = completed.returncode == 0 and discovered > 0 and not after
+    result = {
+        "ok": ok,
+        "code": "ok" if ok else "self-test.failed",
+        "tests": discovered,
+        "exitCode": completed.returncode,
+        "bytecodeArtifacts": after,
+    }
+    if output_format == "json":
+        print(json.dumps(result, sort_keys=True, separators=(",", ":")))
+    elif output_format == "verbose" or not ok:
+        print(combined, end="" if combined.endswith("\n") else "\n")
+        print(f"summary passed={str(ok).lower()} tests={discovered} bytecode={len(after)}")
+    else:
+        print(f"OK self-test tests={discovered} bytecode=0")
+    return 0 if ok else 1
+
+
+def record_section_command(heading: str) -> int:
+    normalized = heading if heading.startswith("## ") else f"## {heading}"
+    lines = (COMPANION_ROOT / "references/design-record.md").read_text(encoding="utf-8").splitlines(keepends=True)
+    matches = [index for index, line in enumerate(lines) if line.rstrip("\r\n") == normalized]
+    if len(matches) != 1:
+        detail = "not found" if not matches else f"ambiguous ({len(matches)} matches)"
+        print(f"record section {detail}: {normalized}", file=sys.stderr)
+        return 2
+    start = matches[0]
+    end = next((index for index in range(start + 1, len(lines)) if lines[index].startswith("## ")), len(lines))
+    sys.stdout.write("".join(lines[start:end]).rstrip("\r\n") + "\n")
+    return 0
+
+
 def run_python(script: Path, arguments: Iterable[str], capture: bool = False) -> subprocess.CompletedProcess[str]:
     with tempfile.TemporaryDirectory(prefix="wayfinder-maintainer-cache-") as cache_root:
         return subprocess.run(
@@ -627,7 +698,12 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
         research_text = (COMPANION_ROOT / "references/research/initialization-18-implementation-certification.md").read_text(encoding="utf-8")
         add("single-progress-authority", "See the [maintainer design record]" in research_text and "Slice 4—" not in research_text)
         skill_text = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
-        add("skill-candidate-status", f"candidate revision {revision}" in skill_text.lower())
+        stable_runtime_status = (
+            "Wayfinder version 1 remains unactivated" in skill_text
+            and "Do not infer current maintenance or certification status from this stub" in skill_text
+            and re.search(r"candidate revision [0-9]+", skill_text, re.IGNORECASE) is None
+        )
+        add("runtime-status-stable", stable_runtime_status)
         companion_config = (COMPANION_ROOT / "agents/openai.yaml").read_text(encoding="utf-8")
         add(
             "companion-explicit-only",
@@ -643,7 +719,10 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
             "## Candidate revision 8 Windows certification investigation and correction — accepted",
             "## Candidate revision 8 maintainer-efficiency tranche — accepted",
             "## Candidate revision 9 Windows corrections — accepted",
-            "## Candidate revision 9 hosted certification execution — authorized",
+            "## Candidate revision 9 hosted certification execution — accepted with failed aggregate",
+            "## Candidate revision 9 maintainer reliability and efficiency — accepted",
+            "## Candidate revision 9 Windows failure investigation — accepted",
+            "## Candidate revision 9 maintainer-only Windows correction — accepted",
         )
         current_state_matches = (
             CURRENT_STATE_PATH.is_file()
@@ -1368,6 +1447,24 @@ def _print_maintainer_result(ok: bool, code: str, data: dict[str, Any]) -> None:
     print(json.dumps({"ok": ok, "code": code, "data": data}, sort_keys=True, separators=(",", ":")))
 
 
+def _matrix_failure_summary(results: list[dict[str, Any]], detail_limit: int = 25) -> dict[str, Any]:
+    failures = [item for item in results if item.get("status") != "passed"]
+    bounded = [
+        {
+            "id": str(item.get("id", "missing")),
+            "category": str(item.get("category", "missing")),
+            "rules": [str(rule) for rule in item.get("rules", [])],
+            "detail": str(item.get("detail", "no diagnostic supplied"))[:512],
+        }
+        for item in failures[:detail_limit]
+    ]
+    return {
+        "failedCaseIds": [str(item.get("id", "missing")) for item in failures],
+        "failedCases": bounded,
+        "failureDetailsTruncated": max(0, len(failures) - len(bounded)),
+    }
+
+
 def _runtime_json(command: list[str]) -> dict[str, Any]:
     completed = subprocess.run(
         command,
@@ -1639,7 +1736,7 @@ def _matrix_entry_markdown(report: dict[str, Any], json_digest: str) -> bytes:
     provenance = report["executionProvenance"]
     summary = report["summary"]
     lines = [
-        f"# Wayfinder revision 8 environment evidence — {target['adapterId']} on {target['operatingSystemFamily']}",
+        f"# Wayfinder revision 9 environment evidence — {target['adapterId']} on {target['operatingSystemFamily']}",
         "",
         f"- **Status:** {report['status']}",
         f"- **Generated:** {report['generatedAt']}",
@@ -1672,9 +1769,17 @@ def _matrix_entry_markdown(report: dict[str, Any], json_digest: str) -> bytes:
         f"- Expected-output set: `{package['expectedOutputsSha256']}`",
         f"- Invocation observations: {report['invocations']['count']} at `{report['invocations']['sha256']}`",
         "",
-        "## Limitations and unavailable observations",
-        "",
     ]
+    failures = _matrix_failure_summary(report["results"])
+    if failures["failedCaseIds"]:
+        lines.extend(["## Failed cases", ""])
+        for item in failures["failedCases"]:
+            rules = ", ".join(f"`{rule}`" for rule in item["rules"])
+            lines.append(f"- `{item['id']}` ({item['category']}; {rules}): {item['detail']}")
+        if failures["failureDetailsTruncated"]:
+            lines.append(f"- {failures['failureDetailsTruncated']} additional failure diagnostics are present in the JSON report.")
+        lines.append("")
+    lines.extend(["## Limitations and unavailable observations", ""])
     lines.extend(f"- {item}" for item in report["limitations"])
     lines.append("")
     return "\n".join(lines).encode("utf-8")
@@ -1851,6 +1956,7 @@ def matrix_entry_command(adapter_id: str, operating_system_family: str, output: 
         "markdownSha256": sha256(markdown_path),
         "resultSetSha256": result_set_digest,
         "summary": report["summary"],
+        **_matrix_failure_summary(results),
     }
     _print_maintainer_result(passed, "ok" if passed else "matrix.entry-failed", result_data)
     return 0 if passed else 1
@@ -2080,6 +2186,21 @@ def _review_matrix_report(path: Path, report: dict[str, Any]) -> tuple[tuple[str
     return target if target in MATRIX_TARGETS else None, issues
 
 
+def _recorded_report_basename(value: Any) -> str | None:
+    if not isinstance(value, str) or not value or "\0" in value or value.endswith(("/", "\\")):
+        return None
+    basename = re.split(r"[\\/]", value)[-1]
+    if basename in {"", ".", ".."}:
+        return None
+    return basename
+
+
+def _local_report_matches(root: Path, basename: str | None) -> list[Path]:
+    if basename is None:
+        return []
+    return [path for path in root.rglob(basename) if path.is_file() and not path.is_symlink()]
+
+
 def matrix_review_command(artifact_dir: Path, output_format: str) -> int:
     root = artifact_dir.resolve()
     if not root.is_dir() or artifact_dir.is_symlink():
@@ -2141,11 +2262,24 @@ def matrix_review_command(artifact_dir: Path, output_format: str) -> int:
             issues.append(f"{status_path}: maintainer result is not JSON: {exc}")
             command_result = {}
         data = command_result.get("data", {}) if isinstance(command_result, dict) else {}
+        if not isinstance(data, dict):
+            issues.append(f"{status_path}: maintainer result data is not an object")
+            data = {}
+        json_name = _recorded_report_basename(data.get("json"))
+        json_matches = _local_report_matches(root, json_name)
+        if json_name is None:
+            issues.append(f"{status_path}: recorded JSON report path is malformed or empty")
+        elif len(json_matches) != 1 or json_matches[0] != report_path:
+            issues.append(f"{report_path}: recorded JSON report basename is missing or ambiguous")
         if data.get("jsonSha256") != sha256(report_path):
             issues.append(f"{report_path}: report hash differs from execution status")
-        markdown_name = Path(str(data.get("markdown", ""))).name
-        markdown_matches = [path for path in root.rglob(markdown_name) if path.is_file() and not path.is_symlink()] if markdown_name else []
-        if len(markdown_matches) != 1 or data.get("markdownSha256") != sha256(markdown_matches[0]):
+        markdown_name = _recorded_report_basename(data.get("markdown"))
+        markdown_matches = _local_report_matches(root, markdown_name)
+        if markdown_name is None:
+            issues.append(f"{status_path}: recorded Markdown report path is malformed or empty")
+        elif len(markdown_matches) != 1:
+            issues.append(f"{report_path}: recorded Markdown report basename is missing or ambiguous")
+        elif data.get("markdownSha256") != sha256(markdown_matches[0]):
             issues.append(f"{report_path}: Markdown report hash differs or is unavailable")
         failed_ids = [item["id"] for item in report.get("results", []) if item.get("status") != "passed"]
         if failed_ids:
@@ -2225,7 +2359,7 @@ def expect_command(expected_exit: int, expected_code: str, command: list[str]) -
     return 0 if passed else 1
 
 
-def handoff_command(objective: str, exclusions: list[str]) -> int:
+def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
     if doctor("quiet") != 0:
         print("maintainer doctor failed; handoff not generated", file=sys.stderr)
         return 1
@@ -2250,12 +2384,23 @@ def handoff_command(objective: str, exclusions: list[str]) -> int:
     print("\nRequired preparation\n")
     print("1. Read the repository instructions, `$wayfinder-maintainer`, and `references/current-state.md`; load only routed chronology unless governance changes.")
     print("2. Resolve runtimes once and run `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py doctor --verbose` with Python 3.11+ before editing.")
-    print("3. Preserve historical evidence and use the maintainer command's `test` and `evidence` subcommands for verification.")
+    print("3. Apply the action-authorization gate before authentication, downloads, dispatch, publication, destructive work, or another consequential external action.")
+    print("4. Use `maintain.py self-test` for maintainer regressions and `maintain.py record-section --heading HEADING` for exact chronology retrieval.")
+    print("\nTranche mode\n")
+    print(f"- Kind: `{kind}`")
+    if kind == "investigation":
+        print("- Inspect and report only; do not create evidence, freeze records, publish, activate, or mutate governed bytes unless the objective separately grants that authority.")
+    elif kind == "implementation":
+        print("- Change only the objective's authorized surfaces; use focused tests, canonical self-tests, repository validation, diff checking, and one final doctor.")
+    elif kind == "hosted-review":
+        print("- Read public run metadata and failed logs first. Download exact named artifacts only when the active tranche explicitly authorizes it and existing authentication is sufficient.")
+    elif kind == "acceptance-record":
+        print("- Record only the explicitly accepted outcome through the applicable exclusive command; do not begin the next tranche.")
     if exclusions:
         print("\nExplicit exclusions\n")
         for item in exclusions:
             print(f"- {item}")
-    print("\nDo not infer authorization for later work. Present material changes for explicit approval and stop after recording the accepted outcome.")
+    print("\nDo not infer authorization for later work. Present material changes for explicit approval and stop at the active tranche boundary.")
     return 0
 
 
@@ -2265,8 +2410,10 @@ def main(argv: list[str]) -> int:
         epilog=(
             "Examples:\n"
             "  maintain.py doctor --verbose\n"
+            "  maintain.py self-test\n"
             "  maintain.py test --adapter python-reference-v1 --case package-valid --case inventory-files-roots\n"
             "  maintain.py describe --format json\n"
+            "  maintain.py record-section --heading 'Candidate revision 9 Windows corrections — accepted'\n"
             "  maintain.py matrix-review --artifact-dir downloaded --format markdown"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -2278,6 +2425,8 @@ def main(argv: list[str]) -> int:
     doctor_modes.add_argument("--verbose", action="store_const", dest="output_mode", const="verbose", help="Emit every canonical doctor check and runtime diagnostic.")
     doctor_modes.add_argument("--json", action="store_const", dest="output_mode", const="json", help="Emit stable compact JSON.")
     doctor_parser.set_defaults(output_mode="summary")
+    self_test_parser = subparsers.add_parser("self-test", help="Run every maintainer regression without repository bytecode.")
+    self_test_parser.add_argument("--format", choices=("summary", "verbose", "json"), default="summary")
     test_parser = subparsers.add_parser("test", help="Run the full or focused unchanged conformance suite.")
     test_parser.add_argument("--case", action="append", default=[], help="Select one case; repeat in the same invocation to batch cases.")
     test_parser.add_argument("--category", action="append", default=[], help="Select one category; repeat to batch categories.")
@@ -2285,6 +2434,8 @@ def main(argv: list[str]) -> int:
     test_parser.add_argument("--output", choices=("summary", "verbose", "json"), default="summary", help="Conformance output mode (default: summary).")
     describe_parser = subparsers.add_parser("describe", aliases=["context"], help="Show canonical paths, identities, runtimes, cases, and approval boundary.")
     describe_parser.add_argument("--format", choices=("markdown", "json"), default="markdown")
+    record_section_parser = subparsers.add_parser("record-section", help="Print one exact level-two design-record section.")
+    record_section_parser.add_argument("--heading", required=True)
     evidence_parser = subparsers.add_parser("evidence", help="Create new local evidence without overwrite.")
     evidence_parser.add_argument("--output", type=Path, required=True)
     freeze_proposal_parser = subparsers.add_parser("freeze-proposal", help="Create a revision-scoped freeze proposal without overwrite.")
@@ -2308,17 +2459,22 @@ def main(argv: list[str]) -> int:
     expect_parser.add_argument("--exit", dest="expected_exit", type=int, required=True)
     expect_parser.add_argument("--code", dest="expected_code", required=True)
     expect_parser.add_argument("target", nargs=argparse.REMAINDER)
-    handoff_parser = subparsers.add_parser("handoff")
+    handoff_parser = subparsers.add_parser("handoff", help="Generate mode-aware factual handoff scaffolding.")
+    handoff_parser.add_argument("--kind", required=True, choices=("investigation", "implementation", "hosted-review", "acceptance-record"))
     handoff_parser.add_argument("--objective", required=True)
     handoff_parser.add_argument("--exclude", action="append", default=[])
     args = parser.parse_args(argv)
 
     if args.command == "doctor":
         return doctor(args.output_mode)
+    if args.command == "self-test":
+        return self_test_command(args.format)
     if args.command == "test":
         return test_command(args.case, args.category, args.adapter, args.output)
     if args.command in {"describe", "context"}:
         return describe_command(args.format)
+    if args.command == "record-section":
+        return record_section_command(args.heading)
     if args.command == "evidence":
         return evidence_command(args.output)
     if args.command == "freeze-proposal":
@@ -2336,7 +2492,7 @@ def main(argv: list[str]) -> int:
     if args.command == "expect":
         return expect_command(args.expected_exit, args.expected_code, args.target)
     if args.command == "handoff":
-        return handoff_command(args.objective, args.exclude)
+        return handoff_command(args.kind, args.objective, args.exclude)
     return 2
 
 

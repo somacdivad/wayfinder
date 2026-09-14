@@ -70,6 +70,15 @@ def load_json(path: Path) -> Any:
 def main() -> int:
     failures: list[str] = []
 
+    agents_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    if "references/current-state.md" not in agents_text:
+        failures.append("AGENTS.md must route mutable Wayfinder status to current-state.md")
+    if "v1-candidate-revision-" in agents_text or "five passing entries" in agents_text:
+        failures.append("AGENTS.md must not duplicate mutable candidate or hosted status")
+    runtime_skill = (ROOT / "plugins/wayfinder/skills/wayfinder/SKILL.md").read_text(encoding="utf-8")
+    if "candidate revision 8" in runtime_skill.lower() or "candidate revision 9" in runtime_skill.lower():
+        failures.append("runtime skill must not duplicate mutable candidate status")
+
     for name in PLUGIN_NAMES:
         plugin_root = ROOT / "plugins" / name
         portable = load_json(plugin_root / "plugin.json")
