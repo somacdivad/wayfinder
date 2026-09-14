@@ -495,7 +495,7 @@
       "sourcePath": "skills/wayfinder-maintainer/references/design-record.md",
       "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/design-record.md",
       "sourceSha256": "d5ac857a7bd5c5466171c5ad62e039928cff3d77830190fc6a2081a638d09a1c",
-      "destinationSha256": "574eb929a92c45df8e1a866c691e18a70097bf05a2e4d1d069252fefcb28e867",
+      "destinationSha256": "9a6b9ff523df30ae960c1ee57e9cdf2f2012ada78e351af4d96a6881ce155e4f",
       "status": "maintainer-owned-migration-change",
       "reason": "Record the accepted public-repository migration checkpoint."
     },
@@ -677,9 +677,9 @@
       "sourcePath": "skills/wayfinder-maintainer/scripts/conformance/v1/run.py",
       "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/conformance/v1/run.py",
       "sourceSha256": "de8ab3c4726146fd225f4b0d543c4c3134063197dc81e6dd40ef0882949fb1b6",
-      "destinationSha256": "30943556cdbc65e3658f6a458b7e15575c34ab90dad89fe8b04394026eb56e4c",
+      "destinationSha256": "5b11ab386262d75cbf0237865ea5fe48eb6bfebdfc6811978dd261f7dd5061c4",
       "status": "maintainer-owned-migration-change",
-      "reason": "Discover the two-plugin topology or an explicitly supplied runtime root."
+      "reason": "Discover the two-plugin topology or an explicitly supplied runtime root, and normalize host path spellings to the frozen revision-8 golden marker."
     },
     {
       "sourcePath": "skills/wayfinder-maintainer/scripts/conformance/v1/test_controls.py",

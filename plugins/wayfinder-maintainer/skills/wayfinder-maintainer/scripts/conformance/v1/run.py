@@ -1817,10 +1817,22 @@ def initialize_case(skill_root: Path, adapter: Path, case: dict[str, Any], tempo
             raise CaseFailure("source-assisted plan does not demonstrate all dispositions")
     if case_id == "initialize-minimal":
         golden = json.loads((skill_root / CONFORMANCE_REL / "expected/initialize-minimal-golden.json").read_text(encoding="utf-8"))
-        normalized_plan = plan_raw.replace(str(workspace).encode("utf-8"), b"<WORKSPACE>")
+        # Revision 8's governed golden bytes were frozen from macOS, where a
+        # tempfile spelled /var/... resolves to /private/var/.... Normalize
+        # every host to that frozen logical marker without changing the
+        # adapter output or the governed golden file.
+        workspace_marker = b"/private<WORKSPACE>"
+        workspace_spellings = sorted(
+            {str(workspace), str(workspace.resolve())}, key=len, reverse=True
+        )
+        normalized_plan = plan_raw
+        for spelling in workspace_spellings:
+            normalized_plan = normalized_plan.replace(spelling.encode("utf-8"), workspace_marker)
         normalized_plan = normalized_plan.replace(plan["contractSha256"].encode("ascii"), b"<CONTRACT_SHA256>")
         preview_raw = (bundle / "preview.md").read_bytes()
-        normalized_preview = preview_raw.replace(str(workspace).encode("utf-8"), b"<WORKSPACE>")
+        normalized_preview = preview_raw
+        for spelling in workspace_spellings:
+            normalized_preview = normalized_preview.replace(spelling.encode("utf-8"), workspace_marker)
         normalized_preview = normalized_preview.replace(result["data"]["planSha256"].encode("ascii"), b"<PLAN_SHA256>")
         normalized_preview = normalized_preview.replace(result["data"]["operationId"].encode("ascii"), b"<OPERATION_ID>")
         observed = {

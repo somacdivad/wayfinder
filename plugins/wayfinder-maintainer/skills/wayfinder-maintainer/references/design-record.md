@@ -343,4 +343,4 @@ Authorized on 2026-09-14 as a delivery and packaging tranche separate from certi
 
 | Checkpoint | Status | Decision |
 |---|---|---|
-| Public two-plugin repository structure and CI route | Implemented locally; publication pending | The owner authorized implementation on 2026-09-14. Local and hosted configuration must be verified, and the public GitHub repository must be created before this checkpoint is complete. No subsequent certification or activation tranche begins automatically. |
+| Public two-plugin repository structure and CI route | Published and validated | The owner authorized implementation on 2026-09-14. The public `somacdivad/wayfinder` repository was created and initial commit `6f8a311be0d8c98d557db64ed3263acd4b92ffe3` was published to `main`. The first hosted validation exposed a maintainer-harness path-normalization defect on Linux; a bounded maintainer-only correction preserved all frozen governed and adapter bytes, and ordinary repository validation subsequently passed. The manual certification and evidence-publication workflows were not run. No subsequent certification or activation tranche begins automatically. |
