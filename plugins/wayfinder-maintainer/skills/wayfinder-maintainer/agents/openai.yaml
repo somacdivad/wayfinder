@@ -1,0 +1,6 @@
+interface:
+  display_name: "Wayfinder Maintainer"
+  short_description: "Maintain and certify the Wayfinder contract"
+  default_prompt: "Use $wayfinder-maintainer to check, test, version, or certify the Wayfinder candidate."
+policy:
+  allow_implicit_invocation: false

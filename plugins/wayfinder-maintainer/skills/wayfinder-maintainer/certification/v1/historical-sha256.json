@@ -1,0 +1,20 @@
+{
+  "format": "wayfinder-historical-evidence-hashes",
+  "schemaVersion": 1,
+  "files": {
+    "slice-1-local.json": "3c9b81cc804d2644754b44663eebca1880c4cb628669ee06f2de1be947bdb9fb",
+    "slice-1-local.md": "a73589de1ec43687a97dfa7399499555cc4a24aa3e45a972fa8a1645e884125e",
+    "slice-2-local.json": "86455eeda29b7bb74844c097411d4c09c37f61507c0413ec7159f445b71235fe",
+    "slice-2-local.md": "0339a401e85f5edbb555805241c30c95eeb9b7073a5e22c3640a19563f6da1c6",
+    "slice-3-local.json": "8f8c656eae611074c8c94f02c3ded056e2ebc3ec7a9efffeea7d1804cacc753e",
+    "slice-3-local.md": "dd524ad0a0a77685e5fafe0f56561468c381da47db74e68e2c48d0eb4642bfb9",
+    "slice-4-local.json": "887661d5a3944d9040b8be365db29bf409ba256cfb907d447e8cb36465529795",
+    "slice-4-local.md": "b95ce4619c2f8f737fb7093f340c6e0bd0dc38ad2cd1f725bd5b91a31a26192b",
+    "slice-5-local.json": "cd7b8f0b9d1bc8f515c6c1ecf29440e4a868732820142eb6407252274079bb73",
+    "slice-5-local.md": "696824e2b0117e8532335f01cfda066a418afd661747c1fff04c34b4844952ec",
+    "candidate-revision-6-local.json": "8ccdcf57d82b8445175ef05dee9dd0baf201e96e9b8ea4dbcd12fc59f24ec63b",
+    "candidate-revision-6-local.md": "bea6564ed09ddc9de60aca2b6d724b483acef6acdb341aa6eb19723a961f5ab8",
+    "candidate-revision-7-local.json": "830d1a9dfd714f7a6f2c1bf2f747b51b8b03e63538c7d7c8ae3e15b397fed67f",
+    "candidate-revision-7-local.md": "d6ed3a2ca58524134077c8d2e18aa13bc00be2babd38853fa35109a9e719686e"
+  }
+}

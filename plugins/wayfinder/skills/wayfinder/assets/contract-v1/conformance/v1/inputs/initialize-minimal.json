@@ -1,0 +1,102 @@
+{
+  "format": "wayfinder-initialize-proposal",
+  "schemaVersion": 1,
+  "mode": "fresh",
+  "profile": {"id": "foundation", "confirmed": true},
+  "effectiveDate": "2026-09-13",
+  "manifest": {
+    "format": "wayfinder-project-record",
+    "schemaVersion": 1,
+    "recordRoot": "record",
+    "entrypoint": "README.md",
+    "canonicalBaseline": {"kind": "git-ref", "ref": "refs/heads/main"},
+    "modules": [
+      {"id": "decisions", "root": "decisions", "entrypoint": "decisions/README.md", "subjects": []}
+    ],
+    "generatedArtifacts": [
+      {"path": ".wayfinder/catalog.json", "generator": "document-catalog-v1"}
+    ]
+  },
+  "documents": [
+    {
+      "output": "README.md", "title": "Project knowledge map", "id": "wf-0001-knowledge-map", "kind": "map", "status": "Active", "updated": "2026-09-13", "summary": "Routes readers through the initial project record.",
+      "decisionDate": null, "supersedes": [], "supersededBy": [], "relationships": [],
+      "sections": [
+        {"heading": "Purpose", "content": "This record preserves the confirmed starting point for Project North and its later planning work."},
+        {"heading": "Authority boundary", "content": "After publication, the manifest-governed Wayfinder record is authoritative for the project-planning concerns it contains. Repository code and instructions remain authoritative for their separate operational concerns."},
+        {"heading": "Navigation", "content": "Read the plan brief for current intent, the question register for uncertainty, and the decision index for accepted choices.\n\n<!-- wayfinder:generated name=\"members\" generator=\"document-index-v1\" input-sha256=\"0000000000000000000000000000000000000000000000000000000000000000\" -->\n<!-- /wayfinder:generated -->"},
+        {"heading": "Next planning step", "content": "Resume Interview at [wfq-0001-success-evidence](open-questions.md#wfq-0001-success-evidence)."}
+      ],
+      "questions": [], "sources": []
+    },
+    {
+      "output": "plan-brief.md", "title": "Current plan brief", "id": "wf-0002-plan-brief", "kind": "brief", "status": "Draft", "updated": "2026-09-13", "summary": "States the confirmed initial intent and boundaries.",
+      "decisionDate": null, "supersedes": [], "supersededBy": [], "relationships": [],
+      "sections": [
+        {"heading": "Intent", "content": "Project North will organize a durable planning record for a small collaborative project."},
+        {"heading": "Desired outcomes", "content": "The record should help readers find the current plan, decisions, and consequential unknowns."},
+        {"heading": "Boundaries", "content": "Initialization covers project knowledge only. Implementation and external-system changes are outside this bootstrap."},
+        {"heading": "People", "content": "The project owner is the accountable planning perspective. Additional affected perspectives have not yet been elicited."},
+        {"heading": "Current knowledge", "content": "The owner confirmed the working intent and foundation taxonomy. Evidence needs and success measures remain open."}
+      ],
+      "questions": [], "sources": []
+    },
+    {
+      "output": "open-questions.md", "title": "Open questions", "id": "wf-0003-open-questions", "kind": "register", "status": "Active", "updated": "2026-09-13", "summary": "Preserves consequential unknowns for later Interview work.",
+      "decisionDate": null, "supersedes": [], "supersededBy": [], "relationships": [],
+      "sections": [{"heading": "Purpose", "content": "This register is the durable resumption point for unresolved planning work."}],
+      "questions": [
+        {
+          "id": "wfq-0001-success-evidence", "title": "What evidence will show that the project record is useful?", "state": "Open", "raised": "2026-09-13", "scope": null,
+          "appliesTo": [{"targetId": "wf-0002-plan-brief", "targetPath": "plan-brief.md"}], "addressedBy": [], "resolvedBy": [], "resolutionDate": null,
+          "sections": [
+            {"heading": "Why it matters", "content": "Without explicit evidence, later work could mistake activity for a useful planning outcome."},
+            {"heading": "Next step", "content": "Use Interview to identify readers, tasks, and observable success evidence."},
+            {"heading": "History", "content": "- 2026-09-13: None -> Open - Raised during the confirmed initialization proposal."}
+          ]
+        }
+      ],
+      "sources": []
+    },
+    {
+      "output": "decisions/README.md", "title": "Decision index", "id": "wf-0004-decision-index", "kind": "index", "status": "Active", "updated": "2026-09-13", "summary": "Defines and indexes durable project decisions.",
+      "decisionDate": null, "supersedes": [], "supersededBy": [], "relationships": [],
+      "sections": [
+        {"heading": "Decision authority", "content": "Accepted decision records govern until superseded. No accepted project decisions were identified during initialization."}
+      ],
+      "questions": [], "sources": []
+    }
+  ],
+  "concerns": [
+    {"id": "current-intent", "statement": "Readers need the current project intent and boundaries.", "homeId": "wf-0002-plan-brief"},
+    {"id": "unknown-success-evidence", "statement": "The evidence for usefulness is not yet known.", "homeId": "wfq-0001-success-evidence"},
+    {"id": "decision-history", "statement": "Accepted and superseded decisions need one durable index.", "homeId": "wf-0004-decision-index"}
+  ],
+  "epistemicStates": [
+    {"state": "Not yet elicited", "statement": "Affected perspectives and success evidence require later elicitation.", "targetId": "wfq-0001-success-evidence"}
+  ],
+  "omittedModules": [
+    {"id": "research", "reason": "No material evidence workflow was confirmed for the initial bootstrap."},
+    {"id": "product", "reason": "The project has not been confirmed as a product plan."},
+    {"id": "architecture", "reason": "No technical structure is part of the confirmed initial concern set."},
+    {"id": "development", "reason": "No durable builder workflow is part of the confirmed initial concern set."}
+  ],
+  "authorityBoundary": {
+    "statement": "The published Wayfinder record will govern project-planning knowledge in its stated scope; repository instructions and code retain their separate authority.",
+    "coauthoritativePaths": [],
+    "competingCurrentAuthority": []
+  },
+  "interviewResume": {
+    "summary": "Resume with the evidence needed to judge whether the record helps its intended readers.",
+    "nextWorkflow": "interview",
+    "recommendedFocusIds": ["wfq-0001-success-evidence"]
+  },
+  "materialInferences": [],
+  "sourceInventory": null,
+  "intakeLedger": null,
+  "materialSourcePaths": [],
+  "semanticReadiness": {
+    "identityAndIntent": "supported", "outcomes": "supported", "boundaries": "supported", "people": "explicit-unresolved",
+    "currentKnowledge": "supported", "consequentialUnknowns": "supported", "structure": "supported", "publicationBasis": "supported"
+  }
+}

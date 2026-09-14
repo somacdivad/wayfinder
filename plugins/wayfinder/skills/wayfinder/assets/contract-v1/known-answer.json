@@ -1,0 +1,42 @@
+{
+  "format": "wayfinder-known-answer",
+  "schemaVersion": 1,
+  "canonicalJson": [
+    {
+      "input": {
+        "b": 1,
+        "a": "é"
+      },
+      "expected": "{\"a\":\"é\",\"b\":1}"
+    },
+    {
+      "input": [
+        null,
+        true,
+        false,
+        -9007199254740991,
+        9007199254740991
+      ],
+      "expected": "[null,true,false,-9007199254740991,9007199254740991]"
+    }
+  ],
+  "sha256": [
+    {
+      "utf8": [119, 97, 121, 102, 105, 110, 100, 101, 114, 10],
+      "expected": "634e4071522e25f7a1b0cd88d5730634cdf269aa769720d8fa05431955a4995a"
+    }
+  ],
+  "nfc": [
+    {
+      "codePoints": [101, 769],
+      "expected": "é"
+    }
+  ],
+  "portablePaths": [
+    {"value": "docs/README.md", "accepted": true},
+    {"value": ".", "allowDot": true, "accepted": true},
+    {"value": "docs/../escape", "accepted": false},
+    {"value": "docs\\README.md", "accepted": false},
+    {"value": "CON", "accepted": false}
+  ]
+}

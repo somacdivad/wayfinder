@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wayfinder.local/schemas/v1/initialize-plan.schema.json",
+  "title": "Wayfinder canonical Initialize plan version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schemaVersion", "contractVersion", "contractSha256", "proposalSha256", "mode", "effectiveDate", "workspace", "manifest", "sourceBindings", "preconditions", "review", "validation", "payloads", "operations"],
+  "properties": {
+    "format": {"const": "wayfinder-initialize-plan"},
+    "schemaVersion": {"const": 1},
+    "contractVersion": {"const": 1},
+    "contractSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "proposalSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "mode": {"enum": ["fresh", "source-assisted"]},
+    "effectiveDate": {"type": "string", "format": "date"},
+    "workspace": {"$ref": "#/$defs/workspace"},
+    "manifest": {"$ref": "manifest.schema.json"},
+    "sourceBindings": {"$ref": "#/$defs/sourceBindings"},
+    "preconditions": {"$ref": "#/$defs/preconditions"},
+    "review": {"$ref": "#/$defs/review"},
+    "validation": {"$ref": "#/$defs/validation"},
+    "payloads": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/payload"}},
+    "operations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/operation"}}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "workspace": {"type": "object", "additionalProperties": false, "required": ["workspaceRoot", "recordRoot"], "properties": {"workspaceRoot": {"type": "string"}, "recordRoot": {"type": "string"}}},
+    "binding": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "bundlePath"], "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/$defs/digest"}, "bundlePath": {"type": "string"}}},
+    "sourceBindings": {"type": "object", "additionalProperties": false, "required": ["inventory", "intake", "materialSourcePaths"], "properties": {"inventory": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]}, "intake": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]}, "materialSourcePaths": {"type": "array", "items": {"type": "string"}}}},
+    "baseline": {"oneOf": [
+      {"type": "object", "additionalProperties": false, "required": ["kind", "ref", "commit"], "properties": {"kind": {"const": "git-ref"}, "ref": {"type": "string"}, "commit": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"}}},
+      {"type": "object", "additionalProperties": false, "required": ["kind", "path", "sha256"], "properties": {"kind": {"const": "snapshot"}, "path": {"type": "string"}, "sha256": {"$ref": "#/$defs/digest"}}}
+    ]},
+    "preconditions": {"type": "object", "additionalProperties": false, "required": ["manifestAbsent", "targetsAbsent", "moduleRootsAbsent", "bundleAbsent", "canonicalBaseline"], "properties": {"manifestAbsent": {"const": true}, "targetsAbsent": {"type": "array", "items": {"type": "string"}}, "moduleRootsAbsent": {"type": "array", "items": {"type": "string"}}, "bundleAbsent": {"const": true}, "canonicalBaseline": {"$ref": "#/$defs/baseline"}}},
+    "review": {"type": "object", "additionalProperties": false, "required": ["profile", "concernHomes", "epistemicStates", "omittedModules", "authorityBoundary", "materialInferences", "interviewResume", "semanticReadiness", "targetTree"], "properties": {"profile": {"$ref": "initialize-proposal.schema.json#/properties/profile"}, "concernHomes": {"type": "array", "items": {"$ref": "initialize-proposal.schema.json#/$defs/concern"}}, "epistemicStates": {"type": "array", "items": {"$ref": "initialize-proposal.schema.json#/$defs/epistemic"}}, "omittedModules": {"type": "array", "items": {"$ref": "initialize-proposal.schema.json#/$defs/omission"}}, "authorityBoundary": {"$ref": "initialize-proposal.schema.json#/$defs/authority"}, "materialInferences": {"type": "array", "items": {"$ref": "initialize-proposal.schema.json#/$defs/inference"}}, "interviewResume": {"$ref": "initialize-proposal.schema.json#/$defs/resume"}, "semanticReadiness": {"$ref": "initialize-proposal.schema.json#/$defs/readiness"}, "targetTree": {"type": "array", "items": {"type": "string"}}}},
+    "diagnostic": {"type": "object", "additionalProperties": false, "required": ["code", "message", "path", "actual"], "properties": {"code": {"type": "string"}, "message": {"type": "string"}, "path": {"type": "string"}, "actual": {"type": ["string", "integer", "boolean", "null"]}}},
+    "validation": {"type": "object", "additionalProperties": false, "required": ["documents", "questions", "warnings", "catalogSha256"], "properties": {"documents": {"type": "integer", "minimum": 1}, "questions": {"type": "integer", "minimum": 0}, "warnings": {"type": "array", "items": {"$ref": "#/$defs/diagnostic"}}, "catalogSha256": {"$ref": "#/$defs/digest"}}},
+    "producer": {"type": "object", "additionalProperties": false, "required": ["id", "sha256"], "properties": {"id": {"type": "string"}, "sha256": {"$ref": "#/$defs/digest"}}},
+    "payload": {"type": "object", "additionalProperties": false, "required": ["bundlePath", "targetPath", "role", "documentId", "byteLength", "sha256", "producer"], "properties": {"bundlePath": {"type": "string"}, "targetPath": {"type": "string"}, "role": {"enum": ["authored-document", "generated-artifact", "manifest"]}, "documentId": {"type": ["string", "null"]}, "byteLength": {"type": "integer", "minimum": 0}, "sha256": {"$ref": "#/$defs/digest"}, "producer": {"$ref": "#/$defs/producer"}}},
+    "operation": {"oneOf": [
+      {"type": "object", "additionalProperties": false, "required": ["action", "path"], "properties": {"action": {"const": "create-directory"}, "path": {"type": "string"}}},
+      {"type": "object", "additionalProperties": false, "required": ["action", "path", "payload", "sha256"], "properties": {"action": {"const": "create-file"}, "path": {"type": "string"}, "payload": {"type": "string"}, "sha256": {"$ref": "#/$defs/digest"}}},
+      {"type": "object", "additionalProperties": false, "required": ["action", "path", "payload", "sha256"], "properties": {"action": {"const": "publish-manifest"}, "path": {"const": ".wayfinder/manifest.json"}, "payload": {"type": "string"}, "sha256": {"$ref": "#/$defs/digest"}}}
+    ]}
+  }
+}

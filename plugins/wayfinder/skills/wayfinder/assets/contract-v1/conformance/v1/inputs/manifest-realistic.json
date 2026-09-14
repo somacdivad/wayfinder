@@ -1,0 +1,50 @@
+{
+  "format": "wayfinder-project-record",
+  "schemaVersion": 1,
+  "recordRoot": "docs",
+  "entrypoint": "README.md",
+  "canonicalBaseline": {
+    "kind": "snapshot",
+    "path": ".wayfinder/baselines/canonical.json",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "modules": [
+    {
+      "id": "product",
+      "root": "product",
+      "entrypoint": "product/product-brief.md",
+      "subjects": [
+        {
+          "id": "audiences",
+          "kind": "document",
+          "entrypoint": "product/audiences.md"
+        },
+        {
+          "id": "collaboration",
+          "kind": "collection",
+          "root": "product/collaboration",
+          "entrypoint": "product/collaboration/README.md"
+        }
+      ]
+    },
+    {
+      "id": "decisions",
+      "root": "decisions",
+      "entrypoint": "decisions/README.md",
+      "subjects": [
+        {
+          "id": "technical-foundation",
+          "kind": "collection",
+          "root": "decisions/technical-foundation",
+          "entrypoint": "decisions/technical-foundation/README.md"
+        }
+      ]
+    }
+  ],
+  "generatedArtifacts": [
+    {
+      "path": ".wayfinder/catalog.json",
+      "generator": "document-catalog-v1"
+    }
+  ]
+}

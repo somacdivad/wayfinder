@@ -1,0 +1,19 @@
+{
+  "format": "wayfinder-project-record",
+  "schemaVersion": 1,
+  "recordRoot": "record",
+  "entrypoint": "README.md",
+  "canonicalBaseline": {
+    "kind": "git-ref",
+    "ref": "refs/heads/main"
+  },
+  "modules": [
+    {
+      "id": "decisions",
+      "root": "decisions",
+      "entrypoint": "decisions/README.md",
+      "subjects": []
+    }
+  ],
+  "generatedArtifacts": []
+}

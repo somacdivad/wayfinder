@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wayfinder.local/schemas/v1/initialize-receipt.schema.json",
+  "title": "Wayfinder initialization receipt version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schemaVersion", "operationId", "completedAt", "mode", "planSha256", "contractVersion", "contractSha256", "adapter", "canonicalBaseline", "manifestSha256", "targetSetSha256", "intake", "validation", "operationalIntegrity", "semanticReadiness", "entrypoint", "openQuestionIds", "nextWorkflow", "recommendedFocusIds", "journalHeadSha256"],
+  "properties": {
+    "format": {"const": "wayfinder-initialization-receipt"},
+    "schemaVersion": {"const": 1},
+    "operationId": {"type": "string", "pattern": "^wfinit-(?:[0-9a-f]{24}|test-[a-z0-9]+(?:-[a-z0-9]+)*)$"},
+    "completedAt": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "mode": {"enum": ["fresh", "source-assisted"]},
+    "planSha256": {"$ref": "#/$defs/digest"},
+    "contractVersion": {"const": 1},
+    "contractSha256": {"$ref": "#/$defs/digest"},
+    "adapter": {"type": "object", "additionalProperties": false, "required": ["id", "sha256"], "properties": {"id": {"type": "string"}, "sha256": {"$ref": "#/$defs/digest"}}},
+    "canonicalBaseline": {"type": "object"},
+    "manifestSha256": {"$ref": "#/$defs/digest"},
+    "targetSetSha256": {"$ref": "#/$defs/digest"},
+    "intake": {"type": "object", "additionalProperties": false, "required": ["ledgerDigest", "incorporate", "reference", "preserveOutOfScope", "unresolved"], "properties": {"ledgerDigest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}, "incorporate": {"type": "integer", "minimum": 0}, "reference": {"type": "integer", "minimum": 0}, "preserveOutOfScope": {"type": "integer", "minimum": 0}, "unresolved": {"type": "integer", "minimum": 0}}},
+    "validation": {"type": "object", "additionalProperties": false, "required": ["validatorVersion", "errors", "warnings", "resultSha256"], "properties": {"validatorVersion": {"const": 1}, "errors": {"const": 0}, "warnings": {"type": "integer", "minimum": 0}, "resultSha256": {"$ref": "#/$defs/digest"}}},
+    "operationalIntegrity": {"type": "object", "additionalProperties": false, "required": ["status", "targetCount", "manifestPublishedLast"], "properties": {"status": {"const": "passed"}, "targetCount": {"type": "integer", "minimum": 1}, "manifestPublishedLast": {"const": true}}},
+    "semanticReadiness": {"type": "object", "additionalProperties": false, "required": ["status", "predicates", "authorityConfirmed"], "properties": {"status": {"const": "passed"}, "predicates": {"type": "object"}, "authorityConfirmed": {"const": true}}},
+    "entrypoint": {"type": "string"},
+    "openQuestionIds": {"type": "array", "items": {"type": "string"}},
+    "nextWorkflow": {"const": "interview"},
+    "recommendedFocusIds": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "journalHeadSha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

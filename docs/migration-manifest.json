@@ -1,0 +1,700 @@
+{
+  "format": "wayfinder-migration-manifest",
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-14T13:46:28Z",
+  "source": {
+    "repository": "somacdivad/mypond",
+    "paths": [
+      "skills/wayfinder",
+      "skills/wayfinder-maintainer"
+    ]
+  },
+  "destination": {
+    "repository": "somacdivad/wayfinder",
+    "layout": "two-plugin-monorepo"
+  },
+  "files": [
+    {
+      "sourcePath": "skills/wayfinder/SKILL.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/SKILL.md",
+      "sourceSha256": "e3f3596e7de6ef7cbfa8126696bbbd4353d08404e45fe88a9fd84e9bb1fc1568",
+      "destinationSha256": "e3f3596e7de6ef7cbfa8126696bbbd4353d08404e45fe88a9fd84e9bb1fc1568",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/agents/openai.yaml",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/agents/openai.yaml",
+      "sourceSha256": "5716cb2928a617cb1de1c6e5c4090b70151bc42e64b1f0c8656f5b2d7872cc9b",
+      "destinationSha256": "5716cb2928a617cb1de1c6e5c4090b70151bc42e64b1f0c8656f5b2d7872cc9b",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/cases.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/cases.json",
+      "sourceSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6",
+      "destinationSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/expected/catalog-golden.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/expected/catalog-golden.json",
+      "sourceSha256": "78de054af7a60a286d198c77106a146aacc01f6eba80fc3b3622467ddcc8bcf9",
+      "destinationSha256": "78de054af7a60a286d198c77106a146aacc01f6eba80fc3b3622467ddcc8bcf9",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/expected/initialize-apply-golden.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/expected/initialize-apply-golden.json",
+      "sourceSha256": "f203dd93369a34f8884cb09c0ef38d355fcccf92fa3292a6d732b355b810f967",
+      "destinationSha256": "f203dd93369a34f8884cb09c0ef38d355fcccf92fa3292a6d732b355b810f967",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/expected/initialize-minimal-golden.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/expected/initialize-minimal-golden.json",
+      "sourceSha256": "da0ede2a25905b7a09953f162bcb6e0a08a78c80608515cb70d77a7d0556329d",
+      "destinationSha256": "da0ede2a25905b7a09953f162bcb6e0a08a78c80608515cb70d77a7d0556329d",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/expected/inventory-golden.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/expected/inventory-golden.json",
+      "sourceSha256": "86b65056b5ff69a3ffc4e6b7b39c0280f523ad1051d69add30df9510edc901bd",
+      "destinationSha256": "86b65056b5ff69a3ffc4e6b7b39c0280f523ad1051d69add30df9510edc901bd",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/expected/probe-deterministic.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/expected/probe-deterministic.json",
+      "sourceSha256": "25780fbcab9dc81aae1c2303acd592c91e0ccf60943d50b6fcb579d917bd1863",
+      "destinationSha256": "25780fbcab9dc81aae1c2303acd592c91e0ccf60943d50b6fcb579d917bd1863",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/expected/render-brief.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/expected/render-brief.md",
+      "sourceSha256": "5dfaadfab37dbfecfa2f4d8b8717d82cfd66b7c392270f976f9f842b15936b9a",
+      "destinationSha256": "5dfaadfab37dbfecfa2f4d8b8717d82cfd66b7c392270f976f9f842b15936b9a",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/expected/result-envelope-fields.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/expected/result-envelope-fields.json",
+      "sourceSha256": "1ee8dcf9272ee1d45c4cc0d4e07d09db8b15c61ab4a0f349a677fb15cc7a8b0e",
+      "destinationSha256": "1ee8dcf9272ee1d45c4cc0d4e07d09db8b15c61ab4a0f349a677fb15cc7a8b0e",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/inputs/initialize-minimal.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/inputs/initialize-minimal.json",
+      "sourceSha256": "eeac5ba16d6fc78e419c7b38b8b42392c54b8537916a5911cb96574a17f4b6ff",
+      "destinationSha256": "eeac5ba16d6fc78e419c7b38b8b42392c54b8537916a5911cb96574a17f4b6ff",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/inputs/manifest-minimal.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/inputs/manifest-minimal.json",
+      "sourceSha256": "36a9428ea413d50a7e78c03ad9c7e1bb8b891e191ad0f22039a9cca186239fd4",
+      "destinationSha256": "36a9428ea413d50a7e78c03ad9c7e1bb8b891e191ad0f22039a9cca186239fd4",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/conformance/v1/inputs/manifest-realistic.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/conformance/v1/inputs/manifest-realistic.json",
+      "sourceSha256": "62b3dde986490b4afd910f2dbb57daef6ce7e47c04d661dd5b0a33d687fc2af2",
+      "destinationSha256": "62b3dde986490b4afd910f2dbb57daef6ce7e47c04d661dd5b0a33d687fc2af2",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/contract.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/contract.json",
+      "sourceSha256": "75a0fe4ac106ffb6ad496a38d65addf004f03f128c18fd512232c4631315955b",
+      "destinationSha256": "75a0fe4ac106ffb6ad496a38d65addf004f03f128c18fd512232c4631315955b",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/grammar.abnf",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/grammar.abnf",
+      "sourceSha256": "957c61bd72da37e5e23d26e8fc2231d07c1b9cb4961a1654fa5ac9b10b55fde5",
+      "destinationSha256": "957c61bd72da37e5e23d26e8fc2231d07c1b9cb4961a1654fa5ac9b10b55fde5",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/known-answer.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/known-answer.json",
+      "sourceSha256": "a4677cc3dbf83680a4b49fbe883df5787bb5532b3ba04168cfb10dc8652d9749",
+      "destinationSha256": "a4677cc3dbf83680a4b49fbe883df5787bb5532b3ba04168cfb10dc8652d9749",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/release.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/release.json",
+      "sourceSha256": "677fa5af49c11532d49875bd8d1138a36903668449188e6358f2d0a5947f2284",
+      "destinationSha256": "677fa5af49c11532d49875bd8d1138a36903668449188e6358f2d0a5947f2284",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/catalog.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/catalog.schema.json",
+      "sourceSha256": "0b215208e5b28524322ee0a1a7df49e70146aacd8c2066e5ea145ba3970cc379",
+      "destinationSha256": "0b215208e5b28524322ee0a1a7df49e70146aacd8c2066e5ea145ba3970cc379",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/generation-request.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/generation-request.schema.json",
+      "sourceSha256": "78f02fda51a882688c22dc68ebd8776bed4738b16221804a79563bfa0a849244",
+      "destinationSha256": "78f02fda51a882688c22dc68ebd8776bed4738b16221804a79563bfa0a849244",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/initialize-event.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/initialize-event.schema.json",
+      "sourceSha256": "e717ba7e400de9f280c266a183ba7b8b4318403ba3d932b96778b987aadf1547",
+      "destinationSha256": "e717ba7e400de9f280c266a183ba7b8b4318403ba3d932b96778b987aadf1547",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/initialize-plan.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/initialize-plan.schema.json",
+      "sourceSha256": "52cb09cb5b411d5b94bc15def7504ee80c83018a6355a16c93cc157825ecb948",
+      "destinationSha256": "52cb09cb5b411d5b94bc15def7504ee80c83018a6355a16c93cc157825ecb948",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/initialize-proposal.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/initialize-proposal.schema.json",
+      "sourceSha256": "a75eb78ac7df500782e6001af4f94a7270aba0f6b1d9786789a158631d1d834d",
+      "destinationSha256": "a75eb78ac7df500782e6001af4f94a7270aba0f6b1d9786789a158631d1d834d",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/initialize-receipt.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/initialize-receipt.schema.json",
+      "sourceSha256": "35765c8cd364f0df0851a8996989e18ed7ad3f4b1097c2c6d4b17f1e15e08ce0",
+      "destinationSha256": "35765c8cd364f0df0851a8996989e18ed7ad3f4b1097c2c6d4b17f1e15e08ce0",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/intake-ledger.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/intake-ledger.schema.json",
+      "sourceSha256": "fa8a5bc0abd62e735074ab6debed0bb539e721a9ac7e6d2912db48ae6b181c02",
+      "destinationSha256": "fa8a5bc0abd62e735074ab6debed0bb539e721a9ac7e6d2912db48ae6b181c02",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/inventory-request.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/inventory-request.schema.json",
+      "sourceSha256": "55aecdb031561028f927e39dbbdc1002d310f9695faeaa37bbc5b6354dc24915",
+      "destinationSha256": "55aecdb031561028f927e39dbbdc1002d310f9695faeaa37bbc5b6354dc24915",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/inventory.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/inventory.schema.json",
+      "sourceSha256": "7a272adf799e6d6c886c3c46a741820c4a8d0be433827e67280cdab206bde3b8",
+      "destinationSha256": "7a272adf799e6d6c886c3c46a741820c4a8d0be433827e67280cdab206bde3b8",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/manifest.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/manifest.schema.json",
+      "sourceSha256": "de1dac649903e5ab5a613a8bc992f63f8201cf2474bc796508b85502f4848f54",
+      "destinationSha256": "de1dac649903e5ab5a613a8bc992f63f8201cf2474bc796508b85502f4848f54",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/release.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/release.schema.json",
+      "sourceSha256": "e36aba8c834141964f4cb1e0851bba64f8377e36c4956b1863687bac46c8de97",
+      "destinationSha256": "e36aba8c834141964f4cb1e0851bba64f8377e36c4956b1863687bac46c8de97",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/schemas/result.schema.json",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/schemas/result.schema.json",
+      "sourceSha256": "f8ebe74f8f0c42fdce9750181ac1156fee35d55fdb72327dbc133b57077f59de",
+      "destinationSha256": "f8ebe74f8f0c42fdce9750181ac1156fee35d55fdb72327dbc133b57077f59de",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/templates/brief.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/templates/brief.md",
+      "sourceSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "destinationSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/templates/decision.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/templates/decision.md",
+      "sourceSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "destinationSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/templates/evidence.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/templates/evidence.md",
+      "sourceSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "destinationSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/templates/guide.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/templates/guide.md",
+      "sourceSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "destinationSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/templates/index.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/templates/index.md",
+      "sourceSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "destinationSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/templates/map.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/templates/map.md",
+      "sourceSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "destinationSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/assets/contract-v1/templates/register.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/assets/contract-v1/templates/register.md",
+      "sourceSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "destinationSha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/references/contracts/v1.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/references/contracts/v1.md",
+      "sourceSha256": "cb4e2391ad40281009ff590b73c67bb65827b561f4de9f251b4cc53793c95e94",
+      "destinationSha256": "cb4e2391ad40281009ff590b73c67bb65827b561f4de9f251b4cc53793c95e94",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/references/facilitation.md",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/references/facilitation.md",
+      "sourceSha256": "574c2a9ac801d114dba883bf23533a7eb12605a062c155da0e474b55d4b53e62",
+      "destinationSha256": "574c2a9ac801d114dba883bf23533a7eb12605a062c155da0e474b55d4b53e62",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/scripts/adapters/wayfinder-node.mjs",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-node.mjs",
+      "sourceSha256": "fcd01cfd47c98488eb2e85055924630642ee4093c02272bb67ba961d4e084125",
+      "destinationSha256": "fcd01cfd47c98488eb2e85055924630642ee4093c02272bb67ba961d4e084125",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/scripts/adapters/wayfinder-powershell.ps1",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-powershell.ps1",
+      "sourceSha256": "9b64624f0c837db6082ce241a3f17f3d05614490e4e721d757588c8fefbe0bce",
+      "destinationSha256": "9b64624f0c837db6082ce241a3f17f3d05614490e4e721d757588c8fefbe0bce",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder/scripts/adapters/wayfinder.py",
+      "destinationPath": "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder.py",
+      "sourceSha256": "d0ce8b8e21606bd026ff82b93945cbef3225387b0c47702b688d285c966679d4",
+      "destinationSha256": "d0ce8b8e21606bd026ff82b93945cbef3225387b0c47702b688d285c966679d4",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/SKILL.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/SKILL.md",
+      "sourceSha256": "309a7e2b0f282a072ccdc5f64554d0c6bbf9fd43ee9dd09c9678ea2da96b81d4",
+      "destinationSha256": "eb875d84433d199b88485ab3c1f7ad5f13819baa7279bc908ff43ce621200bca",
+      "status": "maintainer-owned-migration-change",
+      "reason": "Document the new source-repository path and explicit external runtime root."
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/agents/openai.yaml",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/agents/openai.yaml",
+      "sourceSha256": "c98b012162929751c9618e142f3745f8ca09e0526c7293887788830f2bec102f",
+      "destinationSha256": "c98b012162929751c9618e142f3745f8ca09e0526c7293887788830f2bec102f",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/candidate-revision-6-local.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/candidate-revision-6-local.json",
+      "sourceSha256": "8ccdcf57d82b8445175ef05dee9dd0baf201e96e9b8ea4dbcd12fc59f24ec63b",
+      "destinationSha256": "8ccdcf57d82b8445175ef05dee9dd0baf201e96e9b8ea4dbcd12fc59f24ec63b",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/candidate-revision-6-local.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/candidate-revision-6-local.md",
+      "sourceSha256": "bea6564ed09ddc9de60aca2b6d724b483acef6acdb341aa6eb19723a961f5ab8",
+      "destinationSha256": "bea6564ed09ddc9de60aca2b6d724b483acef6acdb341aa6eb19723a961f5ab8",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/candidate-revision-7-local.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/candidate-revision-7-local.json",
+      "sourceSha256": "830d1a9dfd714f7a6f2c1bf2f747b51b8b03e63538c7d7c8ae3e15b397fed67f",
+      "destinationSha256": "830d1a9dfd714f7a6f2c1bf2f747b51b8b03e63538c7d7c8ae3e15b397fed67f",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/candidate-revision-7-local.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/candidate-revision-7-local.md",
+      "sourceSha256": "d6ed3a2ca58524134077c8d2e18aa13bc00be2babd38853fa35109a9e719686e",
+      "destinationSha256": "d6ed3a2ca58524134077c8d2e18aa13bc00be2babd38853fa35109a9e719686e",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/candidate-revision-8-local.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/candidate-revision-8-local.json",
+      "sourceSha256": "773d643b11fbaaa283610d71c5810e4a213da3fb407ede95a5a2b1379066187e",
+      "destinationSha256": "773d643b11fbaaa283610d71c5810e4a213da3fb407ede95a5a2b1379066187e",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/candidate-revision-8-local.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/candidate-revision-8-local.md",
+      "sourceSha256": "890baf2638953e48ca72e13f15285e4caf2761580ee7f1a67194ed3ed93678dd",
+      "destinationSha256": "890baf2638953e48ca72e13f15285e4caf2761580ee7f1a67194ed3ed93678dd",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/freeze-acceptance-revision-8.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/freeze-acceptance-revision-8.json",
+      "sourceSha256": "01a8676a4b652358008e26ac612feaa51013eff3c03db07e047cdb171ee26e9f",
+      "destinationSha256": "01a8676a4b652358008e26ac612feaa51013eff3c03db07e047cdb171ee26e9f",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/freeze-acceptance-revision-8.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/freeze-acceptance-revision-8.md",
+      "sourceSha256": "783d0be43f957a851bf07e4c9a1f111aef653fbab6f93c7f4f09f7d025d1b786",
+      "destinationSha256": "783d0be43f957a851bf07e4c9a1f111aef653fbab6f93c7f4f09f7d025d1b786",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/historical-sha256.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/historical-sha256.json",
+      "sourceSha256": "ea6840c354d2b02e6995de6fde92464504a97785a29587ea26aabe23c765d866",
+      "destinationSha256": "ea6840c354d2b02e6995de6fde92464504a97785a29587ea26aabe23c765d866",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.json",
+      "sourceSha256": "6b43c2f0b41e83d76218e363651d6353ab62561426e4c7abf997cb561aa3fd78",
+      "destinationSha256": "6b43c2f0b41e83d76218e363651d6353ab62561426e4c7abf997cb561aa3fd78",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.md",
+      "sourceSha256": "8a81084ab64a18bac8d59694bc81233035cc0f02434a36d8106dfc0f2cc1c11c",
+      "destinationSha256": "8a81084ab64a18bac8d59694bc81233035cc0f02434a36d8106dfc0f2cc1c11c",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/parity-revision-8-local.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/parity-revision-8-local.json",
+      "sourceSha256": "28bc61ede21e0b8041c1951b1327c948642d0712170048f17ce2bab9653562ef",
+      "destinationSha256": "28bc61ede21e0b8041c1951b1327c948642d0712170048f17ce2bab9653562ef",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/parity-revision-8-local.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/parity-revision-8-local.md",
+      "sourceSha256": "840641fd2b2814104a78f7fe0d4106ac70c4688056237003770d7ec7874e97c0",
+      "destinationSha256": "840641fd2b2814104a78f7fe0d4106ac70c4688056237003770d7ec7874e97c0",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/proposed-freeze-revision-8.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/proposed-freeze-revision-8.json",
+      "sourceSha256": "57cbca84b2cbbbda557208cefcc78487d177a8e995b48d94e11f2aa51a81730a",
+      "destinationSha256": "57cbca84b2cbbbda557208cefcc78487d177a8e995b48d94e11f2aa51a81730a",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/proposed-freeze-revision-8.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/proposed-freeze-revision-8.md",
+      "sourceSha256": "f176c3777c18bce6173f1853d916f99706a1b8047749be0e737d619258392ec7",
+      "destinationSha256": "f176c3777c18bce6173f1853d916f99706a1b8047749be0e737d619258392ec7",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/slice-1-local.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/slice-1-local.json",
+      "sourceSha256": "3c9b81cc804d2644754b44663eebca1880c4cb628669ee06f2de1be947bdb9fb",
+      "destinationSha256": "3c9b81cc804d2644754b44663eebca1880c4cb628669ee06f2de1be947bdb9fb",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/slice-1-local.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/slice-1-local.md",
+      "sourceSha256": "a73589de1ec43687a97dfa7399499555cc4a24aa3e45a972fa8a1645e884125e",
+      "destinationSha256": "a73589de1ec43687a97dfa7399499555cc4a24aa3e45a972fa8a1645e884125e",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/slice-2-local.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/slice-2-local.json",
+      "sourceSha256": "86455eeda29b7bb74844c097411d4c09c37f61507c0413ec7159f445b71235fe",
+      "destinationSha256": "86455eeda29b7bb74844c097411d4c09c37f61507c0413ec7159f445b71235fe",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/slice-2-local.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/slice-2-local.md",
+      "sourceSha256": "0339a401e85f5edbb555805241c30c95eeb9b7073a5e22c3640a19563f6da1c6",
+      "destinationSha256": "0339a401e85f5edbb555805241c30c95eeb9b7073a5e22c3640a19563f6da1c6",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/slice-3-local.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/slice-3-local.json",
+      "sourceSha256": "8f8c656eae611074c8c94f02c3ded056e2ebc3ec7a9efffeea7d1804cacc753e",
+      "destinationSha256": "8f8c656eae611074c8c94f02c3ded056e2ebc3ec7a9efffeea7d1804cacc753e",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/slice-3-local.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/slice-3-local.md",
+      "sourceSha256": "dd524ad0a0a77685e5fafe0f56561468c381da47db74e68e2c48d0eb4642bfb9",
+      "destinationSha256": "dd524ad0a0a77685e5fafe0f56561468c381da47db74e68e2c48d0eb4642bfb9",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/slice-4-local.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/slice-4-local.json",
+      "sourceSha256": "887661d5a3944d9040b8be365db29bf409ba256cfb907d447e8cb36465529795",
+      "destinationSha256": "887661d5a3944d9040b8be365db29bf409ba256cfb907d447e8cb36465529795",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/slice-4-local.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/slice-4-local.md",
+      "sourceSha256": "b95ce4619c2f8f737fb7093f340c6e0bd0dc38ad2cd1f725bd5b91a31a26192b",
+      "destinationSha256": "b95ce4619c2f8f737fb7093f340c6e0bd0dc38ad2cd1f725bd5b91a31a26192b",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/slice-5-local.json",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/slice-5-local.json",
+      "sourceSha256": "cd7b8f0b9d1bc8f515c6c1ecf29440e4a868732820142eb6407252274079bb73",
+      "destinationSha256": "cd7b8f0b9d1bc8f515c6c1ecf29440e4a868732820142eb6407252274079bb73",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/certification/v1/slice-5-local.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/slice-5-local.md",
+      "sourceSha256": "696824e2b0117e8532335f01cfda066a418afd661747c1fff04c34b4844952ec",
+      "destinationSha256": "696824e2b0117e8532335f01cfda066a418afd661747c1fff04c34b4844952ec",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/design-record.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/design-record.md",
+      "sourceSha256": "d5ac857a7bd5c5466171c5ad62e039928cff3d77830190fc6a2081a638d09a1c",
+      "destinationSha256": "574eb929a92c45df8e1a866c691e18a70097bf05a2e4d1d069252fefcb28e867",
+      "status": "maintainer-owned-migration-change",
+      "reason": "Record the accepted public-repository migration checkpoint."
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/2026-09-14-public-repository-plugin-structure.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/2026-09-14-public-repository-plugin-structure.md",
+      "sourceSha256": "a106f644561603a043c3df5ca9487eb7e39e44555e40af39685961f00754837c",
+      "destinationSha256": "19de48cf70a4176bf8ccc1dd34bef1b365db57ace7bf606602ed6adf482642d8",
+      "status": "maintainer-owned-migration-change",
+      "reason": "Mark the researched migration design as accepted."
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-01-structure.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-01-structure.md",
+      "sourceSha256": "57801f750e8cd79a8b5aee777d99b45a1a5703349838b07abb03e9963b45435e",
+      "destinationSha256": "57801f750e8cd79a8b5aee777d99b45a1a5703349838b07abb03e9963b45435e",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-02-representation.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-02-representation.md",
+      "sourceSha256": "cfe886287818454193b2bd241a8ac11d4a93a00d78f6605e8b41d5a3956d236e",
+      "destinationSha256": "cfe886287818454193b2bd241a8ac11d4a93a00d78f6605e8b41d5a3956d236e",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-03-metadata-envelope.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-03-metadata-envelope.md",
+      "sourceSha256": "e67fb01d93a3a3cfffd0bb2b8e3b05f16041225dcd43178fa3c958a828caf3c0",
+      "destinationSha256": "e67fb01d93a3a3cfffd0bb2b8e3b05f16041225dcd43178fa3c958a828caf3c0",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-04-universal-fields.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-04-universal-fields.md",
+      "sourceSha256": "8912b2948cd5883a352eed1df9f7283f419868359d59c41fa521c51a2bbe4ff0",
+      "destinationSha256": "8912b2948cd5883a352eed1df9f7283f419868359d59c41fa521c51a2bbe4ff0",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-05-identifier-model.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-05-identifier-model.md",
+      "sourceSha256": "0c257261e3ced9e14c96251f135e199fc178a82f8b2cc80c45a1df85ec0d242c",
+      "destinationSha256": "0c257261e3ced9e14c96251f135e199fc178a82f8b2cc80c45a1df85ec0d242c",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-06-identifier-grammar.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-06-identifier-grammar.md",
+      "sourceSha256": "21c8e57bac6964dd05c48799795c74325beb865495276472dfa10d3ab62a4269",
+      "destinationSha256": "21c8e57bac6964dd05c48799795c74325beb865495276472dfa10d3ab62a4269",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-07-id-immutability-boundary.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-07-id-immutability-boundary.md",
+      "sourceSha256": "7115d1582219630c701de004426b5302741246ec329da49d09d9480b5c0406f8",
+      "destinationSha256": "7115d1582219630c701de004426b5302741246ec329da49d09d9480b5c0406f8",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-08-collision-precedence.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-08-collision-precedence.md",
+      "sourceSha256": "35ff4fb12b37048bce50d201f48dbb5f79503ab8c5b28c15934550f430426e23",
+      "destinationSha256": "35ff4fb12b37048bce50d201f48dbb5f79503ab8c5b28c15934550f430426e23",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-09-rekey-rewrite-scope.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-09-rekey-rewrite-scope.md",
+      "sourceSha256": "7330e9df667fd552432209cb030a83ebaba706325c1d951290baf890acdbb572",
+      "destinationSha256": "7330e9df667fd552432209cb030a83ebaba706325c1d951290baf890acdbb572",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-10-rekey-transaction.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-10-rekey-transaction.md",
+      "sourceSha256": "0813452b8fef09aa389a13c8e2a895f55cff2f58fa5d493e7d182166674848f2",
+      "destinationSha256": "0813452b8fef09aa389a13c8e2a895f55cff2f58fa5d493e7d182166674848f2",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-11-root-manifest.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-11-root-manifest.md",
+      "sourceSha256": "4af11274766d6491a7747267c879840ab0a5ce411e26b35088821257ec971d00",
+      "destinationSha256": "4af11274766d6491a7747267c879840ab0a5ce411e26b35088821257ec971d00",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-12-profiles.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-12-profiles.md",
+      "sourceSha256": "140e6f657278130bf322ecc25742bdd79fff882723890f8d6dd744361c289e76",
+      "destinationSha256": "140e6f657278130bf322ecc25742bdd79fff882723890f8d6dd744361c289e76",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-13-content-transaction.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-13-content-transaction.md",
+      "sourceSha256": "c2a6e68822bd481271d7b3c13b2789765c6479e73d4078139be5ea0173fafbbe",
+      "destinationSha256": "c2a6e68822bd481271d7b3c13b2789765c6479e73d4078139be5ea0173fafbbe",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-14-document-system.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-14-document-system.md",
+      "sourceSha256": "8647772eeb66c309311698270e9bb58498b0afc6a85118f1f9774f847d3d5415",
+      "destinationSha256": "8647772eeb66c309311698270e9bb58498b0afc6a85118f1f9774f847d3d5415",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-15-relationships-and-items.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-15-relationships-and-items.md",
+      "sourceSha256": "501b13eaf2806253544c68f9d6d5ed8cc3a072c423920241e8ef816de64a0ddc",
+      "destinationSha256": "501b13eaf2806253544c68f9d6d5ed8cc3a072c423920241e8ef816de64a0ddc",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-16-schema-portability.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-16-schema-portability.md",
+      "sourceSha256": "625d054894f3788109ce6091b0a67b7d70790de893d51cb9c2f3e1100af94505",
+      "destinationSha256": "625d054894f3788109ce6091b0a67b7d70790de893d51cb9c2f3e1100af94505",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-17-adoption-completion.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-17-adoption-completion.md",
+      "sourceSha256": "d0ccda4c2079ba4e48d66a4bd256f4523fdf3c8494134421c9699dd56d5b5199",
+      "destinationSha256": "d0ccda4c2079ba4e48d66a4bd256f4523fdf3c8494134421c9699dd56d5b5199",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/research/initialization-18-implementation-certification.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/research/initialization-18-implementation-certification.md",
+      "sourceSha256": "ad68372cca12c23015c9801d434208327e9d101ba5ae713a23f91533a417eacf",
+      "destinationSha256": "ad68372cca12c23015c9801d434208327e9d101ba5ae713a23f91533a417eacf",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/references/workflow.md",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/workflow.md",
+      "sourceSha256": "3f607969600a582a51bc99c9015bc25dfbd50c496f65878c7346c160c575d1fe",
+      "destinationSha256": "f705b419d029cde2943455309b7b921b76ddd48c1a326db74ba0290de7182b2e",
+      "status": "maintainer-owned-migration-change",
+      "reason": "Document the new source-repository path and standalone target binding."
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/scripts/conformance/v1/build_package.py",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/conformance/v1/build_package.py",
+      "sourceSha256": "72ef79d3701aa359791cbb027ee69b71f8e906f08392da515ede7a3d81ae7759",
+      "destinationSha256": "dc04ac4d0623744b6643b77856863a1f61f4ba027cc0b82f45bc46e19d73bc59",
+      "status": "maintainer-owned-migration-change",
+      "reason": "Discover the two-plugin topology or an explicitly supplied runtime root."
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/scripts/conformance/v1/demonstrate_slice2.py",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/conformance/v1/demonstrate_slice2.py",
+      "sourceSha256": "57eef142609b74fc6dd9ba28442f754a7541b4f04c43e466643f0b300c808eb9",
+      "destinationSha256": "356b8eecac1b015ca60bfda22f0c0511f3bf33e4360d0b49f6bdd10dffda6377",
+      "status": "maintainer-owned-migration-change",
+      "reason": "Discover the two-plugin topology or an explicitly supplied runtime root."
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/scripts/conformance/v1/demonstrate_slice4.py",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/conformance/v1/demonstrate_slice4.py",
+      "sourceSha256": "4fb4f871576c5b73919951c644b1dc2cf052a4b574f24494cc70da2f401bfad9",
+      "destinationSha256": "ed2ef3c2fdcb3a4478b7433df966a32033ff3344b107bee88133f6c1dada6bf4",
+      "status": "maintainer-owned-migration-change",
+      "reason": "Discover the two-plugin topology or an explicitly supplied runtime root."
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/scripts/conformance/v1/demonstrate_slice5.py",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/conformance/v1/demonstrate_slice5.py",
+      "sourceSha256": "7bbf3c13c4b4a9efb10081fa1478f72ff208204063cfb9d7ca9e314bc54318a8",
+      "destinationSha256": "d183843e9f297197f7a476ae20e4337b95ffc2324c3d693159a3b4d00a939ee0",
+      "status": "maintainer-owned-migration-change",
+      "reason": "Discover the two-plugin topology or an explicitly supplied runtime root."
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/scripts/conformance/v1/run.py",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/conformance/v1/run.py",
+      "sourceSha256": "de8ab3c4726146fd225f4b0d543c4c3134063197dc81e6dd40ef0882949fb1b6",
+      "destinationSha256": "30943556cdbc65e3658f6a458b7e15575c34ab90dad89fe8b04394026eb56e4c",
+      "status": "maintainer-owned-migration-change",
+      "reason": "Discover the two-plugin topology or an explicitly supplied runtime root."
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/scripts/conformance/v1/test_controls.py",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/conformance/v1/test_controls.py",
+      "sourceSha256": "da440383bf53875baaeecd79f20aec99c3a7e3e1964bc2cc59a8d791b4226c3b",
+      "destinationSha256": "da440383bf53875baaeecd79f20aec99c3a7e3e1964bc2cc59a8d791b4226c3b",
+      "status": "byte-identical"
+    },
+    {
+      "sourcePath": "skills/wayfinder-maintainer/scripts/maintain.py",
+      "destinationPath": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py",
+      "sourceSha256": "a628bed39111abb2d39cb276044d50eae19dd52e39534b57e0fd0908b8117dcd",
+      "destinationSha256": "ab66cc15666928fbcad4e4d7554ff633af12f8009871652ad5a08be2eff393df",
+      "status": "maintainer-owned-migration-change",
+      "reason": "Discover the two-plugin topology and capture hosted execution provenance."
+    }
+  ]
+}

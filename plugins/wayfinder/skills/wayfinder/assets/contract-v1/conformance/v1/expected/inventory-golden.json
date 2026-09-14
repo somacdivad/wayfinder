@@ -1,0 +1,75 @@
+{
+  "format": "wayfinder-source-inventory",
+  "schemaVersion": 1,
+  "selections": [
+    {"path": "sources/a.md", "type": "regular-file"},
+    {"path": "sources/bad.bin", "type": "regular-file"},
+    {"path": "sources/nested/b.txt", "type": "regular-file"},
+    {"path": "sources/z.txt", "type": "regular-file"}
+  ],
+  "targetRoots": ["sources/target"],
+  "limits": {"maxEntries": 200, "maxFileBytes": 10000, "maxTotalBytes": 100000, "maxDepth": 12},
+  "entries": [
+    {
+      "path": "sources/a.md",
+      "type": "regular-file",
+      "included": true,
+      "exclusion": null,
+      "byteLength": 48,
+      "sha256": "a512a7761fceeb2598817718058cf661f323d44cc6938b2cc95dffa6bfb717f5",
+      "content": "strict-utf8",
+      "markdown": {
+        "accepted": true,
+        "h1": "Alpha",
+        "outline": [
+          {"level": 1, "text": "Alpha", "line": 1},
+          {"level": 2, "text": "Details", "line": 3}
+        ]
+      }
+    },
+    {
+      "path": "sources/bad.bin",
+      "type": "regular-file",
+      "included": true,
+      "exclusion": null,
+      "byteLength": 3,
+      "sha256": "ba778c0261008c8f71ae4061ad0162ffcbe63b52c91f89f236738131d1217ec7",
+      "content": "opaque-bytes",
+      "markdown": null
+    },
+    {
+      "path": "sources/nested/b.txt",
+      "type": "regular-file",
+      "included": true,
+      "exclusion": null,
+      "byteLength": 5,
+      "sha256": "a6328afc76e9db71da297ebff4b0d3e7a7eb3b01d917c05a6573fef121b6ecb6",
+      "content": "strict-utf8",
+      "markdown": null
+    },
+    {
+      "path": "sources/z.txt",
+      "type": "regular-file",
+      "included": true,
+      "exclusion": null,
+      "byteLength": 5,
+      "sha256": "a6328afc76e9db71da297ebff4b0d3e7a7eb3b01d917c05a6573fef121b6ecb6",
+      "content": "strict-utf8",
+      "markdown": null
+    }
+  ],
+  "duplicateGroups": [
+    {
+      "sha256": "a6328afc76e9db71da297ebff4b0d3e7a7eb3b01d917c05a6573fef121b6ecb6",
+      "paths": ["sources/nested/b.txt", "sources/z.txt"]
+    }
+  ],
+  "summary": {
+    "entries": 4,
+    "includedRegularFiles": 4,
+    "excluded": 0,
+    "totalIncludedBytes": 61,
+    "byType": {"regular-file": 4, "directory": 0, "symlink": 0, "unsupported-file": 0},
+    "duplicateGroups": 1
+  }
+}

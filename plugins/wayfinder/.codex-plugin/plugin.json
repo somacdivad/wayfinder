@@ -1,0 +1,26 @@
+{
+  "name": "wayfinder",
+  "version": "1.0.0-rc.8",
+  "description": "Build, maintain, validate, and selectively consult a durable repository-owned project record.",
+  "author": {
+    "name": "David Amos",
+    "url": "https://github.com/somacdivad"
+  },
+  "homepage": "https://github.com/somacdivad/wayfinder#readme",
+  "repository": "https://github.com/somacdivad/wayfinder",
+  "license": "Apache-2.0",
+  "keywords": ["agent-skills", "project-record", "planning"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Wayfinder",
+    "shortDescription": "Build a durable project record.",
+    "longDescription": "Wayfinder provides contract-governed workflows for a durable repository-owned project record. The current candidate is unactivated.",
+    "developerName": "David Amos",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write", "Validate"],
+    "websiteURL": "https://github.com/somacdivad/wayfinder",
+    "defaultPrompt": [
+      "Use $wayfinder to work with this project record."
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "bundleFiles": [
+    "payload/0001",
+    "payload/0002",
+    "payload/0003",
+    "payload/0004",
+    "payload/0005",
+    "payload/0006",
+    "plan.json",
+    "preview.md"
+  ],
+  "normalizedPlanSha256": "ea1476288d8b6b6e60a1df0080017b8852ee6c207338bc1db7d6fc35bfeadc73",
+  "normalizedPreviewSha256": "b07974c4cba2f989620b112c0a981faf803df488950509b08d2a34ba5810bda2",
+  "payloadSha256": [
+    "13b5fa71d9391db2c81e5a365574bfe3a6174a54cc69c45eb2a564a0a43bd67a",
+    "006a248da0016f416425a6fa7f6514ad97a81ca19cd40dead2baa07d2c61dd78",
+    "9c59ddbd1c945550076326d76ee03724aedf2a4370c3ac7e5a1268d026d275ea",
+    "f4eef6feb264e2ec29e6e0c238ec7da10c474db35040418c7e343e9c59690a06",
+    "c3a9fe728f54350005b27e9e5f4e47714c285ed685d2a3fbe029123f2a78a249",
+    "2907ffaf183b7d0704089e06dc1dfab8abba1c9ed4053b97a39b1fca05d552a8"
+  ]
+}

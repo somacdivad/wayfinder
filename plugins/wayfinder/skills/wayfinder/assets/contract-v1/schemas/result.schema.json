@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wayfinder.local/schemas/v1/result.schema.json",
+  "title": "Wayfinder command result version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schemaVersion", "ok", "command", "code", "data", "diagnostics"],
+  "properties": {
+    "format": {"const": "wayfinder-command-result"},
+    "schemaVersion": {"const": 1},
+    "ok": {"type": "boolean"},
+    "command": {"enum": ["probe", "discover", "inventory", "initialize-plan", "initialize-apply", "initialize-recover", "validate", "generate", "unknown"]},
+    "code": {"type": "string"},
+    "data": {"type": "object"},
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "message"],
+        "properties": {
+          "code": {"type": "string"},
+          "message": {"type": "string"},
+          "path": {"type": "string"},
+          "field": {"type": "string"},
+          "expected": {},
+          "actual": {},
+          "remediation": {"type": "string"}
+        }
+      }
+    }
+  }
+}

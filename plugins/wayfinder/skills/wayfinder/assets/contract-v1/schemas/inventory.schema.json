@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wayfinder.local/schemas/v1/inventory.schema.json",
+  "title": "Wayfinder canonical source inventory version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schemaVersion", "selections", "targetRoots", "limits", "entries", "duplicateGroups", "summary"],
+  "properties": {
+    "format": {"const": "wayfinder-source-inventory"},
+    "schemaVersion": {"const": 1},
+    "selections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "type"],
+        "properties": {
+          "path": {"type": "string"},
+          "type": {"enum": ["regular-file", "directory", "symlink", "unsupported-file"]}
+        }
+      }
+    },
+    "targetRoots": {"type": "array", "items": {"type": "string"}},
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxEntries", "maxFileBytes", "maxTotalBytes", "maxDepth"],
+      "properties": {
+        "maxEntries": {"type": "integer", "minimum": 1},
+        "maxFileBytes": {"type": "integer", "minimum": 1},
+        "maxTotalBytes": {"type": "integer", "minimum": 1},
+        "maxDepth": {"type": "integer", "minimum": 1}
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "type", "included", "exclusion", "byteLength", "sha256", "content", "markdown"],
+        "properties": {
+          "path": {"type": "string"},
+          "type": {"enum": ["regular-file", "directory", "symlink", "unsupported-file"]},
+          "included": {"type": "boolean"},
+          "exclusion": {"type": ["string", "null"]},
+          "byteLength": {"type": ["integer", "null"], "minimum": 0},
+          "sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+          "content": {"enum": ["strict-utf8", "opaque-bytes", null]},
+          "markdown": {
+            "oneOf": [
+              {"type": "null"},
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["accepted", "h1", "outline"],
+                "properties": {
+                  "accepted": {"const": true},
+                  "h1": {"type": ["string", "null"]},
+                  "outline": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["level", "text", "line"],
+                      "properties": {
+                        "level": {"type": "integer", "minimum": 1, "maximum": 6},
+                        "text": {"type": "string", "minLength": 1},
+                        "line": {"type": "integer", "minimum": 1}
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["accepted", "reason", "h1", "outline"],
+                "properties": {
+                  "accepted": {"const": false},
+                  "reason": {"const": "non-nfc-text"},
+                  "h1": {"const": null},
+                  "outline": {"const": []}
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "duplicateGroups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sha256", "paths"],
+        "properties": {
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "paths": {"type": "array", "minItems": 2, "items": {"type": "string"}}
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entries", "includedRegularFiles", "excluded", "totalIncludedBytes", "byType", "duplicateGroups"],
+      "properties": {
+        "entries": {"type": "integer", "minimum": 0},
+        "includedRegularFiles": {"type": "integer", "minimum": 0},
+        "excluded": {"type": "integer", "minimum": 0},
+        "totalIncludedBytes": {"type": "integer", "minimum": 0},
+        "byType": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["regular-file", "directory", "symlink", "unsupported-file"],
+          "properties": {
+            "regular-file": {"type": "integer", "minimum": 0},
+            "directory": {"type": "integer", "minimum": 0},
+            "symlink": {"type": "integer", "minimum": 0},
+            "unsupported-file": {"type": "integer", "minimum": 0}
+          }
+        },
+        "duplicateGroups": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

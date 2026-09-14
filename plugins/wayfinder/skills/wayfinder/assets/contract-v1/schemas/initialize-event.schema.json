@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wayfinder.local/schemas/v1/initialize-event.schema.json",
+  "title": "Wayfinder initialization event version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schemaVersion", "operationId", "sequence", "timestamp", "type", "previousEventSha256", "data", "eventSha256"],
+  "properties": {
+    "format": {"const": "wayfinder-initialization-event"},
+    "schemaVersion": {"const": 1},
+    "operationId": {"type": "string", "pattern": "^wfinit-(?:[0-9a-f]{24}|test-[a-z0-9]+(?:-[a-z0-9]+)*)$"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "type": {"enum": ["operation-recorded", "staging-started", "payload-staged", "staging-complete", "preconditions-rechecked", "publication-started", "directory-created", "file-create-started", "file-created", "manifest-publish-started", "manifest-published", "live-validation-started", "live-validation-complete", "receipt-written", "complete", "rollback-started", "path-removed", "rollback-complete", "rollback-blocked"]},
+    "previousEventSha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "data": {"type": "object"},
+    "eventSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

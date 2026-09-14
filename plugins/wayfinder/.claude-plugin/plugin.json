@@ -1,0 +1,19 @@
+{
+  "name": "wayfinder",
+  "version": "1.0.0-rc.8",
+  "description": "Build, maintain, validate, and selectively consult a durable repository-owned project record.",
+  "author": {
+    "name": "David Amos",
+    "url": "https://github.com/somacdivad"
+  },
+  "homepage": "https://github.com/somacdivad/wayfinder#readme",
+  "repository": "https://github.com/somacdivad/wayfinder",
+  "license": "Apache-2.0",
+  "keywords": [
+    "agent-skills",
+    "codex",
+    "claude",
+    "copilot",
+    "project-record"
+  ]
+}

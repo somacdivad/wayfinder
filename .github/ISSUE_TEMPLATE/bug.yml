@@ -1,0 +1,27 @@
+name: Bug report
+description: Report a reproducible packaging, tooling, or contract defect
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets, private project records, or undisclosed vulnerabilities.
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior and authority
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction and environment
+      description: Include plugin version, candidate, client, runtime, OS, and filesystem behavior when relevant.
+    validations:
+      required: true

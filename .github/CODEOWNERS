@@ -1,0 +1,8 @@
+* @somacdivad
+/.github/ @somacdivad
+/plugins/*/plugin.json @somacdivad
+/plugins/*/.codex-plugin/ @somacdivad
+/plugins/*/.claude-plugin/ @somacdivad
+/plugins/wayfinder/skills/wayfinder/assets/contract-v1/ @somacdivad
+/plugins/wayfinder/skills/wayfinder/scripts/adapters/ @somacdivad
+/plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/ @somacdivad

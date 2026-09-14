@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wayfinder"
+  short_description: "Build and maintain a canonical project record"
+  default_prompt: "Use $wayfinder to initialize, develop, update, validate, or consult this project record."

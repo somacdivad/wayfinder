@@ -1,0 +1,29 @@
+{
+  "format": "wayfinder-contract-release",
+  "schemaVersion": 1,
+  "releaseId": "v1-candidate-revision-8",
+  "status": "unactivated-frozen",
+  "contractVersion": 1,
+  "contractManifest": {
+    "path": "assets/contract-v1/contract.json",
+    "sha256": "75a0fe4ac106ffb6ad496a38d65addf004f03f128c18fd512232c4631315955b"
+  },
+  "adapters": [
+    {
+      "id": "python-reference-v1",
+      "path": "scripts/adapters/wayfinder.py",
+      "sha256": "d0ce8b8e21606bd026ff82b93945cbef3225387b0c47702b688d285c966679d4"
+    },
+    {
+      "id": "node-v1",
+      "path": "scripts/adapters/wayfinder-node.mjs",
+      "sha256": "fcd01cfd47c98488eb2e85055924630642ee4093c02272bb67ba961d4e084125"
+    },
+    {
+      "id": "powershell-v1",
+      "path": "scripts/adapters/wayfinder-powershell.ps1",
+      "sha256": "9b64624f0c837db6082ce241a3f17f3d05614490e4e721d757588c8fefbe0bce"
+    }
+  ],
+  "certifications": []
+}

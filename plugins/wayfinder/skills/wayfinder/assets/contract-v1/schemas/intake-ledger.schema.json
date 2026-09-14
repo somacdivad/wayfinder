@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wayfinder.local/schemas/v1/intake-ledger.schema.json",
+  "title": "Wayfinder intake ledger version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schemaVersion", "inventorySha256", "sources"],
+  "properties": {
+    "format": {"const": "wayfinder-intake-ledger"},
+    "schemaVersion": {"const": 1},
+    "inventorySha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "byteLength", "disposition", "reason", "targetIds", "transformationNote", "evidenceKeys", "questionIds"],
+        "properties": {
+          "path": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "byteLength": {"type": "integer", "minimum": 0},
+          "disposition": {"enum": ["incorporate", "reference", "preserve-out-of-scope", "unresolved"]},
+          "reason": {"type": "string", "minLength": 1},
+          "targetIds": {"type": "array", "items": {"type": "string", "pattern": "^wf-[0-9]{4,}-[a-z0-9]+(?:-[a-z0-9]+)*$"}},
+          "transformationNote": {"type": ["string", "null"], "minLength": 1},
+          "evidenceKeys": {"type": "array", "items": {"type": "string", "pattern": "^src-[0-9]{2,}$"}},
+          "questionIds": {"type": "array", "items": {"type": "string", "pattern": "^wfq-[0-9]{4,}-[a-z0-9]+(?:-[a-z0-9]+)*$"}}
+        }
+      }
+    }
+  }
+}

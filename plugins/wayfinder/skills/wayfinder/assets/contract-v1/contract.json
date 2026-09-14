@@ -1,0 +1,239 @@
+{
+  "format": "wayfinder-executable-contract",
+  "schemaVersion": 1,
+  "contractVersion": 1,
+  "candidateRevision": 8,
+  "status": "frozen",
+  "governedScopes": [
+    {
+      "path": "references/contracts",
+      "recursive": true
+    },
+    {
+      "path": "assets/contract-v1/schemas",
+      "recursive": true
+    },
+    {
+      "path": "assets/contract-v1/templates",
+      "recursive": true
+    },
+    {
+      "path": "assets/contract-v1/grammar.abnf",
+      "recursive": false
+    },
+    {
+      "path": "assets/contract-v1/known-answer.json",
+      "recursive": false
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/cases.json",
+      "recursive": false
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/inputs",
+      "recursive": true
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected",
+      "recursive": true
+    }
+  ],
+  "governedResources": [
+    {
+      "path": "assets/contract-v1/conformance/v1/cases.json",
+      "role": "fixture-index",
+      "sha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6"
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/catalog-golden.json",
+      "role": "fixture-expected",
+      "sha256": "78de054af7a60a286d198c77106a146aacc01f6eba80fc3b3622467ddcc8bcf9"
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/initialize-apply-golden.json",
+      "role": "fixture-expected",
+      "sha256": "f203dd93369a34f8884cb09c0ef38d355fcccf92fa3292a6d732b355b810f967"
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/initialize-minimal-golden.json",
+      "role": "fixture-expected",
+      "sha256": "da0ede2a25905b7a09953f162bcb6e0a08a78c80608515cb70d77a7d0556329d"
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/inventory-golden.json",
+      "role": "fixture-expected",
+      "sha256": "86b65056b5ff69a3ffc4e6b7b39c0280f523ad1051d69add30df9510edc901bd"
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/probe-deterministic.json",
+      "role": "fixture-expected",
+      "sha256": "25780fbcab9dc81aae1c2303acd592c91e0ccf60943d50b6fcb579d917bd1863"
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/render-brief.md",
+      "role": "fixture-expected",
+      "sha256": "5dfaadfab37dbfecfa2f4d8b8717d82cfd66b7c392270f976f9f842b15936b9a"
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/result-envelope-fields.json",
+      "role": "fixture-expected",
+      "sha256": "1ee8dcf9272ee1d45c4cc0d4e07d09db8b15c61ab4a0f349a677fb15cc7a8b0e"
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/inputs/initialize-minimal.json",
+      "role": "fixture-input",
+      "sha256": "eeac5ba16d6fc78e419c7b38b8b42392c54b8537916a5911cb96574a17f4b6ff"
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/inputs/manifest-minimal.json",
+      "role": "fixture-input",
+      "sha256": "36a9428ea413d50a7e78c03ad9c7e1bb8b891e191ad0f22039a9cca186239fd4"
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/inputs/manifest-realistic.json",
+      "role": "fixture-input",
+      "sha256": "62b3dde986490b4afd910f2dbb57daef6ce7e47c04d661dd5b0a33d687fc2af2"
+    },
+    {
+      "path": "assets/contract-v1/grammar.abnf",
+      "role": "machine-grammar",
+      "sha256": "957c61bd72da37e5e23d26e8fc2231d07c1b9cb4961a1654fa5ac9b10b55fde5"
+    },
+    {
+      "path": "assets/contract-v1/known-answer.json",
+      "role": "known-answer",
+      "sha256": "a4677cc3dbf83680a4b49fbe883df5787bb5532b3ba04168cfb10dc8652d9749"
+    },
+    {
+      "path": "assets/contract-v1/schemas/catalog.schema.json",
+      "role": "machine-schema",
+      "sha256": "0b215208e5b28524322ee0a1a7df49e70146aacd8c2066e5ea145ba3970cc379"
+    },
+    {
+      "path": "assets/contract-v1/schemas/generation-request.schema.json",
+      "role": "machine-schema",
+      "sha256": "78f02fda51a882688c22dc68ebd8776bed4738b16221804a79563bfa0a849244"
+    },
+    {
+      "path": "assets/contract-v1/schemas/initialize-event.schema.json",
+      "role": "machine-schema",
+      "sha256": "e717ba7e400de9f280c266a183ba7b8b4318403ba3d932b96778b987aadf1547"
+    },
+    {
+      "path": "assets/contract-v1/schemas/initialize-plan.schema.json",
+      "role": "machine-schema",
+      "sha256": "52cb09cb5b411d5b94bc15def7504ee80c83018a6355a16c93cc157825ecb948"
+    },
+    {
+      "path": "assets/contract-v1/schemas/initialize-proposal.schema.json",
+      "role": "machine-schema",
+      "sha256": "a75eb78ac7df500782e6001af4f94a7270aba0f6b1d9786789a158631d1d834d"
+    },
+    {
+      "path": "assets/contract-v1/schemas/initialize-receipt.schema.json",
+      "role": "machine-schema",
+      "sha256": "35765c8cd364f0df0851a8996989e18ed7ad3f4b1097c2c6d4b17f1e15e08ce0"
+    },
+    {
+      "path": "assets/contract-v1/schemas/intake-ledger.schema.json",
+      "role": "machine-schema",
+      "sha256": "fa8a5bc0abd62e735074ab6debed0bb539e721a9ac7e6d2912db48ae6b181c02"
+    },
+    {
+      "path": "assets/contract-v1/schemas/inventory-request.schema.json",
+      "role": "machine-schema",
+      "sha256": "55aecdb031561028f927e39dbbdc1002d310f9695faeaa37bbc5b6354dc24915"
+    },
+    {
+      "path": "assets/contract-v1/schemas/inventory.schema.json",
+      "role": "machine-schema",
+      "sha256": "7a272adf799e6d6c886c3c46a741820c4a8d0be433827e67280cdab206bde3b8"
+    },
+    {
+      "path": "assets/contract-v1/schemas/manifest.schema.json",
+      "role": "machine-schema",
+      "sha256": "de1dac649903e5ab5a613a8bc992f63f8201cf2474bc796508b85502f4848f54"
+    },
+    {
+      "path": "assets/contract-v1/schemas/release.schema.json",
+      "role": "machine-schema",
+      "sha256": "e36aba8c834141964f4cb1e0851bba64f8377e36c4956b1863687bac46c8de97"
+    },
+    {
+      "path": "assets/contract-v1/schemas/result.schema.json",
+      "role": "machine-schema",
+      "sha256": "f8ebe74f8f0c42fdce9750181ac1156fee35d55fdb72327dbc133b57077f59de"
+    },
+    {
+      "path": "assets/contract-v1/templates/brief.md",
+      "role": "literal-template",
+      "sha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab"
+    },
+    {
+      "path": "assets/contract-v1/templates/decision.md",
+      "role": "literal-template",
+      "sha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab"
+    },
+    {
+      "path": "assets/contract-v1/templates/evidence.md",
+      "role": "literal-template",
+      "sha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab"
+    },
+    {
+      "path": "assets/contract-v1/templates/guide.md",
+      "role": "literal-template",
+      "sha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab"
+    },
+    {
+      "path": "assets/contract-v1/templates/index.md",
+      "role": "literal-template",
+      "sha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab"
+    },
+    {
+      "path": "assets/contract-v1/templates/map.md",
+      "role": "literal-template",
+      "sha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab"
+    },
+    {
+      "path": "assets/contract-v1/templates/register.md",
+      "role": "literal-template",
+      "sha256": "3d0dae6d821c9e8f6b8bf253f78b934f1e9a78639b5a8d9620906f3630daa4ab"
+    },
+    {
+      "path": "references/contracts/v1.md",
+      "role": "semantic-contract",
+      "sha256": "cb4e2391ad40281009ff590b73c67bb65827b561f4de9f251b4cc53793c95e94"
+    }
+  ],
+  "registries": {
+    "commands": [
+      "probe",
+      "discover",
+      "inventory",
+      "initialize-plan",
+      "initialize-apply",
+      "initialize-recover",
+      "validate",
+      "generate"
+    ],
+    "exitClasses": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      70
+    ],
+    "generators": [
+      "document-catalog-v1",
+      "document-index-v1"
+    ],
+    "standardModules": [
+      "decisions",
+      "research",
+      "product",
+      "architecture",
+      "development"
+    ]
+  }
+}

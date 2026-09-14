@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wayfinder.local/schemas/v1/initialize-proposal.schema.json",
+  "title": "Wayfinder Initialize semantic proposal version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schemaVersion", "mode", "profile", "effectiveDate", "manifest", "documents", "concerns", "epistemicStates", "omittedModules", "authorityBoundary", "interviewResume", "materialInferences", "sourceInventory", "intakeLedger", "materialSourcePaths", "semanticReadiness"],
+  "properties": {
+    "format": {"const": "wayfinder-initialize-proposal"},
+    "schemaVersion": {"const": 1},
+    "mode": {"enum": ["fresh", "source-assisted"]},
+    "profile": {"type": "object", "additionalProperties": false, "required": ["id", "confirmed"], "properties": {"id": {"enum": ["foundation", "evidence-led", "software-product"]}, "confirmed": {"const": true}}},
+    "effectiveDate": {"type": "string", "format": "date"},
+    "manifest": {"$ref": "manifest.schema.json"},
+    "documents": {"type": "array", "minItems": 1, "items": {"$ref": "generation-request.schema.json#/$defs/document"}},
+    "concerns": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/concern"}},
+    "epistemicStates": {"type": "array", "items": {"$ref": "#/$defs/epistemic"}},
+    "omittedModules": {"type": "array", "items": {"$ref": "#/$defs/omission"}},
+    "authorityBoundary": {"$ref": "#/$defs/authority"},
+    "interviewResume": {"$ref": "#/$defs/resume"},
+    "materialInferences": {"type": "array", "items": {"$ref": "#/$defs/inference"}},
+    "sourceInventory": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
+    "intakeLedger": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
+    "materialSourcePaths": {"type": "array", "items": {"type": "string"}},
+    "semanticReadiness": {"$ref": "#/$defs/readiness"}
+  },
+  "$defs": {
+    "binding": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "concern": {"type": "object", "additionalProperties": false, "required": ["id", "statement", "homeId"], "properties": {"id": {"type": "string"}, "statement": {"type": "string", "minLength": 1}, "homeId": {"type": "string"}}},
+    "epistemic": {"type": "object", "additionalProperties": false, "required": ["state", "statement", "targetId"], "properties": {"state": {"enum": ["Hypothesis", "Assumption", "Open question", "Deferred", "Not applicable", "Not yet elicited"]}, "statement": {"type": "string", "minLength": 1}, "targetId": {"type": "string"}}},
+    "omission": {"type": "object", "additionalProperties": false, "required": ["id", "reason"], "properties": {"id": {"enum": ["decisions", "research", "product", "architecture", "development"]}, "reason": {"type": "string", "minLength": 1}}},
+    "authority": {"type": "object", "additionalProperties": false, "required": ["statement", "coauthoritativePaths", "competingCurrentAuthority"], "properties": {"statement": {"type": "string", "minLength": 1}, "coauthoritativePaths": {"type": "array", "items": {"type": "string"}}, "competingCurrentAuthority": {"type": "array", "items": {"type": "string", "minLength": 1}}}},
+    "resume": {"type": "object", "additionalProperties": false, "required": ["summary", "nextWorkflow", "recommendedFocusIds"], "properties": {"summary": {"type": "string", "minLength": 1}, "nextWorkflow": {"const": "interview"}, "recommendedFocusIds": {"type": "array", "minItems": 1, "items": {"type": "string"}}}},
+    "inference": {"type": "object", "additionalProperties": false, "required": ["statement", "basis", "confirmed"], "properties": {"statement": {"type": "string", "minLength": 1}, "basis": {"type": "string", "minLength": 1}, "confirmed": {"const": true}}},
+    "readiness": {"type": "object", "additionalProperties": false, "required": ["identityAndIntent", "outcomes", "boundaries", "people", "currentKnowledge", "consequentialUnknowns", "structure", "publicationBasis"], "properties": {"identityAndIntent": {"$ref": "#/$defs/readinessState"}, "outcomes": {"$ref": "#/$defs/readinessState"}, "boundaries": {"$ref": "#/$defs/readinessState"}, "people": {"$ref": "#/$defs/readinessState"}, "currentKnowledge": {"$ref": "#/$defs/readinessState"}, "consequentialUnknowns": {"$ref": "#/$defs/readinessState"}, "structure": {"$ref": "#/$defs/readinessState"}, "publicationBasis": {"$ref": "#/$defs/readinessState"}}},
+    "readinessState": {"enum": ["supported", "explicit-unresolved"]}
+  }
+}

@@ -1,0 +1,570 @@
+{
+  "format": "wayfinder-local-conformance-evidence",
+  "schemaVersion": 1,
+  "scope": "stage-0-slice-1-only",
+  "status": "passing-local-evidence-not-full-certification",
+  "generatedAt": "2026-09-13T20:01:59Z",
+  "package": {
+    "releaseId": "v1-candidate-slice-1",
+    "releaseSha256": "89210668f7031945e451e06a4196708c5edbfafc14531336212c2b2c67303b25",
+    "contractVersion": 1,
+    "contractSha256": "aa85f2a1c75852383cfb6562ce363c6095fd2b7e43d215969526ba176cba7d4f",
+    "adapterId": "python-reference-v1",
+    "adapterSha256": "ac2cb98deb31bd11d3caa4c81a89c52982f611fcc3e5d7c884a0ec051d642369",
+    "casesSha256": "b24e6bddc7a76ce0672052204cea128d8eb2168e3879302cb286b6075e26c26d"
+  },
+  "environment": {
+    "pythonImplementation": "CPython",
+    "pythonVersion": "3.12.14",
+    "operatingSystem": "macOS-26.6.2-arm64-arm-64bit",
+    "filesystem": "local temporary directories; case sensitivity not independently characterized",
+    "locale": "C.UTF-8",
+    "timezone": "host default"
+  },
+  "summary": {
+    "total": 63,
+    "passed": 63,
+    "failed": 0,
+    "byCategory": {
+      "command": 5,
+      "discovery": 10,
+      "harness": 1,
+      "json": 16,
+      "manifest": 21,
+      "package": 8,
+      "property": 2
+    }
+  },
+  "resultsDigest": "2473f72f077bb8cc6cf4fb6b0104edb5e4d928995b3f01b116e8b4d550a5e20c",
+  "results": [
+    {
+      "id": "harness-test-controls",
+      "category": "harness",
+      "rules": [
+        "WF-CMD-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-valid",
+      "category": "package",
+      "rules": [
+        "WF-PKG-001",
+        "WF-PKG-002",
+        "WF-PROBE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-resource-changed",
+      "category": "package",
+      "rules": [
+        "WF-PKG-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-resource-missing",
+      "category": "package",
+      "rules": [
+        "WF-PKG-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-resource-unlisted",
+      "category": "package",
+      "rules": [
+        "WF-PKG-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-contract-version",
+      "category": "package",
+      "rules": [
+        "WF-PKG-001",
+        "WF-JSON-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-adapter-changed",
+      "category": "package",
+      "rules": [
+        "WF-PKG-001",
+        "WF-PROBE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-release-malformed",
+      "category": "package",
+      "rules": [
+        "WF-PKG-001",
+        "WF-JSON-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-resource-duplicate",
+      "category": "package",
+      "rules": [
+        "WF-PKG-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-valid-minimal",
+      "category": "json",
+      "rules": [
+        "WF-JSON-001",
+        "WF-MAN-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-valid-realistic",
+      "category": "json",
+      "rules": [
+        "WF-JSON-001",
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-bom",
+      "category": "json",
+      "rules": [
+        "WF-TEXT-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-malformed-utf8",
+      "category": "json",
+      "rules": [
+        "WF-TEXT-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-malformed-unicode",
+      "category": "json",
+      "rules": [
+        "WF-TEXT-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-duplicate-key",
+      "category": "json",
+      "rules": [
+        "WF-JSON-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-unknown-key",
+      "category": "json",
+      "rules": [
+        "WF-JSON-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-missing-field",
+      "category": "json",
+      "rules": [
+        "WF-JSON-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-wrong-type",
+      "category": "json",
+      "rules": [
+        "WF-JSON-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-unsupported-version",
+      "category": "json",
+      "rules": [
+        "WF-JSON-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-float",
+      "category": "json",
+      "rules": [
+        "WF-JSON-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-exponent",
+      "category": "json",
+      "rules": [
+        "WF-JSON-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-out-of-range-integer",
+      "category": "json",
+      "rules": [
+        "WF-JSON-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-negative-zero",
+      "category": "json",
+      "rules": [
+        "WF-JSON-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-non-nfc",
+      "category": "json",
+      "rules": [
+        "WF-TEXT-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-crlf",
+      "category": "json",
+      "rules": [
+        "WF-TEXT-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-explicit",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-upward",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-002",
+        "WF-DISC-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-nearest-wins",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-invalid-nearest",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-repository-root",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-vcs-boundary",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-no-manifest",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-file-start",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-control-symlink",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-manifest-symlink",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-absolute-path",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-backslash",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-empty-segment",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-dot-segment",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-traversal",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001",
+        "WF-PATH-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-case-alias",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-duplicate-module-id",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-duplicate-module-root",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-nested-module-root",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-empty-subjects",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-document-collection",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-duplicate-subject-id",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-overlapping-subjects",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-document-in-collection",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-module-entrypoint-outside",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-004",
+        "WF-MAN-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-subject-entrypoint-outside",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-005",
+        "WF-MAN-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-unknown-generator",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-unsafe-snapshot",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-002",
+        "WF-PATH-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-managed-symlink",
+      "category": "manifest",
+      "rules": [
+        "WF-DISC-006",
+        "WF-PATH-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-missing-entrypoint",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-artifact-entrypoint-conflict",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-006",
+        "WF-MAN-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "property-path-boundaries",
+      "category": "property",
+      "rules": [
+        "WF-PATH-001",
+        "WF-PATH-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "property-repeat-output",
+      "category": "property",
+      "rules": [
+        "WF-CMD-002",
+        "WF-JSON-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-envelope",
+      "category": "command",
+      "rules": [
+        "WF-CMD-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-deterministic",
+      "category": "command",
+      "rules": [
+        "WF-CMD-002",
+        "WF-JSON-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-no-writes",
+      "category": "command",
+      "rules": [
+        "WF-CMD-004",
+        "WF-DISC-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-unknown",
+      "category": "command",
+      "rules": [
+        "WF-CMD-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-unexpected",
+      "category": "command",
+      "rules": [
+        "WF-CMD-002",
+        "WF-CMD-003"
+      ],
+      "status": "passed"
+    }
+  ],
+  "limitations": [
+    "This is maintainer-run local Slice 1 evidence, not independent validation.",
+    "Node.js and PowerShell adapters do not exist yet.",
+    "The required macOS, Linux, Windows, case-sensitive, and case-insensitive release matrix is incomplete.",
+    "Slices 2 through 5, interruption recovery, forward initialization tests, and runtime activation remain unavailable."
+  ]
+}

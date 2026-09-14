@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wayfinder.local/schemas/v1/generation-request.schema.json",
+  "title": "Wayfinder Slice 3 generation request",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "schemaVersion", "action", "documents", "questions"],
+      "properties": {
+        "format": {"const": "wayfinder-generation-request"},
+        "schemaVersion": {"const": 1},
+        "action": {"const": "allocate"},
+        "documents": {"type": "array", "items": {"$ref": "#/$defs/allocation"}},
+        "questions": {"type": "array", "items": {"$ref": "#/$defs/allocation"}}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "schemaVersion", "action", "documents"],
+      "properties": {
+        "format": {"const": "wayfinder-generation-request"},
+        "schemaVersion": {"const": 1},
+        "action": {"const": "render"},
+        "documents": {"type": "array", "items": {"$ref": "#/$defs/document"}}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "schemaVersion", "action"],
+      "properties": {
+        "format": {"const": "wayfinder-generation-request"},
+        "schemaVersion": {"const": 1},
+        "action": {"const": "catalog"}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "schemaVersion", "action", "paths"],
+      "properties": {
+        "format": {"const": "wayfinder-generation-request"},
+        "schemaVersion": {"const": 1},
+        "action": {"const": "regions"},
+        "paths": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  ],
+  "$defs": {
+    "allocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "mnemonic"],
+      "properties": {"title": {"type": "string", "minLength": 1}, "mnemonic": {"type": ["string", "null"]}}
+    },
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetId", "targetPath"],
+      "properties": {"targetId": {"type": "string"}, "targetPath": {"type": "string"}}
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "content"],
+      "properties": {"heading": {"type": "string", "minLength": 1}, "content": {"type": "string", "minLength": 1}}
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relation", "targetId", "targetPath"],
+      "properties": {"relation": {"enum": ["Governed-By", "Supported-By"]}, "targetId": {"type": "string"}, "targetPath": {"type": "string"}}
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "state", "raised", "scope", "appliesTo", "addressedBy", "resolvedBy", "resolutionDate", "sections"],
+      "properties": {
+        "id": {"type": "string"}, "title": {"type": "string"}, "state": {"enum": ["Open", "Investigating", "Deferred", "Resolved", "Retired"]},
+        "raised": {"type": "string"}, "scope": {"enum": ["Record-Wide", null]}, "appliesTo": {"type": "array", "items": {"$ref": "#/$defs/link"}},
+        "addressedBy": {"type": "array", "items": {"$ref": "#/$defs/link"}}, "resolvedBy": {"type": "array", "items": {"$ref": "#/$defs/link"}},
+        "resolutionDate": {"type": ["string", "null"]}, "sections": {"type": "array", "items": {"$ref": "#/$defs/section"}}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "title", "citation", "original", "published", "accessed", "applicability", "usedFor", "limitations"],
+      "properties": {
+        "key": {"type": "string"}, "title": {"type": "string"}, "citation": {"type": "string"}, "original": {"type": "string"},
+        "published": {"type": ["string", "null"]}, "accessed": {"type": "string"}, "applicability": {"enum": ["Direct", "Adjacent", "General"]},
+        "usedFor": {"type": "string"}, "limitations": {"type": "string"}
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["output", "title", "id", "kind", "status", "updated", "summary", "decisionDate", "supersedes", "supersededBy", "relationships", "sections", "questions", "sources"],
+      "properties": {
+        "output": {"type": "string"}, "title": {"type": "string"}, "id": {"type": "string"},
+        "kind": {"enum": ["map", "brief", "register", "evidence", "decision", "guide", "index"]}, "status": {"type": "string"},
+        "updated": {"type": "string"}, "summary": {"type": "string"}, "decisionDate": {"type": ["string", "null"]},
+        "supersedes": {"type": "array", "items": {"type": "string"}}, "supersededBy": {"type": "array", "items": {"type": "string"}},
+        "relationships": {"type": "array", "items": {"$ref": "#/$defs/relationship"}}, "sections": {"type": "array", "items": {"$ref": "#/$defs/section"}},
+        "questions": {"type": "array", "items": {"$ref": "#/$defs/question"}}, "sources": {"type": "array", "items": {"$ref": "#/$defs/source"}}
+      }
+    }
+  }
+}

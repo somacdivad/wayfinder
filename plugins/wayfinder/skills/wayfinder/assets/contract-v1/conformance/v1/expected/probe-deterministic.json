@@ -1,0 +1,22 @@
+{
+  "knownAnswerCount": 9,
+  "capabilities": [
+    "canonical-json-integer-subset",
+    "document-catalog-v1",
+    "document-index-v1",
+    "document-render-v1",
+    "initialize-apply-v1",
+    "initialize-plan-v1",
+    "initialize-recover-v1",
+    "nfc",
+    "record-validation-v1",
+    "sha256",
+    "source-inventory-v1",
+    "strict-json",
+    "symlink-inspection",
+    "utf8-strict"
+  ],
+  "contractVersion": 1,
+  "releaseId": "v1-candidate-revision-8",
+  "status": "unactivated-frozen"
+}

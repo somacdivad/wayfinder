@@ -1,0 +1,148 @@
+{
+  "format": "wayfinder-document-catalog",
+  "schemaVersion": 1,
+  "generator": "document-catalog-v1",
+  "inputSha256": "def92515c04a7324f85d0bc5e21b4db81c1539b58c41bb8a6da6a4194a2fc98b",
+  "documents": [
+    {
+      "id": "wf-0001-record-map",
+      "path": "README.md",
+      "title": "Synthetic record",
+      "kind": "map",
+      "status": "Active",
+      "updated": "2026-09-13",
+      "summary": "Routes the synthetic record.",
+      "module": null,
+      "subject": null,
+      "supersedes": [],
+      "supersededBy": [],
+      "governedBy": [],
+      "supportedBy": []
+    },
+    {
+      "id": "wf-0002-decision-index",
+      "path": "decisions/README.md",
+      "title": "Decision index",
+      "kind": "index",
+      "status": "Active",
+      "updated": "2026-09-13",
+      "summary": "Indexes synthetic decisions.",
+      "module": "decisions",
+      "subject": null,
+      "supersedes": [],
+      "supersededBy": [],
+      "governedBy": [],
+      "supportedBy": []
+    },
+    {
+      "id": "wf-0003-synthetic-decision",
+      "path": "decisions/decision.md",
+      "title": "Synthetic decision",
+      "kind": "decision",
+      "status": "Accepted",
+      "updated": "2026-09-13",
+      "summary": "Governs the synthetic record.",
+      "module": "decisions",
+      "subject": null,
+      "supersedes": [],
+      "supersededBy": [],
+      "governedBy": [],
+      "supportedBy": []
+    },
+    {
+      "id": "wf-0004-research-index",
+      "path": "research/README.md",
+      "title": "Research index",
+      "kind": "index",
+      "status": "Active",
+      "updated": "2026-09-13",
+      "summary": "Indexes synthetic evidence.",
+      "module": "research",
+      "subject": null,
+      "supersedes": [],
+      "supersededBy": [],
+      "governedBy": [],
+      "supportedBy": []
+    },
+    {
+      "id": "wf-0005-source-index",
+      "path": "research/sources/README.md",
+      "title": "Source collection",
+      "kind": "index",
+      "status": "Active",
+      "updated": "2026-09-13",
+      "summary": "Indexes source evidence.",
+      "module": "research",
+      "subject": "research/sources",
+      "supersedes": [],
+      "supersededBy": [],
+      "governedBy": [],
+      "supportedBy": []
+    },
+    {
+      "id": "wf-0006-synthetic-evidence",
+      "path": "research/sources/evidence.md",
+      "title": "Synthetic evidence",
+      "kind": "evidence",
+      "status": "Active",
+      "updated": "2026-09-13",
+      "summary": "Supports the synthetic rule.",
+      "module": "research",
+      "subject": "research/sources",
+      "supersedes": [],
+      "supersededBy": [],
+      "governedBy": [],
+      "supportedBy": []
+    },
+    {
+      "id": "wf-0007-product-brief",
+      "path": "product/product.md",
+      "title": "Product brief",
+      "kind": "brief",
+      "status": "Active",
+      "updated": "2026-09-13",
+      "summary": "States the synthetic product direction.",
+      "module": "product",
+      "subject": null,
+      "supersedes": [],
+      "supersededBy": [],
+      "governedBy": [
+        "wf-0003-synthetic-decision"
+      ],
+      "supportedBy": [
+        "wf-0006-synthetic-evidence"
+      ]
+    },
+    {
+      "id": "wf-0008-open-questions",
+      "path": "product/questions.md",
+      "title": "Open questions",
+      "kind": "register",
+      "status": "Active",
+      "updated": "2026-09-13",
+      "summary": "Tracks synthetic open questions.",
+      "module": "product",
+      "subject": "product/questions",
+      "supersedes": [],
+      "supersededBy": [],
+      "governedBy": [],
+      "supportedBy": []
+    }
+  ],
+  "questions": [
+    {
+      "id": "wfq-0001-retention",
+      "path": "product/questions.md",
+      "anchor": "wfq-0001-retention",
+      "title": "How long should records be retained?",
+      "state": "Open",
+      "raised": "2026-09-13",
+      "appliesTo": [
+        "wf-0007-product-brief"
+      ],
+      "addressedBy": [],
+      "resolvedBy": [],
+      "resumption": "Ask the record owner."
+    }
+  ]
+}

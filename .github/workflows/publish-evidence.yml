@@ -1,0 +1,66 @@
+name: Prepare approved evidence release
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Approved certification workflow run ID
+        required: true
+        type: string
+      source_commit:
+        description: Exact approved source commit SHA
+        required: true
+        type: string
+      matrix_sha256:
+        description: Exact approved aggregate matrix SHA-256
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  prepare:
+    environment: evidence-publication
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.source_commit }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.14.7
+          architecture: x64
+      - name: Download exact approved run
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          pattern: wayfinder-*
+          path: approved-evidence
+          merge-multiple: true
+      - name: Re-verify and bind publication manifest
+        run: >-
+          python scripts/prepare_evidence_release.py
+          --input approved-evidence
+          --expected-commit "${{ inputs.source_commit }}"
+          --expected-matrix-sha256 "${{ inputs.matrix_sha256 }}"
+          --output publication
+      - name: Create draft evidence release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVIDENCE_TAG: evidence-v1-candidate-revision-8-${{ inputs.matrix_sha256 }}
+        shell: bash
+        run: |
+          gh release create "$EVIDENCE_TAG" \
+            --draft \
+            --target "${{ inputs.source_commit }}" \
+            --title "Wayfinder revision 8 bounded matrix evidence" \
+            --notes "Bounded eight-entry matrix evidence. Not full-family certification and does not authorize activation."
+          find approved-evidence publication -type f -print0 | while IFS= read -r -d '' file; do
+            gh release upload "$EVIDENCE_TAG" "$file"
+          done

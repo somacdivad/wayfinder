@@ -1,0 +1,41 @@
+# Wayfinder
+
+Wayfinder is a portable agent plugin for building, maintaining, validating, and selectively consulting a durable, repository-owned project record. The repository also contains an independently installable maintainer plugin for contract development, conformance testing, and certification.
+
+> [!IMPORTANT]
+> Wayfinder is not activated for runtime use. The current `v1-candidate-revision-8` semantic contract is frozen, but the release is unactivated and the eight-environment certification matrix is incomplete. Installing or forking this repository does not change that status.
+
+## Packages
+
+| Package | Audience | Status |
+| --- | --- | --- |
+| [`wayfinder`](plugins/wayfinder) | End users after activation | Portable package present; runtime instructions intentionally block unfinished workflows |
+| [`wayfinder-maintainer`](plugins/wayfinder-maintainer) | Contributors and certifiers | Opt-in package; not listed in the end-user catalog |
+
+Each package uses one canonical skill tree and includes manifests for the Agent Plugins 1.0 format, Codex, and Claude. GitHub Copilot can consume the portable root manifest. No client-specific copy of either skill is maintained.
+
+## Repository status
+
+- Candidate: `v1-candidate-revision-8`
+- Contract: frozen
+- Release: unactivated
+- Common conformance suite: 305 cases
+- Accepted local adapter parity: all three adapters passed 305/305; 900 normalized invocations agreed
+- Environment matrix: one of eight exact entries has passing evidence; completion is not claimed
+
+See [architecture](docs/architecture.md), [compatibility](docs/compatibility.md), [certification](docs/certification.md), and [migration provenance](docs/migration-provenance.md).
+
+## Development
+
+Use Python 3.11 or newer:
+
+```sh
+python3 scripts/validate_repository.py
+python3 plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py doctor
+```
+
+The exact eight-entry certification workflow is manual-only. It records authentic hosted observations and cannot activate or publish a runtime release.
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE).

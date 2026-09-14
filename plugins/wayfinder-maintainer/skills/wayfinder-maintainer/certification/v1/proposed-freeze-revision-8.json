@@ -1,0 +1,109 @@
+{
+  "format": "wayfinder-freeze-proposal",
+  "schemaVersion": 1,
+  "status": "proposed",
+  "decision": "dual-layer-package-status-and-maintainer-record",
+  "candidate": {
+    "releaseId": "v1-candidate-revision-8",
+    "candidateRevision": 8,
+    "contractVersion": 1,
+    "contractStatus": "frozen",
+    "releaseStatus": "unactivated-frozen",
+    "contractSha256": "75a0fe4ac106ffb6ad496a38d65addf004f03f128c18fd512232c4631315955b",
+    "releaseSha256": "69d029df64b5ac553aedab0d6127d3b99371f77847a7e41defac459b7e3c773e",
+    "pythonAdapterId": "python-reference-v1",
+    "pythonAdapterClassification": "implementation-under-test",
+    "pythonAdapterSha256": "d0ce8b8e21606bd026ff82b93945cbef3225387b0c47702b688d285c966679d4",
+    "fixtureIndexSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6",
+    "expectedOutputsSha256": "c0fad6a47eff844f27135620e07210d081f19fab88aaa962cf5f0a6fb563ed7e"
+  },
+  "ruleCoverage": {
+    "normativeRules": 96,
+    "coveredRules": 96,
+    "conformanceCases": 305,
+    "caseCountIsSemanticProof": false
+  },
+  "expectedOutputReview": [
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/catalog-golden.json",
+      "status": "reviewed-against-contract",
+      "rules": ["WF-JSON-005", "WF-GEN-002", "WF-GEN-003"]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/initialize-apply-golden.json",
+      "status": "reviewed-against-contract",
+      "rules": ["WF-JOURNAL-001", "WF-PUBLISH-001", "WF-COMPLETE-001", "WF-RECEIPT-001"]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/initialize-minimal-golden.json",
+      "status": "reviewed-against-contract",
+      "rules": ["WF-PLAN-001", "WF-PLAN-002", "WF-PLAN-004"]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/inventory-golden.json",
+      "status": "reviewed-against-contract",
+      "rules": ["WF-INV-003", "WF-INV-005", "WF-INV-006", "WF-INV-007"]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/probe-deterministic.json",
+      "status": "reviewed-against-contract",
+      "rules": ["WF-PKG-001", "WF-PKG-004", "WF-PROBE-002", "WF-PROBE-003"]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/render-brief.md",
+      "status": "reviewed-against-contract",
+      "rules": ["WF-TPL-001"]
+    },
+    {
+      "path": "assets/contract-v1/conformance/v1/expected/result-envelope-fields.json",
+      "status": "reviewed-against-contract",
+      "rules": ["WF-CMD-001"]
+    }
+  ],
+  "invalidation": {
+    "triggers": [
+      "governed-byte-change",
+      "semantic-change",
+      "cross-artifact-disagreement"
+    ],
+    "requiredActions": [
+      "reopen-candidate",
+      "advance-candidate-revision",
+      "invalidate-affected-evidence",
+      "rerun-every-adapter"
+    ]
+  },
+  "certificationMatrix": {
+    "status": "required-future-evidence",
+    "requiredFilesystemBehaviors": ["case-sensitive", "case-insensitive"],
+    "requiredEntries": [
+      {"adapterId": "python-reference-v1", "runtimeImplementation": "CPython", "runtimeVersion": "3.14.7", "operatingSystemFamily": "macOS", "evidenceStatus": "missing"},
+      {"adapterId": "python-reference-v1", "runtimeImplementation": "CPython", "runtimeVersion": "3.14.7", "operatingSystemFamily": "Linux", "evidenceStatus": "missing"},
+      {"adapterId": "python-reference-v1", "runtimeImplementation": "CPython", "runtimeVersion": "3.14.7", "operatingSystemFamily": "Windows", "evidenceStatus": "missing"},
+      {"adapterId": "node-v1", "runtimeImplementation": "Node.js", "runtimeVersion": "24.21.0", "operatingSystemFamily": "macOS", "evidenceStatus": "missing"},
+      {"adapterId": "node-v1", "runtimeImplementation": "Node.js", "runtimeVersion": "24.21.0", "operatingSystemFamily": "Linux", "evidenceStatus": "missing"},
+      {"adapterId": "node-v1", "runtimeImplementation": "Node.js", "runtimeVersion": "24.21.0", "operatingSystemFamily": "Windows", "evidenceStatus": "missing"},
+      {"adapterId": "powershell-v1", "runtimeImplementation": "PowerShell", "runtimeVersion": "7.6.6", "operatingSystemFamily": "Windows", "evidenceStatus": "missing"},
+      {"adapterId": "powershell-v1", "runtimeImplementation": "PowerShell", "runtimeVersion": "7.6.6", "operatingSystemFamily": "Linux", "evidenceStatus": "missing"}
+    ]
+  },
+  "evidence": {
+    "classification": "local-python-only",
+    "localReport": "candidate-revision-8-local.json",
+    "localReportSha256": "773d643b11fbaaa283610d71c5810e4a213da3fb407ede95a5a2b1379066187e",
+    "resultSetSha256": "6cb5f6f61a5000bd69cd175dd4835feca61366ea0f9c2c9fbb483b8f12cfa022",
+    "missing": [
+      "independent-review-evidence",
+      "node-adapter-evidence",
+      "powershell-adapter-evidence",
+      "cross-adapter-comparison",
+      "cross-platform-matrix-evidence",
+      "full-family-certification"
+    ]
+  },
+  "runtimeActivation": "disabled",
+  "approval": {
+    "status": "pending",
+    "requiredChoice": "Option A"
+  }
+}

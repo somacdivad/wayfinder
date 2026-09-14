@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wayfinder.local/schemas/v1/catalog.schema.json",
+  "title": "Wayfinder document catalog version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schemaVersion", "generator", "inputSha256", "documents", "questions"],
+  "properties": {
+    "format": {"const": "wayfinder-document-catalog"},
+    "schemaVersion": {"const": 1},
+    "generator": {"const": "document-catalog-v1"},
+    "inputSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "documents": {"type": "array", "items": {"$ref": "#/$defs/document"}},
+    "questions": {"type": "array", "items": {"$ref": "#/$defs/question"}}
+  },
+  "$defs": {
+    "documentId": {"type": "string", "pattern": "^wf-(?:[0-9]{4}|[0-9]{5,})-[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "documentIdList": {"type": "array", "items": {"$ref": "#/$defs/documentId"}, "uniqueItems": true},
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "title", "kind", "status", "updated", "summary", "module", "subject", "supersedes", "supersededBy", "governedBy", "supportedBy"],
+      "properties": {
+        "id": {"$ref": "#/$defs/documentId"},
+        "path": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["map", "brief", "register", "evidence", "decision", "guide", "index"]},
+        "status": {"enum": ["Draft", "Active", "Superseded", "Retired", "Proposed", "Accepted", "Rejected"]},
+        "updated": {"type": "string", "format": "date"},
+        "summary": {"type": "string", "minLength": 1},
+        "module": {"type": ["string", "null"]},
+        "subject": {"type": ["string", "null"]},
+        "supersedes": {"$ref": "#/$defs/documentIdList"},
+        "supersededBy": {"$ref": "#/$defs/documentIdList"},
+        "governedBy": {"$ref": "#/$defs/documentIdList"},
+        "supportedBy": {"$ref": "#/$defs/documentIdList"}
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "anchor", "title", "state", "raised", "appliesTo", "addressedBy", "resolvedBy", "resumption"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^wfq-(?:[0-9]{4}|[0-9]{5,})-[a-z0-9]+(?:-[a-z0-9]+)*$"},
+        "path": {"type": "string", "minLength": 1},
+        "anchor": {"type": "string", "pattern": "^wfq-(?:[0-9]{4}|[0-9]{5,})-[a-z0-9]+(?:-[a-z0-9]+)*$"},
+        "title": {"type": "string", "minLength": 1},
+        "state": {"enum": ["Open", "Investigating", "Deferred", "Resolved", "Retired"]},
+        "raised": {"type": "string", "format": "date"},
+        "appliesTo": {"$ref": "#/$defs/documentIdList"},
+        "addressedBy": {"$ref": "#/$defs/documentIdList"},
+        "resolvedBy": {"$ref": "#/$defs/documentIdList"},
+        "resumption": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

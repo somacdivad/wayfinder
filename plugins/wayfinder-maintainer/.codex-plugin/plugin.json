@@ -1,0 +1,26 @@
+{
+  "name": "wayfinder-maintainer",
+  "version": "1.0.0-rc.8",
+  "description": "Maintain, test, and certify the Wayfinder executable contract and adapters.",
+  "author": {
+    "name": "David Amos",
+    "url": "https://github.com/somacdivad"
+  },
+  "homepage": "https://github.com/somacdivad/wayfinder#wayfinder-maintainer",
+  "repository": "https://github.com/somacdivad/wayfinder",
+  "license": "Apache-2.0",
+  "keywords": ["agent-skills", "conformance", "certification"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Wayfinder Maintainer",
+    "shortDescription": "Maintain and certify Wayfinder.",
+    "longDescription": "The opt-in maintainer package owns Wayfinder research, design history, conformance tooling, and immutable certification evidence.",
+    "developerName": "David Amos",
+    "category": "Developer Tools",
+    "capabilities": ["Read", "Write", "Validate"],
+    "websiteURL": "https://github.com/somacdivad/wayfinder",
+    "defaultPrompt": [
+      "Use $wayfinder-maintainer to inspect this candidate."
+    ]
+  }
+}

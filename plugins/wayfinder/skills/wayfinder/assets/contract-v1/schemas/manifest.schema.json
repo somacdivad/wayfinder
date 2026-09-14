@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wayfinder.local/schemas/v1/manifest.schema.json",
+  "title": "Wayfinder project record manifest version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schemaVersion", "recordRoot", "entrypoint", "canonicalBaseline", "modules", "generatedArtifacts"],
+  "properties": {
+    "format": {"const": "wayfinder-project-record"},
+    "schemaVersion": {"const": 1},
+    "recordRoot": {"type": "string"},
+    "entrypoint": {"type": "string"},
+    "canonicalBaseline": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "ref"],
+          "properties": {"kind": {"const": "git-ref"}, "ref": {"type": "string", "pattern": "^refs/"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "path", "sha256"],
+          "properties": {
+            "kind": {"const": "snapshot"},
+            "path": {"type": "string"},
+            "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        }
+      ]
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "root", "entrypoint", "subjects"],
+        "properties": {
+          "id": {"type": "string"},
+          "root": {"type": "string"},
+          "entrypoint": {"type": "string"},
+          "subjects": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["id", "kind", "entrypoint"],
+                  "properties": {"id": {"type": "string"}, "kind": {"const": "document"}, "entrypoint": {"type": "string"}}
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["id", "kind", "root", "entrypoint"],
+                  "properties": {"id": {"type": "string"}, "kind": {"const": "collection"}, "root": {"type": "string"}, "entrypoint": {"type": "string"}}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "generatedArtifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "generator"],
+        "properties": {"path": {"type": "string"}, "generator": {"const": "document-catalog-v1"}}
+      }
+    }
+  }
+}

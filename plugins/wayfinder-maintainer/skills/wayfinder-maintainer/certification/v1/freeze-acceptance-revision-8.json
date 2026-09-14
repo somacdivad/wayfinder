@@ -1,0 +1,22 @@
+{
+  "format": "wayfinder-freeze-acceptance",
+  "schemaVersion": 1,
+  "status": "accepted",
+  "acceptedOn": "2026-09-13",
+  "releaseId": "v1-candidate-revision-8",
+  "candidateRevision": 8,
+  "proposal": {
+    "path": "proposed-freeze-revision-8.json",
+    "sha256": "57cbca84b2cbbbda557208cefcc78487d177a8e995b48d94e11f2aa51a81730a"
+  },
+  "decision": {
+    "choice": "Option A",
+    "authorization": "Accept revision 8 as the frozen version-1 parity target. Later Node.js and PowerShell implementation requires a separate explicit request."
+  },
+  "boundaries": {
+    "parityImplementation": "not-started",
+    "environmentCertification": "incomplete",
+    "fullFamilyCertification": "incomplete",
+    "runtimeActivation": "disabled"
+  }
+}

@@ -1,0 +1,131 @@
+name: Candidate revision 8 bounded matrix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  entry:
+    name: ${{ matrix.id }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: python-macos
+            runner: macos-15-intel
+            adapter: python-reference-v1
+            os_family: macOS
+          - id: python-linux
+            runner: ubuntu-24.04
+            adapter: python-reference-v1
+            os_family: Linux
+          - id: python-windows
+            runner: windows-2025
+            adapter: python-reference-v1
+            os_family: Windows
+          - id: node-macos
+            runner: macos-15-intel
+            adapter: node-v1
+            os_family: macOS
+          - id: node-linux
+            runner: ubuntu-24.04
+            adapter: node-v1
+            os_family: Linux
+          - id: node-windows
+            runner: windows-2025
+            adapter: node-v1
+            os_family: Windows
+          - id: powershell-windows
+            runner: windows-2025
+            adapter: powershell-v1
+            os_family: Windows
+          - id: powershell-linux
+            runner: ubuntu-24.04
+            adapter: powershell-v1
+            os_family: Linux
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Initialize artifact directory
+        shell: bash
+        run: mkdir -p "certification-output/${{ matrix.id }}"
+      - name: Set up harness CPython 3.14.7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.14.7
+          architecture: x64
+      - name: Set up exact Node.js target
+        if: matrix.adapter == 'node-v1'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.21.0
+          architecture: x64
+          package-manager-cache: false
+      - name: Install exact PowerShell target on Linux
+        if: matrix.adapter == 'powershell-v1' && matrix.os_family == 'Linux'
+        run: bash .github/scripts/install-powershell.sh
+      - name: Install exact PowerShell target on Windows
+        if: matrix.adapter == 'powershell-v1' && matrix.os_family == 'Windows'
+        shell: powershell
+        run: '& ./.github/scripts/install-powershell.ps1'
+      - name: Run exact entry
+        shell: bash
+        env:
+          WAYFINDER_NODE_RUNTIME: node
+          WAYFINDER_POWERSHELL_RUNTIME: pwsh
+        run: >-
+          python scripts/run_matrix_entry.py
+          --id "${{ matrix.id }}"
+          --adapter "${{ matrix.adapter }}"
+          --os-family "${{ matrix.os_family }}"
+          --output "certification-output/${{ matrix.id }}"
+      - name: Upload authentic entry output
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: wayfinder-${{ matrix.id }}-v1-candidate-revision-8-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: certification-output/${{ matrix.id }}/
+          if-no-files-found: warn
+          retention-days: 90
+
+  aggregate:
+    name: Strict aggregate
+    if: always()
+    needs: entry
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.14.7
+          architecture: x64
+      - name: Download available entry artifacts
+        continue-on-error: true
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          pattern: wayfinder-*-v1-candidate-revision-8-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: downloaded
+          merge-multiple: true
+      - name: Aggregate only a complete passing matrix
+        id: aggregate
+        continue-on-error: true
+        run: python scripts/aggregate_matrix.py --input downloaded --output aggregate-output
+      - name: Upload aggregate or incomplete inventory
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: wayfinder-matrix-aggregate-v1-candidate-revision-8-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: aggregate-output/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Require complete aggregate
+        if: steps.aggregate.outcome != 'success'
+        run: exit 1

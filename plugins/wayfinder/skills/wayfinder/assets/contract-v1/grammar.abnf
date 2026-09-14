@@ -1,0 +1,59 @@
+; Wayfinder version 1 candidate lexical grammar through Slice 5.
+; RFC 5234 core terminals are assumed. Semantic containment rules remain in v1.md.
+
+sha256 = 64HEXDIG-LOWER
+HEXDIG-LOWER = DIGIT / %x61-66
+
+slug = slug-atom *("-" slug-atom)
+slug-atom = 1*(LOWER / DIGIT)
+LOWER = %x61-7A
+
+standard-module-id = "decisions" / "research" / "product" / "architecture" / "development"
+local-module-id = "local-" slug
+module-id = standard-module-id / local-module-id
+subject-id = slug
+
+portable-path = portable-segment *("/" portable-segment)
+portable-segment = 1*(ALPHA / DIGIT / "." / "_" / "-")
+; portable-segment excludes ".", "..", trailing dot/space, and Windows device
+; names through semantic checks because those exclusions are awkward in ABNF.
+
+fully-qualified-git-ref = "refs/" git-ref-segment *("/" git-ref-segment)
+git-ref-segment = 1*(ALPHA / DIGIT / "." / "_" / "-")
+
+document-id = "wf-" ordinal "-" mnemonic
+question-id = "wfq-" ordinal "-" mnemonic
+ordinal = 4*DIGIT
+; Semantic checks require integer >= 1 and exactly four digits below 1000.
+mnemonic = 1*48(LOWER / DIGIT / "-")
+; Semantic checks reject leading, trailing, or repeated hyphens.
+evidence-key = "src-" 2*DIGIT
+
+metadata-open = "<!-- wayfinder:metadata -->"
+metadata-close = "<!-- /wayfinder:metadata -->"
+relationships-open = "<!-- wayfinder:relationships -->"
+relationships-close = "<!-- /wayfinder:relationships -->"
+question-open = "<!-- wayfinder:question -->"
+question-close = "<!-- /wayfinder:question -->"
+source-open = "<!-- wayfinder:source -->"
+source-close = "<!-- /wayfinder:source -->"
+generated-open = "<!-- wayfinder:generated name=%x22" slug %x22 SP "generator=%x22document-index-v1%x22" SP "input-sha256=%x22" sha256 %x22 SP "-->"
+generated-close = "<!-- /wayfinder:generated -->"
+
+field-line = "- **" field-name ":** " field-value
+field-name = 1*(ALPHA / "-")
+field-value = 1*(WSP / VCHAR)
+; Strict UTF-8 NFC non-ASCII scalar values are also accepted semantically.
+typed-link = "[" document-id "](" relative-markdown-path ")"
+id-list = document-id *(%x2C SP document-id)
+history-line = "- " date ": " question-state " -> " question-state " - " 1*(WSP / VCHAR)
+date = 4DIGIT "-" 2DIGIT "-" 2DIGIT
+question-state = "None" / "Open" / "Investigating" / "Deferred" / "Resolved" / "Retired"
+initialize-mode = "fresh" / "source-assisted"
+starter-profile = "foundation" / "evidence-led" / "software-product"
+epistemic-state = "Hypothesis" / "Assumption" / "Open question" / "Deferred" / "Not applicable" / "Not yet elicited"
+operation-id = "wfinit-" 24HEXDIG-LOWER / "wfinit-test-" slug
+confirmation-token = "wayfinder-confirm-sha256:" sha256
+recovery-action = "inspect" / "resume" / "rollback"
+initialization-event-type = "operation-recorded" / "staging-started" / "payload-staged" / "staging-complete" / "preconditions-rechecked" / "publication-started" / "directory-created" / "file-create-started" / "file-created" / "manifest-publish-started" / "manifest-published" / "live-validation-started" / "live-validation-complete" / "receipt-written" / "complete" / "rollback-started" / "path-removed" / "rollback-complete" / "rollback-blocked"
+relative-markdown-path = 1*(ALPHA / DIGIT / "." / "_" / "-" / "/")
