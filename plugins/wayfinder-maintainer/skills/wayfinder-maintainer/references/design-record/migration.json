@@ -1,0 +1,475 @@
+{
+  "format": "wayfinder-design-record-migration",
+  "preamble": "# Wayfinder design record\n\n- **Status:** Active\n- **Last updated:** 2026-09-15\n- **Audience:** Wayfinder maintainers only\n\nThis file preserves the governing brief, accepted design choices, unresolved decisions, and workflow progress so development can continue across sessions. It is not runtime guidance. Agents using Wayfinder for project work must not read this directory.\n\n",
+  "schemaVersion": 1,
+  "sections": [
+    {
+      "endByte": 2345,
+      "id": "wr-0001",
+      "linkAdjustments": [],
+      "path": "foundation/wr-0001-governing-brief.md",
+      "recordSha256": "5e6aa8d7682a713e31b189899c05bc48a3716e074b26d440c7732c7c69f7ddfd",
+      "sourceSectionSha256": "50f2b5ef14f28ddcd6e275719028de55e7b7bcbd770f54dd5a85048a0b05bf5a",
+      "startByte": 377,
+      "title": "Governing brief"
+    },
+    {
+      "endByte": 15234,
+      "id": "wr-0002",
+      "linkAdjustments": [],
+      "path": "foundation/wr-0002-accepted-choices.md",
+      "recordSha256": "4bd817b6b64ad095b273141f2f400a22558115eddef4ed9029432777f51787a5",
+      "sourceSectionSha256": "21c0faa8ff8cfbc5538a765440268282c49309a1278cf3728a33a0d2e8f6b9d8",
+      "startByte": 2345,
+      "title": "Accepted choices"
+    },
+    {
+      "endByte": 16536,
+      "id": "wr-0003",
+      "linkAdjustments": [],
+      "path": "initialize/policy/wr-0003-workflow-progress.md",
+      "recordSha256": "60d35d1176b0e7c36029705f3a883d6e01da346305b8b5ae2e8d441352a07509",
+      "sourceSectionSha256": "e18dbed2ba674ef2ed77ea167624a064d6e0e6b913dcca7c09ea5f83ee7f8ca8",
+      "startByte": 15234,
+      "title": "Workflow progress"
+    },
+    {
+      "endByte": 17366,
+      "id": "wr-0004",
+      "linkAdjustments": [],
+      "path": "initialize/policy/wr-0004-stub-state.md",
+      "recordSha256": "ce4db960ce2246e6475b7b061d02349779525428b6eebac79f93668f9950f5ce",
+      "sourceSectionSha256": "e99ab1e07744c5be977248b6ac7e1f8f8e1e188ee085b3690ce601768c5fcb7d",
+      "startByte": 16536,
+      "title": "Stub state"
+    },
+    {
+      "endByte": 21473,
+      "id": "wr-0005",
+      "linkAdjustments": [
+        {
+          "after": "../../../../certification/v1/slice-1-local.md",
+          "before": "../certification/v1/slice-1-local.md",
+          "endByte": 2970,
+          "startByte": 2925
+        },
+        {
+          "after": "../../../../certification/v1/slice-1-local.json",
+          "before": "../certification/v1/slice-1-local.json",
+          "endByte": 3051,
+          "startByte": 3004
+        }
+      ],
+      "path": "initialize/candidate-revision-1/wr-0005-stage-0-slice-1-implementation.md",
+      "recordSha256": "19ecaa709cc2d2b69931bcb9fd74bae8103e1d9fecde9d636c7285bc81510e90",
+      "sourceSectionSha256": "449289ae4479c58a73f21acd84521f3dce83269c4b2057efaef4069e9b304afc",
+      "startByte": 17366,
+      "title": "Stage 0 + Slice 1 implementation"
+    },
+    {
+      "endByte": 24469,
+      "id": "wr-0006",
+      "linkAdjustments": [
+        {
+          "after": "../../../../certification/v1/slice-2-local.md",
+          "before": "../certification/v1/slice-2-local.md",
+          "endByte": 1478,
+          "startByte": 1433
+        },
+        {
+          "after": "../../../../certification/v1/slice-2-local.json",
+          "before": "../certification/v1/slice-2-local.json",
+          "endByte": 1559,
+          "startByte": 1512
+        }
+      ],
+      "path": "initialize/candidate-revision-2/wr-0006-slice-2-implementation-accepted.md",
+      "recordSha256": "8df417fab0f4a2af9d2896584bb6cf2899b553a8cc51de10d3d53867d6672823",
+      "sourceSectionSha256": "4c46a3229ae4d4c533571f5542b93bff4c08edeeb13d7ef6cd545914c852dcd9",
+      "startByte": 21473,
+      "title": "Slice 2 implementation — accepted"
+    },
+    {
+      "endByte": 28742,
+      "id": "wr-0007",
+      "linkAdjustments": [
+        {
+          "after": "../../../../certification/v1/slice-3-local.md",
+          "before": "../certification/v1/slice-3-local.md",
+          "endByte": 2484,
+          "startByte": 2439
+        },
+        {
+          "after": "../../../../certification/v1/slice-3-local.json",
+          "before": "../certification/v1/slice-3-local.json",
+          "endByte": 2565,
+          "startByte": 2518
+        }
+      ],
+      "path": "initialize/candidate-revision-3/wr-0007-slice-3-implementation-accepted.md",
+      "recordSha256": "dfb5a6fdf6bf2b31f1cdeb8939fa1adca2553242b275aee37dc0624b04605ff1",
+      "sourceSectionSha256": "dd93a4a64d033c3773c53f065bb2889c70454ed50634a1b76aa1e5cf9d62a36f",
+      "startByte": 24469,
+      "title": "Slice 3 implementation — accepted"
+    },
+    {
+      "endByte": 35080,
+      "id": "wr-0008",
+      "linkAdjustments": [
+        {
+          "after": "../../../../certification/v1/slice-4-local.md",
+          "before": "../certification/v1/slice-4-local.md",
+          "endByte": 4767,
+          "startByte": 4722
+        },
+        {
+          "after": "../../../../certification/v1/slice-4-local.json",
+          "before": "../certification/v1/slice-4-local.json",
+          "endByte": 4848,
+          "startByte": 4801
+        }
+      ],
+      "path": "initialize/candidate-revision-4/wr-0008-slice-4-implementation-accepted.md",
+      "recordSha256": "ec6b5ede4b55b906c87e26fe8f15840afd7e6cd0edba71acbb42aeaa448dca50",
+      "sourceSectionSha256": "59827da34ee7e4bcad907fb031d1468e0ababad01cf7f0e5aa5c341d53d8cecb",
+      "startByte": 28742,
+      "title": "Slice 4 implementation — accepted"
+    },
+    {
+      "endByte": 42195,
+      "id": "wr-0009",
+      "linkAdjustments": [
+        {
+          "after": "../../../../certification/v1/slice-5-local.md",
+          "before": "../certification/v1/slice-5-local.md",
+          "endByte": 5753,
+          "startByte": 5708
+        },
+        {
+          "after": "../../../../certification/v1/slice-5-local.json",
+          "before": "../certification/v1/slice-5-local.json",
+          "endByte": 5834,
+          "startByte": 5787
+        }
+      ],
+      "path": "initialize/candidate-revision-5/wr-0009-slice-5-implementation-accepted.md",
+      "recordSha256": "98987ac19844acba157a2920af17622a836b0fd0ece03b9e6522c0c663a5e68f",
+      "sourceSectionSha256": "15bc8e445e0e543e3df65284897c382a5d5dd181c1b3785428f475f3df95bc24",
+      "startByte": 35080,
+      "title": "Slice 5 implementation — accepted"
+    },
+    {
+      "endByte": 45720,
+      "id": "wr-0010",
+      "linkAdjustments": [
+        {
+          "after": "../../../../certification/v1/candidate-revision-6-local.md",
+          "before": "../certification/v1/candidate-revision-6-local.md",
+          "endByte": 2111,
+          "startByte": 2053
+        },
+        {
+          "after": "../../../../certification/v1/candidate-revision-6-local.json",
+          "before": "../certification/v1/candidate-revision-6-local.json",
+          "endByte": 2205,
+          "startByte": 2145
+        }
+      ],
+      "path": "initialize/candidate-revision-6/wr-0010-candidate-revision-6-maintenance-correction-changes-requested.md",
+      "recordSha256": "fa909bfef3943e217eec72b4774b217032cc2377ed0ab6d340da7917ce474700",
+      "sourceSectionSha256": "6d0b5b1e5177f0ed0564affd6eec3f2e6f2e2bdd92324977428a639baeae4d82",
+      "startByte": 42195,
+      "title": "Candidate revision 6 maintenance correction — changes requested"
+    },
+    {
+      "endByte": 48589,
+      "id": "wr-0011",
+      "linkAdjustments": [
+        {
+          "after": "../../../../certification/v1/candidate-revision-7-local.md",
+          "before": "../certification/v1/candidate-revision-7-local.md",
+          "endByte": 1448,
+          "startByte": 1390
+        },
+        {
+          "after": "../../../../certification/v1/candidate-revision-7-local.json",
+          "before": "../certification/v1/candidate-revision-7-local.json",
+          "endByte": 1542,
+          "startByte": 1482
+        }
+      ],
+      "path": "initialize/candidate-revision-7/wr-0011-candidate-revision-7-structural-boundary-correction-accepted.md",
+      "recordSha256": "1b660cb58f335db09409e02195597f960ec04bc05fdb1b6bd285c117e431346f",
+      "sourceSectionSha256": "6a56531d7a01295caa9f98040d0a28113c479221bbc9db78698b9e0e917aaeed",
+      "startByte": 45720,
+      "title": "Candidate revision 7 structural boundary correction — accepted"
+    },
+    {
+      "endByte": 49124,
+      "id": "wr-0012",
+      "linkAdjustments": [],
+      "path": "initialize/policy/wr-0012-next-decision.md",
+      "recordSha256": "90821483556c54b897f833adbcd2ad3b2cc24cead6ae750f1bb39df630c51d72",
+      "sourceSectionSha256": "42690a4ea823746af4a67d5a1aea7ad9e87878a481b3801bd16f5f4ffc25fba8",
+      "startByte": 48589,
+      "title": "Next decision"
+    },
+    {
+      "endByte": 52672,
+      "id": "wr-0013",
+      "linkAdjustments": [
+        {
+          "after": "../../../../certification/v1/candidate-revision-8-local.md",
+          "before": "../certification/v1/candidate-revision-8-local.md",
+          "endByte": 2040,
+          "startByte": 1982
+        },
+        {
+          "after": "../../../../certification/v1/candidate-revision-8-local.json",
+          "before": "../certification/v1/candidate-revision-8-local.json",
+          "endByte": 2131,
+          "startByte": 2071
+        },
+        {
+          "after": "../../../../certification/v1/proposed-freeze-revision-8.md",
+          "before": "../certification/v1/proposed-freeze-revision-8.md",
+          "endByte": 2222,
+          "startByte": 2164
+        },
+        {
+          "after": "../../../../certification/v1/freeze-acceptance-revision-8.md",
+          "before": "../certification/v1/freeze-acceptance-revision-8.md",
+          "endByte": 2322,
+          "startByte": 2262
+        }
+      ],
+      "path": "initialize/candidate-revision-8/wr-0013-candidate-revision-8-freeze-accepted.md",
+      "recordSha256": "23a561ef7b3ef6f279c25817d0cfbc65340207c72525a35d1c203d236b66728a",
+      "sourceSectionSha256": "dc59b6db5665b28a1c060ceea2e538fd15b269fb3982aa82c57e068603411547",
+      "startByte": 49124,
+      "title": "Candidate revision 8 freeze — accepted"
+    },
+    {
+      "endByte": 56127,
+      "id": "wr-0014",
+      "linkAdjustments": [
+        {
+          "after": "../../../../certification/v1/parity-revision-8-local.md",
+          "before": "../certification/v1/parity-revision-8-local.md",
+          "endByte": 1595,
+          "startByte": 1540
+        },
+        {
+          "after": "../../../../certification/v1/parity-revision-8-local.json",
+          "before": "../certification/v1/parity-revision-8-local.json",
+          "endByte": 1686,
+          "startByte": 1629
+        }
+      ],
+      "path": "initialize/candidate-revision-8/wr-0014-candidate-revision-8-adapter-parity-accepted.md",
+      "recordSha256": "eb02dba4e932a2da50b7f0b41f8b505cc5158d8f9cb1405b0f83c174594dfabf",
+      "sourceSectionSha256": "4b57a123e1218e58c9906b6ecffe421531c7dae90bd0ffa92c8428461dbd30fe",
+      "startByte": 52672,
+      "title": "Candidate revision 8 adapter parity — accepted"
+    },
+    {
+      "endByte": 59959,
+      "id": "wr-0015",
+      "linkAdjustments": [
+        {
+          "after": "../../../../certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.json",
+          "before": "../certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.json",
+          "endByte": 1996,
+          "startByte": 1902
+        },
+        {
+          "after": "../../../../certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.md",
+          "before": "../certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.md",
+          "endByte": 2174,
+          "startByte": 2082
+        }
+      ],
+      "path": "initialize/candidate-revision-8/wr-0015-candidate-revision-8-bounded-certification-matrix-accepted.md",
+      "recordSha256": "681b727cd50b1fa11650d8b0dcd152e9a1abe6dd545529a8e0dd24207350dbca",
+      "sourceSectionSha256": "75f1b21832d86c213de460f8e1d3e5b61ebd98cc67946c945896380e7d2f1bb3",
+      "startByte": 56127,
+      "title": "Candidate revision 8 bounded certification matrix — accepted"
+    },
+    {
+      "endByte": 62318,
+      "id": "wr-0016",
+      "linkAdjustments": [],
+      "path": "distribution/wr-0016-public-repository-migration-implementation-checkpoint.md",
+      "recordSha256": "bd8d3d85c0015fa21fbde9ea957723ff8ef98c6c93c395b0f46c2e4a6ee3688c",
+      "sourceSectionSha256": "4d2f514579ee74168be336a9ba97fc623a1acc32e0e88539a748eee13ae2e604",
+      "startByte": 59959,
+      "title": "Public repository migration — implementation checkpoint"
+    },
+    {
+      "endByte": 65323,
+      "id": "wr-0017",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-8/wr-0017-candidate-revision-8-hosted-certification-execution-accepted-with-failed-aggrega.md",
+      "recordSha256": "250030a141a02ad04839e7a06026b8c82874e684e509b1d4bb0c8d5ea253ea05",
+      "sourceSectionSha256": "66ca0de87ececf52efb63364d5ac4703540a440b8829e40e4aadcaf98336171b",
+      "startByte": 62318,
+      "title": "Candidate revision 8 hosted certification execution — accepted with failed aggregate"
+    },
+    {
+      "endByte": 69170,
+      "id": "wr-0018",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-8/wr-0018-candidate-revision-8-windows-certification-investigation-and-correction-accepted.md",
+      "recordSha256": "4392f6b71da9d3dd58c5423aa11e395c64fd4fd637faf7317e12f56f46aa3add",
+      "sourceSectionSha256": "ae7dfd454818bc7ae2d0319ccd5b20051261a253d2d6a801df58cae7613cdac3",
+      "startByte": 65323,
+      "title": "Candidate revision 8 Windows certification investigation and correction — accepted"
+    },
+    {
+      "endByte": 73560,
+      "id": "wr-0019",
+      "linkAdjustments": [],
+      "path": "governance/wr-0019-candidate-revision-8-maintainer-efficiency-tranche-accepted.md",
+      "recordSha256": "48ba23edf814ed86954c53ae9737c58deeefe9f7dfa5fd2cfaf9840dd50aaab3",
+      "sourceSectionSha256": "7708e74c96f7adbd18a40ab80334793208556763343ea231b05f1c0ecbd4fba2",
+      "startByte": 69170,
+      "title": "Candidate revision 8 maintainer-efficiency tranche — accepted"
+    },
+    {
+      "endByte": 78997,
+      "id": "wr-0020",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-9/wr-0020-candidate-revision-9-windows-corrections-accepted.md",
+      "recordSha256": "f77d312cd29cc80aab9536336fae9c20abcf4a4cf43d4cdb7193f5f0f37f824b",
+      "sourceSectionSha256": "4ce69dbe9ef1cb7dc945dd7374203c78dc03c25fc0cafa3ebe5c09edf41b37ff",
+      "startByte": 73560,
+      "title": "Candidate revision 9 Windows corrections — accepted"
+    },
+    {
+      "endByte": 83216,
+      "id": "wr-0021",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-9/wr-0021-candidate-revision-9-hosted-certification-execution-accepted-with-failed-aggrega.md",
+      "recordSha256": "7e6dee18c37b9583b563f7e1ac513c6b2e45f6b28af87404d6af1fdb328cfdc4",
+      "sourceSectionSha256": "44a20dbb8435b203046b6b98897e8f97b4a47a2ecb5396031738069add0682a0",
+      "startByte": 78997,
+      "title": "Candidate revision 9 hosted certification execution — accepted with failed aggregate"
+    },
+    {
+      "endByte": 87849,
+      "id": "wr-0022",
+      "linkAdjustments": [],
+      "path": "governance/wr-0022-candidate-revision-9-maintainer-reliability-and-efficiency-accepted.md",
+      "recordSha256": "b5e881d98af08bb87cca843f6bcdc9f4589547137317f4a183927c2e7643ec58",
+      "sourceSectionSha256": "51df95a13f927a0adbb4dbef2757c06c5f6509ec676124533f7aa943da6bc74e",
+      "startByte": 83216,
+      "title": "Candidate revision 9 maintainer reliability and efficiency — accepted"
+    },
+    {
+      "endByte": 90793,
+      "id": "wr-0023",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-9/wr-0023-candidate-revision-9-windows-failure-investigation-accepted.md",
+      "recordSha256": "47dd6576a6d06f5d7d3c553113ea1e3bec5e9cad6cae45b98286046c26e968eb",
+      "sourceSectionSha256": "3312893ca90ead67454dceb7559badc096a92311efb81cad1c70accef4da95c8",
+      "startByte": 87849,
+      "title": "Candidate revision 9 Windows failure investigation — accepted"
+    },
+    {
+      "endByte": 95783,
+      "id": "wr-0024",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-9/wr-0024-candidate-revision-9-maintainer-only-windows-correction-accepted.md",
+      "recordSha256": "93ca2151e9888fd665da9b2313dfc68bc6217a8f0a549935aad854ce2b3ab01d",
+      "sourceSectionSha256": "78d7e272dd17e567c6ca61731c1a6aaa0d56d95a53659ac58a61ea181df415b4",
+      "startByte": 90793,
+      "title": "Candidate revision 9 maintainer-only Windows correction — accepted"
+    },
+    {
+      "endByte": 100905,
+      "id": "wr-0025",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-9/wr-0025-candidate-revision-9-corrected-source-hosted-execution-and-residual-windows-inve.md",
+      "recordSha256": "ea508150e6f6bedc0aaf9e10c1cbfdda16b6a9e5c59a863b87162037c0585462",
+      "sourceSectionSha256": "a5b3527386cbcf0b50e6df422d600304d5f97ba60d6cbc086b1477b8f221ecf8",
+      "startByte": 95783,
+      "title": "Candidate revision 9 corrected-source hosted execution and residual Windows investigation — accepted"
+    },
+    {
+      "endByte": 106444,
+      "id": "wr-0026",
+      "linkAdjustments": [],
+      "path": "governance/wr-0026-maintainer-approval-response-governance-accepted.md",
+      "recordSha256": "cca948a7a1de016247f9106e3e24ece96343ccf4ac86768b49f24d2198e7d5fb",
+      "sourceSectionSha256": "55c6c43614bd3c6b61c03c0dcd4561c7b06ed0842bd3a7c3b61d70f552553f81",
+      "startByte": 100905,
+      "title": "Maintainer approval-response governance — accepted"
+    },
+    {
+      "endByte": 110267,
+      "id": "wr-0027",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-10/wr-0027-candidate-revision-10-windows-correction-accepted.md",
+      "recordSha256": "e5b1d0042882c707f3b80bae69d370d0a4023f4f9292b22f365fa942e7bb6166",
+      "sourceSectionSha256": "6e03f009a7f2f85fd7fdfc44c7c804332cf23fe5fc5005f1f9e936f0552f3fe4",
+      "startByte": 106444,
+      "title": "Candidate revision 10 Windows correction — accepted"
+    },
+    {
+      "endByte": 116287,
+      "id": "wr-0028",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-10/wr-0028-candidate-revision-10-hosted-certification-execution-accepted.md",
+      "recordSha256": "ead271c81e3cbac448559ce33a22492cb2ad586ff0e10e7c3f6314f0d0eb6314",
+      "sourceSectionSha256": "fc4c3d5bfe084dd071a72b427430408b544821cdc13d7b1acc4b1ce7d5dee1b7",
+      "startByte": 110267,
+      "title": "Candidate revision 10 hosted certification execution — accepted"
+    },
+    {
+      "endByte": 119703,
+      "id": "wr-0029",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-10/wr-0029-candidate-revision-10-local-evidence-promotion-accepted.md",
+      "recordSha256": "a92841adc3f5701b3fb93739c100de44f6b1af65d91165559e4aba71cb6ddef3",
+      "sourceSectionSha256": "9b4588d96cc9b61b2e77a12f2b57f1b0e47479d854f069d1bc706d351f0bcff7",
+      "startByte": 116287,
+      "title": "Candidate revision 10 local evidence promotion — accepted"
+    },
+    {
+      "endByte": 122620,
+      "id": "wr-0030",
+      "linkAdjustments": [],
+      "path": "initialize/candidate-revision-10/wr-0030-candidate-revision-10-evidence-publication-readiness-accepted-as-not-ready.md",
+      "recordSha256": "fe5e72343fdd900da7c97ab9da44e05a2b7622f8d0e2673088ffb899d6f76477",
+      "sourceSectionSha256": "2afcf8751e5d3138a2c1b26755cf238bfd97da178294088b24f20eee7c0eceb5",
+      "startByte": 119703,
+      "title": "Candidate revision 10 evidence-publication readiness — accepted as not ready"
+    },
+    {
+      "endByte": 131495,
+      "id": "wr-0031",
+      "linkAdjustments": [
+        {
+          "after": "../../research/2026-09-14-bounded-context-and-tool-output-management.md",
+          "before": "research/2026-09-14-bounded-context-and-tool-output-management.md",
+          "endByte": 559,
+          "startByte": 488
+        },
+        {
+          "after": "../../research/2026-09-14-broader-wayfinder-opportunities-addendum.md",
+          "before": "research/2026-09-14-broader-wayfinder-opportunities-addendum.md",
+          "endByte": 697,
+          "startByte": 628
+        }
+      ],
+      "path": "governance/wr-0031-bounded-context-and-claim-integrity-tranche-accepted.md",
+      "recordSha256": "3cf92381cd3857e9dade59d0c2a9c3ae8d4d389e5a517bae2ac2b80f25f716fd",
+      "sourceSectionSha256": "bcc0c0d52fbc3b21852cb1beefef95b9930a2b14ad87db859b3c632bb3fd0cc5",
+      "startByte": 122620,
+      "title": "Bounded-context and claim-integrity tranche — accepted"
+    }
+  ],
+  "sourceBytes": 131495,
+  "sourcePath": "references/design-record.md",
+  "sourceSha256": "d34cfefdff357f7c3511eb3efe632921f9be76dedfdd298fc1dd42395b0ebadf"
+}

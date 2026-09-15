@@ -48,6 +48,8 @@ python3 plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintai
 
 The certification workflow is manual-only. It records authentic hosted observations and cannot activate or publish a runtime release.
 
+Maintainer history is organized into subject folders. Use `maintain.py record list`, `record read --id ID --history`, and `record add --input FILE [--dry-run]` through the same canonical command path above. See the [record-store guide](plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/design-record/README.md) for input fields and exact bounded reads. Current status and authorization remain in the maintainer's `current-state.md`.
+
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
