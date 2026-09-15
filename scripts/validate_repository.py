@@ -91,6 +91,7 @@ def main() -> int:
         failures.append("AGENTS.md must route approval turns to the maintainer approval-response protocol")
 
     maintainer_root = ROOT / "plugins/wayfinder-maintainer/skills/wayfinder-maintainer"
+    failures.extend("design history: " + issue for issue in maintainer.records.integrity_issues(maintainer_root / "references/design-record"))
     maintainer_skill = (maintainer_root / "SKILL.md").read_text(encoding="utf-8")
     if not all(
         marker in maintainer_skill
@@ -114,6 +115,18 @@ def main() -> int:
     workflow_text = (maintainer_root / "references/workflow.md").read_text(encoding="utf-8")
     if "[approval-response protocol](approval-response.md) is mandatory" not in workflow_text:
         failures.append("maintainer workflow must route approval handling to approval-response.md")
+    for label, text in (("repository instructions", agents_text), ("maintainer skill", maintainer_skill), ("workflow", workflow_text), ("approval protocol", approval_text)):
+        if not all(marker in text for marker in ("record list", "record read --id ID --history", "record add")):
+            failures.append(f"{label} must advertise record discovery, affected-history reading, and exclusive additions")
+    legacy_path = maintainer_root / "references/design-record.md"
+    legacy_text = legacy_path.read_text(encoding="utf-8")
+    try:
+        manifest = load_json(maintainer_root / "references/design-record/migration.json")
+        for section in manifest["sections"]:
+            if f"## {section['title']}\n" not in legacy_text or f"(design-record/{section['path']})" not in legacy_text:
+                failures.append(f"legacy design-record anchor/route missing: {section['id']}")
+    except Exception as exc:
+        failures.append(f"legacy design-record routing failed: {exc}")
     handoff_source = (maintainer_root / "scripts/maintain.py").read_text(encoding="utf-8")
     if not all(
         marker in handoff_source

@@ -16,6 +16,7 @@ from unittest import mock
 
 import maintain
 import maintainer_checkpoint as checkpoints
+import maintainer_records as records
 import maintainer_output as output
 import maintainer_status as status_tools
 
@@ -47,11 +48,17 @@ class OutputTests(unittest.TestCase):
 
     def test_section_chunk_sequence_and_stale_cursor(self):
         with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            (root / "references").mkdir()
-            path = root / "references/design-record.md"
-            source = "## Example\n\n" + "αβγ content\n" * 12 + "\n"
-            path.write_text(source + "## Other\nuntouched\n", encoding="utf-8")
+            root = Path(temporary).resolve()
+            store = root / "references/design-record"
+            (store / "foundation").mkdir(parents=True)
+            metadata = {"format": "wayfinder-design-record", "schemaVersion": 1, "id": "wr-0001",
+                        "topic": "foundation", "candidateRevision": None, "title": "Example", "kind": "context",
+                        "outcome": "recorded", "date": "2026-09-15", "summary": "Exact UTF-8 source.",
+                        "predecessors": [], "sources": [], "authorities": [], "legacy": None}
+            path = store / "foundation/wr-0001-example.md"
+            body = ("## Example\n\n" + "αβγ content\n" * 12 + "\n").encode()
+            source = records.render(metadata, body)
+            path.write_bytes(source)
             chunks, cursor, digest, indexes = [], None, None, []
             with mock.patch.object(maintain, "COMPANION_ROOT", root):
                 while True:
@@ -65,13 +72,13 @@ class OutputTests(unittest.TestCase):
                     if cursor is None:
                         break
                 reconstructed = b"".join(chunks)
-                self.assertEqual(reconstructed, source.rstrip("\n").encode() + b"\n")
+                self.assertEqual(reconstructed, source)
                 self.assertEqual(hashlib.sha256(reconstructed).hexdigest(), digest)
                 self.assertEqual(indexes, list(range(len(chunks))))
                 _, raw, _ = capture(maintain.record_section_command, "Example", "json", "discovery-preview", 40, None)
                 first = json.loads(raw)
                 self.assertFalse(first["complete"])
-                path.write_text(source + "changed\n## Other\n", encoding="utf-8")
+                path.write_bytes(records.render(metadata, body + b"changed\n"))
                 code, _, diagnostic = capture(maintain.record_section_command, "Example", "json", "complete-evidence", 40, first["nextCursor"])
                 self.assertEqual(code, 2)
                 self.assertIn("stale", diagnostic)

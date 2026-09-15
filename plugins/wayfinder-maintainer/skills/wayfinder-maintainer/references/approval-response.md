@@ -22,7 +22,7 @@ Process an unambiguous affirmative in this order:
 1. Bind it to the most recent unresolved explicit approval question.
 2. Restate the exact interpreted decision and boundary.
 3. Check the established workflow and current authority to determine whether a durable acceptance record is required.
-4. When authorized and required, record only the accepted outcome and update current routing; do not infer or record acceptance of adjacent work.
+4. When authorized and required, persist only the accepted outcome with `maintain.py record add --input FILE` and explicitly update `current-state.md` routing in the same authorized record task. This includes terminal closure: a conversation-only handoff must not leave the same closure pending in repository routing. Persistence of an already accepted decision does not require another acceptance of that decision. Read the complete affected history and decisive authority/evidence first, using `record list` and `record read --id ID --history`; see [the record-store guide](design-record/README.md). Do not infer or record acceptance of adjacent work; commit and push remain separately authorized.
 5. Determine the single next bounded task, or the terminal closure or verification handoff.
 6. Provide a detailed, self-contained, copy-ready prompt for starting that task in a new session.
 7. Stop without beginning the prompt's task.

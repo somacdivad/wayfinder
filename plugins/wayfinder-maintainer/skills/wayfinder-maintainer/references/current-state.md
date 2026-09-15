@@ -72,33 +72,39 @@
 
 ## Approval boundary
 
-The owner explicitly accepted the exact 17-file bounded-context and claim-integrity implementation and authorized only two separate local commits: implementation first, acceptance record second. The implementation is committed at `a7081fc0db72d519506ee1dedb5df3adcfc4f931` on `codex/bounded-context-claim-integrity`; the acceptance record is committed at `de5e8fc10ee2169f2a5a6ca01061252cc1ae9e53`. Accepted scope is Priority 0 and both Priority 1 groups from the bounded-context report, plus Opportunity 1 only from the addendum. On 2026-09-15, the owner accepted final closure of the record and both local commits in task `01a0a38b-9418-7f00-9d77-9d783c13d7a0`. The tranche is closed; do not request its closure again. The owner's subsequent instructions authorize recording that existing closure in this file and `design-record.md`, then committing only those two files and pushing the resulting commit to `origin` on `candidate-revision-9-certification` without force. This is a bounded closure-record publication task, not later-work authority.
+The owner authorized the hierarchical maintainer design-record plan and instructed "Implement the proposed plan." The bounded local scope is history migration, subject folders, `record list/read/add`, the compatible `record-section` reader, affected-history reading policy, durable outcome/closure routing, discovery documentation, integrity validation, and maintainer tests. This later named instruction supersedes the prior no-later-tranche boundary only for this task. The owner subsequently answered "Yes" to the exact implementation-acceptance question. The reviewed migration and CLI implementation are accepted and closed in `wr-0034`; acceptance grants only durable acceptance/closure persistence and no later tranche. No commits, pushes, network actions, dependencies, workflow/verifier correction, certification expansion, frozen contract/adapter or accepted-evidence edits, runtime guidance changes, activation, or live-project changes are authorized.
+
+The bounded-context and claim-integrity tranche, its acceptance record, and both local commits are closed. The separate two-file closure-record correction was committed and pushed as `6e3d1723fd7d3e7def68ca21ae0b0786e031b790`. Record `wr-0031` preserves that prior closure and its exact boundaries; do not request closure of that tranche again.
 
 The owner explicitly accepted the exact four-file candidate-revision-10 evidence-publication readiness acceptance-record implementation. The recorded protected-environment readiness result is NOT READY. No evidence-publication dispatch is authorized. The decisive blocker is that publish-evidence.yml at source-publication commit 72da3542f3a7e65f4bcae09943612d8ba09daf3e checks out evidence source commit 82a2bb994e7ef8d2ffda7317e0687b0c7230aa54 before invoking scripts/prepare_evidence_release.py; that older verifier lacks --expected-run-id and --expected-attempt, targets revision 9, and would fail argument parsing before draft-release creation. Acceptance records this not-ready result only and authorizes no workflow or verifier correction, GitHub-settings change, workflow dispatch, artifact download, release or tag mutation, release-registry or runtime-guidance change, activation, or later tranche.
 
 ## Pending action and design-record routes
 
-The bounded-context and claim-integrity implementation, acceptance record, and two local commits are owner-accepted and closed. No closure decision remains pending, and no next implementation tranche is authorized or eligible. The bounded closure-record correction records the existing decision only; the owner separately authorized its two-file commit and non-force push to `origin` on `candidate-revision-9-certification`. Stop after verifying that publication without requesting acceptance of the same closure again or beginning later work. Evidence publication remains not ready and not dispatch-eligible. Outside that exact commit and push, do not mutate Git or the network, begin a new authentication flow, download artifacts, dispatch workflows, correct the publication workflow/verifier, modify GitHub settings, publish or alter releases/tags, change the release registry, candidate identity, runtime guidance or activation, edit frozen contract/adapters or any evidence, add dependencies, touch live-project data, or begin Priority 2, another addendum opportunity, or later work.
+The hierarchical maintainer design-record implementation is owner-accepted and closed. Design authorization is recorded in `wr-0032`, implementation verification in `wr-0033`, and accepted implementation and terminal closure in `wr-0034`. No implementation-acceptance or closure decision remains pending; do not request acceptance of this same closure again. Provide the terminal read-only verification handoff and stop without beginning it or another task automatically. Evidence publication remains NOT READY and not dispatch-eligible. Do not mutate Git or the network, begin an authentication flow, download artifacts, dispatch workflows, correct the publication workflow/verifier, modify GitHub settings, publish or alter releases/tags, change the release registry, candidate identity, runtime guidance or activation, edit frozen contract/adapters or any evidence, add dependencies, touch live-project data, or begin another tranche.
 
-Read only the relevant exact section of the [chronological design record](design-record.md):
+Discover with `maintain.py record list`; read exact affected history with `record read --id ID --history`. See the [record-store guide](design-record/README.md). Routed record IDs:
 
-- `## Candidate revision 8 freeze — accepted` for frozen identity and invalidation rules.
-- `## Candidate revision 8 adapter parity — accepted` for adapter and parity authority.
-- `## Candidate revision 8 bounded certification matrix — accepted` for matrix requirements.
-- `## Candidate revision 8 hosted certification execution — accepted with failed aggregate` for hosted evidence bindings.
-- `## Candidate revision 8 Windows certification investigation and correction — accepted` for current blockers.
-- `## Candidate revision 8 maintainer-efficiency tranche — accepted` for the current maintainer workflow and tooling baseline.
-- `## Candidate revision 9 Windows corrections — accepted` for the current implementation and approval boundary.
-- `## Candidate revision 9 hosted certification execution — accepted with failed aggregate` for the accepted bounded hosted result.
-- `## Candidate revision 9 maintainer reliability and efficiency — accepted` for the accepted maintainer-only tranche.
-- `## Candidate revision 9 Windows failure investigation — accepted` for the active correction authority and unresolved hosted obligations.
-- `## Candidate revision 9 maintainer-only Windows correction — accepted` for the accepted correction and authorized hosted-rerun boundary.
-- `## Candidate revision 9 corrected-source hosted execution and residual Windows investigation — accepted` for the latest hosted result, accepted root causes, and the candidate-revision-10 correction authority.
-- `## Maintainer approval-response governance — accepted` for the accepted governance implementation and its preserved boundaries.
-- `## Candidate revision 10 Windows correction — accepted` for the accepted correction and authorized new-session hosted-rerun boundary.
-- `## Candidate revision 10 hosted certification execution — accepted` for the accepted passing hosted record and its review-only artifact boundary.
-- `## Candidate revision 10 local evidence promotion — accepted` for the accepted durable evidence implementation and authorized source-publication boundary.
-- `## Candidate revision 10 evidence-publication readiness — accepted as not ready` for the accepted protected-environment observations, decisive dispatch blocker, and closed publication boundary.
-- `## Bounded-context and claim-integrity tranche — accepted` for the accepted 17-file implementation, two-local-commit authority, verification limitations, preserved invariants, deferred work, and final closure boundary.
+- `wr-0013` for frozen identity and invalidation rules.
+- `wr-0014` for adapter and parity authority.
+- `wr-0015` for matrix requirements.
+- `wr-0017` for hosted evidence bindings.
+- `wr-0018` for current blockers.
+- `wr-0019` for the current maintainer workflow and tooling baseline.
+- `wr-0020` for the current implementation and approval boundary.
+- `wr-0021` for the accepted bounded hosted result.
+- `wr-0022` for the accepted maintainer-only tranche.
+- `wr-0023` for the active correction authority and unresolved hosted obligations.
+- `wr-0024` for the accepted correction and authorized hosted-rerun boundary.
+- `wr-0025` for the latest hosted result, accepted root causes, and the candidate-revision-10 correction authority.
+- `wr-0026` for the accepted governance implementation and its preserved boundaries.
+- `wr-0027` for the accepted correction and authorized new-session hosted-rerun boundary.
+- `wr-0028` for the accepted passing hosted record and its review-only artifact boundary.
+- `wr-0029` for the accepted durable evidence implementation and authorized source-publication boundary.
+- `wr-0030` for the accepted protected-environment observations, decisive dispatch blocker, and closed publication boundary.
+- `wr-0031` for the accepted 17-file implementation, two-local-commit authority, verification limitations, preserved invariants, deferred work, and final closure boundary.
 
-Read the full record before reopening a decision, changing evidence governance, or recording an accepted outcome.
+- `wr-0032` for the historical hierarchical record-store design and implementation authorization, superseded by the accepted closure in `wr-0034`.
+- `wr-0033` for the completed migration and CLI verification and unavailable PowerShell limitation; its historical pending acceptance is superseded by `wr-0034`.
+- `wr-0034` for the accepted reviewed migration and implementation, persisted terminal closure, and no-later-tranche boundary.
+
+Before reopening a decision, changing evidence governance, or recording an accepted outcome, read the complete affected history and decisive linked authority/evidence. Expand on conflicts or missing dependencies; unrelated chronology is not a routine prerequisite. Add new outcomes with `record add --input FILE`, and explicitly update current-state routing when acceptance or closure requires persistence.

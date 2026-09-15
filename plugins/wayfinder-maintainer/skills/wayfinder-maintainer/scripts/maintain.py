@@ -28,6 +28,7 @@ from typing import Any, Iterable
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import maintainer_records as records
 from maintainer_checkpoint import create_checkpoint, verify_checkpoint
 from maintainer_output import COMPLETE_MAX_BYTES, PREVIEW_MAX_BYTES, bounded_chunk, emit_json, envelope, make_cursor, read_cursor
 from maintainer_status import parse_status, projection_drift, rendered_targets, write_targets
@@ -204,9 +205,12 @@ def status_issues(status: dict[str, Any]) -> list[str]:
             issues.append(f"hostedEvidence.{key} differs")
     if evidence.get("exists") is not PROMOTED_REVISION_10_EVIDENCE_ROOT.is_dir():
         issues.append("hosted evidence existence differs")
-    design = (COMPANION_ROOT / "references/design-record.md").read_text(encoding="utf-8")
-    accepted_sections = re.findall(r"^## Candidate revision 10 hosted certification execution — accepted\n(.*?)(?=^## |\Z)", design, flags=re.MULTILINE | re.DOTALL)
-    accepted = len(accepted_sections) == 1 and all(value in accepted_sections[0] for value in (evidence["runId"], evidence["sourceCommit"]))
+    record_root = COMPANION_ROOT / "references/design-record"
+    record_issues = records.integrity_issues(record_root)
+    issues.extend("design records: " + issue for issue in record_issues)
+    design_records = records.load_store(record_root)
+    accepted_record = records.find_record(design_records, identifier="wr-0028")
+    accepted = accepted_record["metadata"]["outcome"] == "accepted" and all(value.encode("utf-8") in accepted_record["body"] for value in (evidence["runId"], evidence["sourceCommit"]))
     if evidence.get("accepted") is not accepted:
         issues.append("hosted evidence acceptance differs from design record")
     for relative, digest in PROMOTED_REVISION_10_EVIDENCE_DIGESTS.items():
@@ -311,13 +315,14 @@ def current_context() -> dict[str, Any]:
         }
         for identifier, path, mode in routing_paths
     ]
-    design_path = COMPANION_ROOT / "references/design-record.md"
-    for heading in re.findall(r"^- `## (.+?)` for ", CURRENT_STATE_PATH.read_text(encoding="utf-8"), flags=re.MULTILINE):
+    record_root = COMPANION_ROOT / "references/design-record"
+    design_records = records.load_store(record_root)
+    for identifier in re.findall(r"^- `(wr-[0-9]{4,})` for ", CURRENT_STATE_PATH.read_text(encoding="utf-8"), flags=re.MULTILINE):
+        record = records.find_record(design_records, identifier=identifier)
         routing.append({
-            "id": "design-record:" + heading, "path": _relative(design_path),
-            "bytes": design_path.stat().st_size, "lines": len(design_path.read_bytes().splitlines()),
-            "sha256": sha256(design_path),
-            "nextCommand": f"maintain.py record-section --heading {heading!r}",
+            "id": "design-record:" + identifier, "path": _relative(record_root / record["path"]),
+            "bytes": len(record["raw"]), "lines": len(record["raw"].splitlines()),
+            "sha256": record["sha256"], "nextCommand": f"maintain.py record read --id {identifier} --history",
         })
     return {
         "format": "wayfinder-maintainer-context",
@@ -341,6 +346,7 @@ def current_context() -> dict[str, Any]:
             "maintainerCommand": str(Path(__file__).resolve()),
             "conformanceRunner": str(CONFORMANCE_RUNNER),
             "designRecord": str(COMPANION_ROOT / "references/design-record.md"),
+            "designRecordStore": str(COMPANION_ROOT / "references/design-record"),
             "workflow": str(COMPANION_ROOT / "references/workflow.md"),
             "certificationRoot": str(CERTIFICATION_ROOT),
         },
@@ -630,62 +636,9 @@ def self_test_command(output_format: str) -> int:
 
 
 def record_section_command(heading: str, output_format: str = "full", response_class: str = "complete-evidence", max_bytes: int = COMPLETE_MAX_BYTES, cursor: str | None = None) -> int:
-    if max_bytes < 4:
-        print("--max-bytes must be at least 4 for UTF-8-safe chunks", file=sys.stderr)
-        return 2
-    normalized = heading if heading.startswith("## ") else f"## {heading}"
-    lines = (COMPANION_ROOT / "references/design-record.md").read_text(encoding="utf-8").splitlines(keepends=True)
-    matches = [index for index, line in enumerate(lines) if line.rstrip("\r\n") == normalized]
-    if len(matches) != 1:
-        detail = "not found" if not matches else f"ambiguous ({len(matches)} matches)"
-        print(f"record section {detail}: {normalized}", file=sys.stderr)
-        return 2
-    start = matches[0]
-    end = next((index for index in range(start + 1, len(lines)) if lines[index].startswith("## ")), len(lines))
-    source = ("".join(lines[start:end]).rstrip("\r\n") + "\n").encode("utf-8")
-    digest = hashlib.sha256(source).hexdigest()
-    boundaries = [0]
-    while boundaries[-1] < len(source):
-        _, boundary = bounded_chunk(source, boundaries[-1], max_bytes)
-        boundaries.append(boundary)
-    offset = 0
-    if cursor:
-        try:
-            binding = read_cursor(cursor)
-        except ValueError as exc:
-            print(str(exc), file=sys.stderr)
-            return 2
-        expected = {"command": "record-section", "scope": normalized, "sourceSha256": digest, "maxBytes": max_bytes}
-        if any(binding.get(key) != value for key, value in expected.items()) or not isinstance(binding.get("offset"), int):
-            print("stale or mismatched cursor", file=sys.stderr)
-            return 2
-        offset = binding["offset"]
-        if offset not in boundaries[:-1]:
-            print("cursor offset is not a stable chunk boundary", file=sys.stderr)
-            return 2
-    chunk, next_offset = bounded_chunk(source, offset, max_bytes)
-    complete = next_offset == len(source)
-    next_cursor = None if complete else make_cursor({
-        "command": "record-section", "scope": normalized, "sourceSha256": digest,
-        "maxBytes": max_bytes, "offset": next_offset,
-    })
-    data = {"heading": normalized, "startByte": offset, "endByte": next_offset, "text": chunk.decode("utf-8"),
-            "chunkIndex": boundaries.index(offset), "chunkCount": len(boundaries) - 1,
-            "reconstructionRequired": len(boundaries) > 2,
-            "sequenceExhausted": complete,
-            "designRecordSha256": sha256(COMPANION_ROOT / "references/design-record.md")}
-    if output_format == "json":
-        emit_json(command="record-section", response_class=response_class,
-                  scope={"kind": "design-record-section", "id": normalized[3:]}, data=data,
-                  complete=complete and response_class == "complete-evidence", truncated=not complete, returned_items=1, total_items=1,
-                  returned_bytes=len(chunk), source_bytes=len(source), source_sha256=digest, next_cursor=next_cursor,
-                  error=None if complete or response_class == "discovery-preview" else {"code": "output.incomplete", "message": "continue with --cursor"})
-    else:
-        print(f"response-class={response_class} complete={str(complete and response_class == 'complete-evidence').lower()} bytes={offset}:{next_offset}/{len(source)} sha256={digest}")
-        sys.stdout.write(chunk.decode("utf-8"))
-        if next_cursor:
-            print(f"next-command: maintain.py record-section --heading {heading!r} --format {output_format} --response-class {response_class} --max-bytes {max_bytes} --cursor {next_cursor}", file=sys.stderr)
-    return 0 if complete or response_class == "discovery-preview" else 2
+    """Compatibility alias; resolve a unique title to the hierarchical record."""
+    return records.read_command(COMPANION_ROOT / "references/design-record", None, heading, False,
+                                output_format, response_class, max_bytes, cursor)
 
 
 def run_python(script: Path, arguments: Iterable[str], capture: bool = False) -> subprocess.CompletedProcess[str]:
@@ -858,7 +811,7 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
         add("case-rule-references", set(cited_rules) <= unique_rules and unique_rules <= set(cited_rules), f"declared={len(unique_rules)} cited={len(set(cited_rules))}")
         add("runtime-maintainer-boundary", not (SKILL_ROOT / "maintainers").exists())
         companion_paths = (
-            COMPANION_ROOT / "references/design-record.md",
+            COMPANION_ROOT / "references/design-record",
             COMPANION_ROOT / "references/research",
             COMPANION_ROOT / "scripts/conformance/v1/run.py",
             COMPANION_ROOT / "certification/v1",
@@ -887,29 +840,15 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
             "allow_implicit_invocation: false" in companion_config
             and 'Use $wayfinder-maintainer' in companion_config,
         )
-        design_text = (COMPANION_ROOT / "references/design-record.md").read_text(encoding="utf-8")
-        required_current_anchors = (
-            "## Candidate revision 8 freeze — accepted",
-            "## Candidate revision 8 adapter parity — accepted",
-            "## Candidate revision 8 bounded certification matrix — accepted",
-            "## Candidate revision 8 hosted certification execution — accepted with failed aggregate",
-            "## Candidate revision 8 Windows certification investigation and correction — accepted",
-            "## Candidate revision 8 maintainer-efficiency tranche — accepted",
-            "## Candidate revision 9 Windows corrections — accepted",
-            "## Candidate revision 9 hosted certification execution — accepted with failed aggregate",
-            "## Candidate revision 9 maintainer reliability and efficiency — accepted",
-            "## Candidate revision 9 Windows failure investigation — accepted",
-            "## Candidate revision 9 maintainer-only Windows correction — accepted",
-            "## Candidate revision 9 corrected-source hosted execution and residual Windows investigation — accepted",
-            "## Maintainer approval-response governance — accepted",
-            "## Candidate revision 10 Windows correction — accepted",
-            "## Candidate revision 10 hosted certification execution — accepted",
-            "## Candidate revision 10 local evidence promotion — accepted",
-            "## Candidate revision 10 evidence-publication readiness — accepted as not ready",
-        )
-        status = parse_status(CURRENT_STATE_PATH)
-        current_state_matches = not status_issues(status) and all(anchor in design_text for anchor in required_current_anchors)
+        record_root = COMPANION_ROOT / "references/design-record"
+        record_integrity = records.integrity_issues(record_root)
+        add("design-record-integrity", not record_integrity, "; ".join(record_integrity))
+        design_records = records.load_store(record_root)
+        routed_ids = re.findall(r"^- `(wr-[0-9]{4,})` for ", CURRENT_STATE_PATH.read_text(encoding="utf-8"), flags=re.MULTILINE)
+        current_state_matches = not status_issues(parse_status(CURRENT_STATE_PATH)) and bool(routed_ids) and all(
+            len([item for item in design_records if item["metadata"]["id"] == identifier]) == 1 for identifier in routed_ids)
         add("current-state-drift", current_state_matches, _relative(CURRENT_STATE_PATH))
+        status = parse_status(CURRENT_STATE_PATH)
         drift = projection_drift(REPOSITORY_ROOT, status)
         add("public-status-projection", not drift, ", ".join(drift))
 
@@ -2600,10 +2539,10 @@ def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
     print(f"- Conformance cases: `{len(cases)}` ({', '.join(f'{key}={value}' for key, value in sorted(counts.items()))})")
     print(f"- Runtime status: {release['status']}; activation disabled")
     print("\nRequired preparation\n")
-    print("1. Read the repository instructions, `$wayfinder-maintainer`, and `references/current-state.md`; load only routed chronology unless governance changes.")
+    print("1. Read the repository instructions, `$wayfinder-maintainer`, and `references/current-state.md`; read the complete affected record history and linked authority, expanding on conflicts.")
     print("2. Resolve runtimes once and run `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py doctor --format full` with Python 3.11+ before editing.")
     print("3. Apply the action-authorization gate before authentication, downloads, dispatch, publication, destructive work, or another consequential external action.")
-    print("4. Use `maintain.py self-test` for maintainer regressions and `maintain.py record-section --heading HEADING` for exact chronology retrieval.")
+    print("4. Use `maintain.py self-test` for maintainer regressions and `maintain.py record list`, `record read --id ID --history`, and `record add --input FILE` for design history. Accepted outcomes and closures also require updating current-state routing.")
     print("\nTranche mode\n")
     print(f"- Kind: `{kind}`")
     if kind == "investigation":
@@ -2787,7 +2726,9 @@ def main(argv: list[str]) -> int:
             "  maintain.py self-test\n"
             "  maintain.py test --adapter python-reference-v1 --case package-valid --case inventory-files-roots\n"
             "  maintain.py describe --format json\n"
-            "  maintain.py record-section --heading 'Candidate revision 9 Windows corrections — accepted'\n"
+            "  maintain.py record list --topic governance\n"
+            "  maintain.py record read --id wr-0031 --history\n"
+            "  maintain.py record add --input record.json --dry-run\n"
             "  maintain.py matrix-review --artifact-dir downloaded --format full"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -2811,7 +2752,24 @@ def main(argv: list[str]) -> int:
     describe_parser.add_argument("--max-bytes", type=int)
     describe_parser.add_argument("--field", action="append", default=[])
     describe_parser.add_argument("--sort")
-    record_section_parser = subparsers.add_parser("record-section", help="Print one exact level-two design-record section.")
+    record_parser = subparsers.add_parser("record", help="Discover, read, and exclusively add maintainer design records.")
+    record_commands = record_parser.add_subparsers(dest="record_command", required=True)
+    record_list = record_commands.add_parser("list", help="Bounded chronological metadata inventory; no record bodies.")
+    record_list.add_argument("--topic", choices=records.TOPICS)
+    record_read = record_commands.add_parser("read", help="Read exact record bytes or the complete linked history.")
+    record_read.add_argument("--id", required=True)
+    record_read.add_argument("--history", action="store_true", help="Include predecessors, later outcomes, and linked authority/source records.")
+    for selected, default_format, default_class in ((record_list, "summary", "discovery-preview"), (record_read, "full", "complete-evidence")):
+        selected.add_argument("--format", choices=("summary", "full", "json"), default=default_format)
+        selected.add_argument("--response-class", choices=("discovery-preview", "complete-evidence"), default=default_class)
+        selected.add_argument("--max-bytes", type=int)
+        selected.add_argument("--cursor")
+    record_add = record_commands.add_parser("add", help="Create one new record from closed JSON; never update status or authenticate approval.")
+    record_add.add_argument("--input", type=Path, required=True, help="JSON fields and example: references/design-record/README.md")
+    record_add.add_argument("--dry-run", action="store_true", help="Preview exact content, ID, path, and digest without writes.")
+    record_add.add_argument("--format", choices=("summary", "full", "json"), default="summary")
+    _output_options(record_add)
+    record_section_parser = subparsers.add_parser("record-section", help="Compatibility alias: read the unique record with this legacy heading.")
     record_section_parser.add_argument("--heading", required=True)
     record_section_parser.add_argument("--format", choices=("summary", "full", "json"), default="full")
     record_section_parser.add_argument("--response-class", choices=("discovery-preview", "complete-evidence"), default="complete-evidence")
@@ -2875,6 +2833,14 @@ def main(argv: list[str]) -> int:
     if args.command in {"describe", "context"}:
         maximum = args.max_bytes or (PREVIEW_MAX_BYTES if args.response_class == "discovery-preview" else COMPLETE_MAX_BYTES)
         return _bounded_command(args, describe_command, args.format, args.response_class, maximum, args.field, args.sort)
+    if args.command == "record":
+        record_root = COMPANION_ROOT / "references/design-record"
+        maximum = args.max_bytes or (PREVIEW_MAX_BYTES if args.response_class == "discovery-preview" else COMPLETE_MAX_BYTES)
+        if args.record_command == "list":
+            return records.list_command(record_root, args.topic, args.format, args.response_class, maximum, args.cursor)
+        if args.record_command == "read":
+            return records.read_command(record_root, args.id, None, args.history, args.format, args.response_class, maximum, args.cursor)
+        return records.add_command(record_root, args.input, args.dry_run, args.format, maximum)
     if args.command == "record-section":
         maximum = args.max_bytes or (PREVIEW_MAX_BYTES if args.response_class == "discovery-preview" else COMPLETE_MAX_BYTES)
         return record_section_command(args.heading, args.format, args.response_class, maximum, args.cursor)
