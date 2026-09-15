@@ -7,11 +7,11 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
-const RELEASE_ID = "v1-candidate-revision-9";
+const RELEASE_ID = "v1-candidate-revision-10";
 const RELEASE_STATUS = "unactivated-frozen";
 const CONTRACT_STATUS = "frozen";
 const CONTRACT_VERSION = 1;
-const CANDIDATE_REVISION = 9;
+const CANDIDATE_REVISION = 10;
 const ADAPTER_ID = "node-v1";
 const ADAPTER_PATH = "scripts/adapters/wayfinder-node.mjs";
 const RELEASE_PATH = "assets/contract-v1/release.json";
@@ -226,14 +226,19 @@ function windowsDirent(target) {
   } catch { return null; }
 }
 function lstatKind(target, dirent = null) {
+  const entry = dirent ?? windowsDirent(target);
+  if (process.platform === "win32" && entry?.isSymbolicLink()) {
+    try { fs.readlinkSync(target); return "symlink"; }
+    catch (error) {
+      if (error.code !== "EINVAL") throw error;
+      const refreshed = windowsDirent(target);
+      if (!refreshed?.isSymbolicLink()) throw error;
+      return "unsupported-file";
+    }
+  }
   try {
     const stat = fs.lstatSync(target);
     if (stat.isSymbolicLink()) return "symlink";
-    const entry = dirent ?? windowsDirent(target);
-    if (process.platform === "win32" && entry?.isSymbolicLink()) {
-      try { fs.readlinkSync(target); return "symlink"; }
-      catch { return "unsupported-file"; }
-    }
     return stat.isDirectory() ? "directory" : stat.isFile() ? "regular-file" : "unsupported-file";
   } catch (error) {
     if (error.code === "ENOENT" || error.code === "ENOTDIR") return "missing";

@@ -117,7 +117,7 @@ class ContextTests(unittest.TestCase):
         code, raw = capture(maintain.describe_command, "json")
         self.assertEqual(code, 0)
         value = json.loads(raw)
-        self.assertEqual(value["candidate"]["releaseId"], "v1-candidate-revision-9")
+        self.assertEqual(value["candidate"]["releaseId"], "v1-candidate-revision-10")
         self.assertEqual({item["id"] for item in value["adapterRegistry"]}, set(maintain.ACCEPTED_ADAPTER_DIGESTS))
 
     def test_current_state_is_exact_and_historical_evidence_is_preserved(self) -> None:
@@ -140,6 +140,25 @@ class ContextTests(unittest.TestCase):
 
 
 class OperationalEfficiencyTests(unittest.TestCase):
+    def test_approval_response_routing_is_complete_and_progressive(self) -> None:
+        companion = maintain.COMPANION_ROOT
+        agents = (maintain.REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        skill = (companion / "SKILL.md").read_text(encoding="utf-8")
+        approval = (companion / "references/approval-response.md").read_text(encoding="utf-8")
+        workflow = (companion / "references/workflow.md").read_text(encoding="utf-8")
+        self.assertIn("approval-response.md", agents)
+        self.assertNotIn("v1-candidate-revision-", agents)
+        for marker in ("Before asking the owner", "when processing the owner's response", "references/approval-response.md"):
+            self.assertIn(marker, skill)
+        for marker in (
+            "## Explicit affirmative response",
+            "## Explicit rejection or revision request",
+            "## Conditional response",
+            "## Ambiguous response",
+        ):
+            self.assertIn(marker, approval)
+        self.assertIn("[approval-response protocol](approval-response.md) is mandatory", workflow)
+
     def test_self_test_discovers_all_modules_without_bytecode(self) -> None:
         completed = subprocess.CompletedProcess([], 0, stdout="", stderr="Ran 21 tests in 1.0s\n\nOK\n")
         with (
@@ -178,6 +197,28 @@ class OperationalEfficiencyTests(unittest.TestCase):
         self.assertIn("Kind: `investigation`", output)
         for command in ("maintain.py evidence", "maintain.py freeze", "maintain.py parity"):
             self.assertNotIn(command, output)
+
+    def test_all_handoff_kinds_include_common_approval_response_contract(self) -> None:
+        for kind in ("investigation", "implementation", "hosted-review", "acceptance-record"):
+            with self.subTest(kind=kind), mock.patch.object(maintain, "doctor", return_value=0):
+                code, output = capture(maintain.handoff_command, kind, "Bounded objective", ["Deferred action"])
+            self.assertEqual(code, 0, output)
+            self.assertIn("Approval response", output)
+            self.assertIn("references/approval-response.md", output)
+            self.assertIn("detailed copy-ready prompt", output)
+            self.assertIn("new session", output)
+            self.assertIn("stop without beginning that task", output)
+            for target in ("reason for rejection", "required correction", "needed evidence", "acceptance criteria"):
+                self.assertIn(target, output)
+
+    def test_handoff_output_remains_bounded_and_deterministic(self) -> None:
+        with mock.patch.object(maintain, "doctor", return_value=0):
+            first_code, first = capture(maintain.handoff_command, "implementation", "Bounded objective", ["Deferred action"])
+            second_code, second = capture(maintain.handoff_command, "implementation", "Bounded objective", ["Deferred action"])
+        self.assertEqual((first_code, first), (second_code, second))
+        self.assertLess(len(first.splitlines()), 50)
+        self.assertEqual(first.count("Approval response"), 1)
+        self.assertIn("Do not infer authorization for later work", first)
 
     def test_github_failure_annotations_and_summary(self) -> None:
         result = {
@@ -355,7 +396,7 @@ class EvidenceTests(unittest.TestCase):
     def test_evidence_refuses_overwrite(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
-            target = root / "candidate-revision-9-local.json"
+            target = root / "candidate-revision-10-local.json"
             target.write_text("preserve\n", encoding="utf-8")
             with mock.patch.object(maintain, "doctor", return_value=0):
                 code, output = capture(maintain.evidence_command, root)
@@ -363,26 +404,18 @@ class EvidenceTests(unittest.TestCase):
             self.assertEqual(target.read_text(encoding="utf-8"), "preserve\n")
             self.assertIn("already exists", output)
 
-    def test_freeze_proposal_is_bound_and_refuses_overwrite(self) -> None:
+    def test_freeze_proposal_requires_revision_scoped_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
-            with mock.patch.object(maintain, "doctor", return_value=0):
+            with mock.patch.object(maintain, "doctor", return_value=0), mock.patch.object(
+                maintain, "CERTIFICATION_ROOT", root
+            ):
                 code, output = capture(maintain.freeze_proposal_command, root)
-            self.assertEqual(code, 0, output)
-            proposal_path = root / "proposed-freeze-revision-9.json"
-            proposal = maintain.load_json(proposal_path)
-            contract = maintain.load_json(maintain.SKILL_ROOT / "assets/contract-v1/contract.json")
-            release = maintain.load_json(maintain.SKILL_ROOT / "assets/contract-v1/release.json")
-            cases = maintain.load_json(maintain.CONFORMANCE_ROOT / "cases.json")
-            self.assertEqual(maintain.freeze_proposal_issues(proposal, contract, release, cases), [])
-            before = {path.name: maintain.sha256(path) for path in root.iterdir()}
-            with mock.patch.object(maintain, "doctor", return_value=0):
-                code, output = capture(maintain.freeze_proposal_command, root)
-            self.assertEqual(code, 2)
-            self.assertIn("already exists", output)
-            self.assertEqual(before, {path.name: maintain.sha256(path) for path in root.iterdir()})
+            self.assertEqual(code, 1)
+            self.assertIn("candidate and parity reports are required", output)
+            self.assertEqual(list(root.iterdir()), [])
 
-    def test_freeze_acceptance_requires_explicit_option_and_refuses_overwrite(self) -> None:
+    def test_freeze_acceptance_requires_explicit_option_and_revision_scoped_proposal(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
             with mock.patch.object(maintain, "doctor", return_value=0):
@@ -390,24 +423,13 @@ class EvidenceTests(unittest.TestCase):
             self.assertEqual(code, 2)
             self.assertIn("requires --accept-option-a", output)
             self.assertEqual(list(root.iterdir()), [])
-            with mock.patch.object(maintain, "doctor", return_value=0):
+            with mock.patch.object(maintain, "doctor", return_value=0), mock.patch.object(
+                maintain, "CERTIFICATION_ROOT", root
+            ):
                 code, output = capture(maintain.freeze_acceptance_command, root, True)
-            self.assertEqual(code, 0, output)
-            acceptance_path = root / "freeze-acceptance-revision-9.json"
-            acceptance = maintain.load_json(acceptance_path)
-            contract = maintain.load_json(maintain.SKILL_ROOT / "assets/contract-v1/contract.json")
-            release = maintain.load_json(maintain.SKILL_ROOT / "assets/contract-v1/release.json")
-            proposal_path = maintain.CERTIFICATION_ROOT / "proposed-freeze-revision-9.json"
-            self.assertEqual(
-                maintain.freeze_acceptance_issues(acceptance, proposal_path, contract, release),
-                [],
-            )
-            before = {path.name: maintain.sha256(path) for path in root.iterdir()}
-            with mock.patch.object(maintain, "doctor", return_value=0):
-                code, output = capture(maintain.freeze_acceptance_command, root, True)
-            self.assertEqual(code, 2)
-            self.assertIn("already exists", output)
-            self.assertEqual(before, {path.name: maintain.sha256(path) for path in root.iterdir()})
+            self.assertEqual(code, 1)
+            self.assertIn("freeze proposal is required", output)
+            self.assertEqual(list(root.iterdir()), [])
 
 
 if __name__ == "__main__":

@@ -412,6 +412,13 @@ def cleanup_special_file_fixture(path: Path, fixture: SpecialFileFixture) -> Non
     fixture.close()
 
 
+def windows_paths_share_identity(left: str, right: str) -> bool:
+    try:
+        return os.path.samefile(left, right)
+    except (OSError, ValueError):
+        return False
+
+
 def normalize_initialize_plan(plan: dict[str, Any], workspace: Path | str) -> bytes:
     projected = copy.deepcopy(plan)
     workspace_binding = projected.get("workspace")
@@ -428,11 +435,17 @@ def normalize_initialize_plan(plan: dict[str, Any], workspace: Path | str) -> by
     path_module = ntpath if windows_style else posixpath
     if not path_module.isabs(workspace_root) or not path_module.isabs(record_root):
         raise CaseFailure("minimal plan workspace paths are not absolute")
-    workspace_spellings = {supplied}
-    if not windows_style:
+    if windows_style:
+        windows_absolute = re.compile(r"^(?:[A-Za-z]:[\\/]|\\\\)")
+        if not windows_absolute.match(supplied) or not windows_absolute.match(record_root):
+            raise CaseFailure("minimal plan workspace path styles are inconsistent")
+        if not windows_paths_share_identity(workspace_root, supplied):
+            raise CaseFailure("minimal plan workspaceRoot differs from the temporary physical workspace")
+    else:
+        workspace_spellings = {supplied}
         workspace_spellings.add(str(Path(supplied).resolve()))
-    if workspace_root not in workspace_spellings:
-        raise CaseFailure("minimal plan workspaceRoot differs from the temporary physical workspace")
+        if workspace_root not in workspace_spellings:
+            raise CaseFailure("minimal plan workspaceRoot differs from the temporary physical workspace")
     if manifest_record == ".":
         expected_record = workspace_root
         canonical_record = "/private<WORKSPACE>"
@@ -442,7 +455,7 @@ def normalize_initialize_plan(plan: dict[str, Any], workspace: Path | str) -> by
             raise CaseFailure("minimal plan manifest recordRoot is unsafe")
         expected_record = path_module.join(workspace_root, *components)
         canonical_record = "/private<WORKSPACE>/" + "/".join(components)
-    if path_module.normpath(record_root) != path_module.normpath(expected_record):
+    if record_root != expected_record:
         raise CaseFailure("minimal plan recordRoot is not the manifest-bound descendant of workspaceRoot")
     workspace_binding["workspaceRoot"] = "/private<WORKSPACE>"
     workspace_binding["recordRoot"] = canonical_record
@@ -1703,6 +1716,7 @@ def command_case(skill_root: Path, adapter: Path, case: dict[str, Any], temporar
         if first.stdout != second.stdout:
             raise CaseFailure("deterministic probe bytes differ")
         expected = json.loads((skill_root / CONFORMANCE_REL / "expected/probe-deterministic.json").read_text(encoding="utf-8"))
+        release = json.loads((skill_root / "assets/contract-v1/release.json").read_text(encoding="utf-8"))
         observed = {
             "knownAnswerCount": result["data"]["deterministic"]["knownAnswers"]["count"],
             "capabilities": result["data"]["deterministic"]["capabilities"],
@@ -1710,7 +1724,8 @@ def command_case(skill_root: Path, adapter: Path, case: dict[str, Any], temporar
             "releaseId": result["data"]["contract"]["releaseId"],
             "status": result["data"]["contract"]["status"],
         }
-        if observed != expected:
+        frozen_observed = {**observed, "releaseId": expected["releaseId"]}
+        if frozen_observed != expected or observed["releaseId"] != release["releaseId"]:
             raise CaseFailure(f"deterministic probe projection differs: {observed!r}")
         if set(result["data"]) != {"adapter", "contract", "deterministic", "environment"}:
             raise CaseFailure("probe does not separate deterministic and environment evidence")

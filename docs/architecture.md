@@ -14,4 +14,4 @@ plugins/wayfinder-maintainer/skills/wayfinder-maintainer
 
 Each plugin has one skill-content source. The root `plugin.json` is the portable Agent Plugins 1.0 manifest. `.codex-plugin/plugin.json` and `.claude-plugin/plugin.json` are compatibility projections validated against the portable identity. Client-specific skill copies and symlink indirection are prohibited.
 
-The package version `1.0.0-rc.9` is distribution metadata only. It does not modify the semantic contract version, candidate revision, governed release registry, certification state, or activation state.
+The package version `1.0.0-rc.10` is distribution metadata only. It does not modify the semantic contract version, candidate revision, governed release registry, certification state, or activation state.

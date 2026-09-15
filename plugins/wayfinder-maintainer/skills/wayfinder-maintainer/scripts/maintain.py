@@ -59,16 +59,16 @@ MATRIX_TARGETS = (
     ("powershell-v1", "PowerShell", "7.6.6", "Linux"),
 )
 ACCEPTED_MATRIX_BINDINGS = {
-    "releaseId": "v1-candidate-revision-9",
-    "releaseSha256": "1826fa1c1323561001565fe4bd635c0432306ced078320f1eecdad81ff268ffb",
+    "releaseId": "v1-candidate-revision-10",
+    "releaseSha256": "581e85c34eb5539d0af0e69128877fe57601600ed59366db13076a366524a083",
     "contractVersion": 1,
-    "contractSha256": "3c79c6e1d2eae7c6016d789c9ade75125a2ec1dcc43f458541f9d7c63654bdd9",
+    "contractSha256": "0d8507c4a8b48fa976c1402b057755da28f896a3feeacf914c35b18a035dc341",
     "fixtureIndexSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6",
     "expectedOutputsSha256": "9d149d3b3603547b509803b3bfb119b79e40db41f97e848f76554f5dccbf1b94",
 }
 ACCEPTED_ADAPTER_DIGESTS = {
-    "python-reference-v1": "f8fe1a0987a37e8a9a43003ede1bcb9eda590c88511daebaafcdd5d13932337a",
-    "node-v1": "df0f3c2a000454b2f7aaa8fcf6762b670aab34b9cb721da571fe334ae29f10ac",
+    "python-reference-v1": "e0b89ba35f223567efe2545d323d816dbaeeedfa8de8fb784fcc7b1c347cb596",
+    "node-v1": "f6d695e60e5964448947ed9f835526efa0f84e3764fb8acdd7f765e3bbe4fa3e",
     "powershell-v1": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9",
 }
 ACCEPTED_PARITY_EVIDENCE_DIGESTS = {
@@ -95,17 +95,19 @@ RUNTIME_REQUIREMENTS = {
     "powershell-v1": ("PowerShell", "7.6.6", "WAYFINDER_POWERSHELL_RUNTIME"),
 }
 CURRENT_APPROVAL_BOUNDARY = (
-    "The owner accepted the exact candidate-revision-9 maintainer-only Windows correction and separately authorized a full "
-    "eight-entry hosted rerun. Acceptance preserves all frozen governed, registered-adapter, and accepted-evidence bytes and "
-    "does not itself certify Windows or the adapter family, promote evidence, add a release-certification entry, activate "
-    "Wayfinder, begin forward testing or cross-adapter recovery, add runtime guidance, or initialize a live project. Hosted "
-    "execution must use one exact published source commit. The owner subsequently clarified that the authorized publication "
-    "scope is every modified and untracked path present in the candidate-revision-9 certification worktree at the start of "
-    "the hosted tranche."
+    "The owner explicitly accepted the exact candidate-revision-10 Windows correction and authorized the full eight-entry hosted "
+    "rerun as the next bounded new-session task. Acceptance records only the reviewed correction and makes no Windows, matrix, "
+    "adapter-family, or full-family certification claim. It does not itself begin publication or hosted execution, create or "
+    "promote evidence, add a release-certification entry, add runtime guidance, activate Wayfinder, modify live project data, begin "
+    "forward testing or cross-adapter recovery, or authorize a later tranche. The exact source-publication scope, including any "
+    "staging, commit, or push, must be resolved explicitly before that action. The accepted layered maintainer approval-response "
+    "governance remains unchanged."
 )
 CURRENT_PENDING_ACTION = (
-    "Publish the complete owner-authorized dirty worktree as one exact commit on candidate-revision-9-certification, dispatch "
-    "the full eight-entry hosted rerun from that commit, preserve outputs as review-only, and report the strict aggregate."
+    "Begin the separately authorized full eight-entry hosted rerun only from the detailed new-session prompt supplied with the "
+    "acceptance response. Before publishing the exact source required by that rerun, resolve the complete staging, commit, and push "
+    "scope and target explicitly. Then use one exact published source commit for all eight entries and report the strict aggregate "
+    "without evidence creation or promotion, a certification claim, activation, or any later tranche."
 )
 FREEZE_ACCEPTANCE_AUTHORIZATION = (
     "Accept the exact revision-9 frozen bytes and local candidate and parity evidence. "
@@ -187,7 +189,7 @@ def current_context() -> dict[str, Any]:
             "adapters": ACCEPTED_ADAPTER_DIGESTS,
             "acceptedParityEvidence": ACCEPTED_PARITY_EVIDENCE_DIGESTS,
             "acceptedMatrixEvidence": ACCEPTED_MATRIX_EVIDENCE_DIGESTS,
-            "currentLocalEvidence": CURRENT_LOCAL_EVIDENCE_DIGESTS,
+            "acceptedRevision9Evidence": CURRENT_LOCAL_EVIDENCE_DIGESTS,
             "historicalEvidenceIndex": _relative(HISTORICAL_HASHES),
         },
         "conformance": {"caseCount": len(cases), "byCategory": dict(sorted(counts.items()))},
@@ -220,7 +222,7 @@ def current_state_markdown() -> str:
         f"`{name}` `{digest}`" for name, digest in sorted(bindings["acceptedMatrixEvidence"].items())
     )
     local_text = ", ".join(
-        f"`{name}` `{digest}`" for name, digest in sorted(bindings["currentLocalEvidence"].items())
+        f"`{name}` `{digest}`" for name, digest in sorted(bindings["acceptedRevision9Evidence"].items())
     )
     lines = [
         "# Wayfinder current maintainer state",
@@ -261,6 +263,9 @@ def current_state_markdown() -> str:
         "- `## Candidate revision 9 maintainer reliability and efficiency — accepted` for the accepted maintainer-only tranche.",
         "- `## Candidate revision 9 Windows failure investigation — accepted` for the active correction authority and unresolved hosted obligations.",
         "- `## Candidate revision 9 maintainer-only Windows correction — accepted` for the accepted correction and authorized hosted-rerun boundary.",
+        "- `## Candidate revision 9 corrected-source hosted execution and residual Windows investigation — accepted` for the latest hosted result, accepted root causes, and the candidate-revision-10 correction authority.",
+        "- `## Maintainer approval-response governance — accepted` for the accepted governance implementation and its preserved boundaries.",
+        "- `## Candidate revision 10 Windows correction — accepted` for the accepted correction and authorized new-session hosted-rerun boundary.",
         "",
         "Read the full record before reopening a decision, changing evidence governance, or recording an accepted outcome.",
         "",
@@ -667,10 +672,11 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
         add("release-schema-status", release_schema["properties"]["status"] == {"enum": ["unactivated-candidate", "unactivated-frozen", "activated-frozen"]})
         add(
             "probe-oracle-identity",
-            probe_expected["releaseId"] == release["releaseId"]
+            probe_expected["releaseId"] == "v1-candidate-revision-9"
+            and release["releaseId"] == expected_release_id
             and probe_expected["contractVersion"] == contract["contractVersion"]
             and probe_expected["status"] == release["status"],
-            f"probe={probe_expected['releaseId']} release={release['releaseId']}",
+            f"frozen-probe={probe_expected['releaseId']} release={release['releaseId']}",
         )
         required_meta_cases = {"package-release-schema-mismatch", "package-status-schema-mismatch", "package-adapter-registry-mismatch"}
         add("meta-conformance-cases", required_meta_cases <= {case["id"] for case in cases["cases"]})
@@ -723,6 +729,9 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
             "## Candidate revision 9 maintainer reliability and efficiency — accepted",
             "## Candidate revision 9 Windows failure investigation — accepted",
             "## Candidate revision 9 maintainer-only Windows correction — accepted",
+            "## Candidate revision 9 corrected-source hosted execution and residual Windows investigation — accepted",
+            "## Maintainer approval-response governance — accepted",
+            "## Candidate revision 10 Windows correction — accepted",
         )
         current_state_matches = (
             CURRENT_STATE_PATH.is_file()
@@ -867,12 +876,12 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
         }
         actual_adapters = {item["id"]: item["sha256"] for item in release["adapters"]}
         add(
-            "accepted-matrix-bindings",
+            "current-candidate-bindings",
             actual_bindings == ACCEPTED_MATRIX_BINDINGS and actual_adapters == ACCEPTED_ADAPTER_DIGESTS,
             json.dumps({"package": actual_bindings, "adapters": actual_adapters}, sort_keys=True),
         )
     except Exception as exc:
-        add("accepted-matrix-bindings", False, str(exc))
+        add("current-candidate-bindings", False, str(exc))
 
     try:
         mismatches = [
@@ -1667,7 +1676,7 @@ def _matrix_package_issues(adapter_id: str) -> tuple[list[str], dict[str, Any], 
         "expectedOutputsSha256": expected_outputs_sha256(contract),
     }
     if actual_bindings != ACCEPTED_MATRIX_BINDINGS:
-        issues.append("accepted candidate/package bindings differ")
+        issues.append("current candidate/package bindings differ")
     registered = {item["id"]: item for item in release.get("adapters", [])}
     if set(registered) != set(ACCEPTED_ADAPTER_DIGESTS):
         issues.append("registered adapter set differs")
@@ -1892,7 +1901,7 @@ def matrix_entry_command(adapter_id: str, operating_system_family: str, output: 
     report = {
         "format": "wayfinder-environment-certification-evidence",
         "schemaVersion": 1,
-        "scope": "bounded-certification-matrix-candidate-revision-9",
+        "scope": "bounded-certification-matrix-candidate-revision-10",
         "status": "passing-environment-entry-not-full-family-certification" if passed else "failing-environment-entry",
         "generatedAt": generated_at.isoformat().replace("+00:00", "Z"),
         "target": {
@@ -1938,7 +1947,7 @@ def matrix_entry_command(adapter_id: str, operating_system_family: str, output: 
         "limitations": limitations,
     }
     timestamp = generated_at.strftime("%Y%m%dT%H%M%SZ")
-    stem = f"matrix-revision-9-{adapter_id}-{operating_system_family.lower()}-{timestamp}"
+    stem = f"matrix-revision-10-{adapter_id}-{operating_system_family.lower()}-{timestamp}"
     json_path = output / f"{stem}.json"
     markdown_path = output / f"{stem}.md"
     if json_path.exists() or json_path.is_symlink() or markdown_path.exists() or markdown_path.is_symlink():
@@ -2046,7 +2055,7 @@ def matrix_aggregate_command(entries: list[Path], output: Path) -> int:
         return 2
     output = output.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    stem = "matrix-revision-9-aggregate"
+    stem = "matrix-revision-10-aggregate"
     json_path = output / f"{stem}.json"
     markdown_path = output / f"{stem}.md"
     if json_path.exists() or json_path.is_symlink() or markdown_path.exists() or markdown_path.is_symlink():
@@ -2068,7 +2077,7 @@ def matrix_aggregate_command(entries: list[Path], output: Path) -> int:
     report = {
         "format": "wayfinder-certification-matrix-evidence",
         "schemaVersion": 1,
-        "scope": "bounded-certification-matrix-candidate-revision-9",
+        "scope": "bounded-certification-matrix-candidate-revision-10",
         "status": "passing-bounded-matrix-not-full-family-certification",
         "generatedAt": generated_at,
         "package": ACCEPTED_MATRIX_BINDINGS,
@@ -2400,6 +2409,10 @@ def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
         print("\nExplicit exclusions\n")
         for item in exclusions:
             print(f"- {item}")
+    print("\nApproval response\n")
+    print("- Follow `references/approval-response.md` before asking for approval and when processing the owner's response.")
+    print("- After explicit acceptance, record only the accepted outcome when required, provide a detailed copy-ready prompt for the next bounded task in a new session, and stop without beginning that task.")
+    print("- After rejection or a material revision request, leave the checkpoint pending and interview with one material question per turn until the reason for rejection, required correction, needed evidence, and acceptance criteria are understood.")
     print("\nDo not infer authorization for later work. Present material changes for explicit approval and stop at the active tranche boundary.")
     return 0
 

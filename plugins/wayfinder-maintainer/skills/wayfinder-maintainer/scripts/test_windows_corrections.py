@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic regression tests for candidate revision 9 Windows corrections."""
+"""Deterministic regression tests for candidate revision 9 and 10 Windows corrections."""
 
 from __future__ import annotations
 
@@ -32,10 +32,10 @@ def load_module(name: str, path: Path):
 
 
 sys.dont_write_bytecode = True
-adapter = load_module("wayfinder_revision_9_adapter", ADAPTER_PATH)
+adapter = load_module("wayfinder_revision_10_adapter", ADAPTER_PATH)
 sys.path.insert(0, str(RUNNER_PATH.parent))
 try:
-    runner = load_module("wayfinder_revision_9_runner", RUNNER_PATH)
+    runner = load_module("wayfinder_revision_10_runner", RUNNER_PATH)
 finally:
     sys.path.pop(0)
 
@@ -307,33 +307,75 @@ class InitializePlanNormalizationTests(unittest.TestCase):
         self.assertEqual(value["contractSha256"], "<CONTRACT_SHA256>")
 
     def test_windows_drive_letter_descendant_and_non_path_backslashes(self) -> None:
-        workspace = "D:\\a folder\\naïve\\workspace"
-        plan = self.plan(workspace, workspace + "\\record")
-        normalized = json.loads(runner.normalize_initialize_plan(plan, workspace))
+        supplied = "D:\\A FOLDE~1\\NAIVE~1\\WORKSP~1"
+        physical = "D:\\a folder\\naïve\\workspace"
+        plan = self.plan(physical, physical + "\\record")
+        with mock.patch.object(runner, "windows_paths_share_identity", return_value=True) as same_identity:
+            normalized = json.loads(runner.normalize_initialize_plan(plan, supplied))
+        same_identity.assert_called_once_with(physical, supplied)
         self.assertEqual(normalized["workspace"]["workspaceRoot"], "/private<WORKSPACE>")
         self.assertEqual(normalized["workspace"]["recordRoot"], "/private<WORKSPACE>/record")
         self.assertEqual(normalized["note"], plan["note"])
 
-    def test_outside_or_inconsistent_record_root_fails_closed(self) -> None:
+    def test_windows_missing_or_divergent_physical_root_fails_closed(self) -> None:
+        physical = "D:\\a folder\\workspace"
+        supplied = "D:\\AFOLDE~1\\WORKSP~1"
+        with mock.patch.object(
+            runner, "windows_paths_share_identity", return_value=False
+        ), self.assertRaisesRegex(runner.CaseFailure, "workspaceRoot differs"):
+            runner.normalize_initialize_plan(self.plan(physical, physical + "\\record"), supplied)
+        for error in (FileNotFoundError(), PermissionError(), ValueError()):
+            with self.subTest(error=type(error).__name__), mock.patch.object(
+                runner.os.path, "samefile", side_effect=error
+            ):
+                self.assertFalse(runner.windows_paths_share_identity(physical, supplied))
+
+    def test_outside_inconsistent_or_nonlexical_record_root_fails_closed(self) -> None:
         for workspace, record in (
             ("/tmp/workspace", "/tmp/other/record"),
             ("D:\\workspace", "D:\\other\\record"),
+            ("D:\\workspace", "D:\\workspace\\.\\record"),
+            ("D:\\workspace", "D:/workspace/record"),
         ):
-            with self.subTest(workspace=workspace), self.assertRaisesRegex(
+            with self.subTest(workspace=workspace), mock.patch.object(
+                runner, "windows_paths_share_identity", return_value=True
+            ), self.assertRaisesRegex(
                 runner.CaseFailure, "recordRoot is not the manifest-bound descendant"
             ):
                 runner.normalize_initialize_plan(self.plan(workspace, record), workspace)
+
+    def test_malformed_or_inconsistent_windows_paths_fail_closed(self) -> None:
+        cases = (
+            self.plan("D:\\workspace", "D:\\workspace\\record", "record/../escape"),
+            self.plan("D:\\workspace", "D:\\workspace\\record", "record\\child"),
+            self.plan("D:\\workspace", "/tmp/workspace/record"),
+        )
+        for plan in cases:
+            with self.subTest(plan=plan), mock.patch.object(
+                runner, "windows_paths_share_identity", return_value=True
+            ), self.assertRaises(runner.CaseFailure):
+                runner.normalize_initialize_plan(plan, "D:\\workspace")
 
     def test_node_and_powershell_non_link_reparse_rules_are_executable(self) -> None:
         node = os.environ["WAYFINDER_NODE_RUNTIME"]
         node_source = (RUNTIME_ROOT / "scripts/adapters/wayfinder-node.mjs").read_text(encoding="utf-8")
         helper = node_source[node_source.index("function windowsDirent"):node_source.index("function physicalDirectory")]
-        program = f'''const fs={{lstatSync:()=>({{isSymbolicLink:()=>false,isDirectory:()=>false,isFile:()=>true}}),readdirSync:()=>[]}};
+        program = f'''let lstatCalls=0,readlinkCalls=0,contentReads=0,refreshMode="reparse",readlinkMode="einval";
+const reparse=()=>({{name:"socket",isSymbolicLink:()=>true}}),regular=()=>({{name:"socket",isSymbolicLink:()=>false}});
+const fs={{
+  lstatSync:()=>{{lstatCalls++;return{{isSymbolicLink:()=>false,isDirectory:()=>false,isFile:()=>true}}}},
+  readdirSync:()=>refreshMode==="missing"?[]:[refreshMode==="reparse"?reparse():regular()],
+  readFileSync:()=>{{contentReads++;throw new Error("content read")}},
+  readlinkSync:()=>{{readlinkCalls++;if(readlinkMode==="target")return"target";throw Object.assign(new Error(readlinkMode),{{code:readlinkMode==="einval"?"EINVAL":readlinkMode}})}}
+}};
 const path=require("path").win32;const process={{platform:"win32"}};{helper}
-const entry={{isSymbolicLink:()=>true}};
-fs.readlinkSync=()=>{{throw Object.assign(new Error("not a link"),{{code:"EINVAL"}})}};
-if(lstatKind("C:\\\\work\\\\socket",entry)!=="unsupported-file")process.exit(2);
-fs.readlinkSync=()=>"target";if(lstatKind("C:\\\\work\\\\link",entry)!=="symlink")process.exit(3);'''
+const entry=reparse();
+if(lstatKind("C:\\\\work\\\\socket",entry)!=="unsupported-file"||lstatCalls||readlinkCalls!==1||contentReads)throw new Error("unsupported reparse classification");
+readlinkMode="target";if(lstatKind("C:\\\\work\\\\socket",entry)!=="symlink"||lstatCalls||contentReads)throw new Error("link classification");
+for(const code of ["EACCES","ENOENT","UNKNOWN"]){{readlinkMode=code;let threw=false;try{{lstatKind("C:\\\\work\\\\socket",entry)}}catch(error){{threw=error.code===code}}if(!threw)throw new Error("metadata failure did not fail closed: "+code);}}
+readlinkMode="einval";for(const mode of ["missing","regular"]){{refreshMode=mode;let threw=false;try{{lstatKind("C:\\\\work\\\\socket",entry)}}catch(error){{threw=error.code==="EINVAL"}}if(!threw)throw new Error("changed reparse did not fail closed: "+mode);}}
+refreshMode="reparse";if(lstatKind("C:\\\\work\\\\socket")!=="unsupported-file"||lstatKind("C:\\\\work\\\\socket",entry)!=="unsupported-file")throw new Error("selection/traversal mismatch");
+if(contentReads)throw new Error("special file content was read");'''
         subprocess.run([node, "-e", program], check=True)
 
         powershell = os.environ["WAYFINDER_POWERSHELL_RUNTIME"]

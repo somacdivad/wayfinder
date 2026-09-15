@@ -8,7 +8,7 @@
       "name": "wayfinder",
       "source": "./plugins/wayfinder",
       "description": "Build and maintain a durable project record.",
-      "version": "1.0.0-rc.9",
+      "version": "1.0.0-rc.10",
       "category": "productivity"
     }
   ]

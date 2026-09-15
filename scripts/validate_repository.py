@@ -12,12 +12,12 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_NAMES = ("wayfinder", "wayfinder-maintainer")
-VERSION = "1.0.0-rc.9"
+VERSION = "1.0.0-rc.10"
 EXPECTED_DIGESTS = {
-    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/contract.json": "3c79c6e1d2eae7c6016d789c9ade75125a2ec1dcc43f458541f9d7c63654bdd9",
-    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/release.json": "1826fa1c1323561001565fe4bd635c0432306ced078320f1eecdad81ff268ffb",
-    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder.py": "f8fe1a0987a37e8a9a43003ede1bcb9eda590c88511daebaafcdd5d13932337a",
-    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-node.mjs": "df0f3c2a000454b2f7aaa8fcf6762b670aab34b9cb721da571fe334ae29f10ac",
+    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/contract.json": "0d8507c4a8b48fa976c1402b057755da28f896a3feeacf914c35b18a035dc341",
+    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/release.json": "581e85c34eb5539d0af0e69128877fe57601600ed59366db13076a366524a083",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder.py": "e0b89ba35f223567efe2545d323d816dbaeeedfa8de8fb784fcc7b1c347cb596",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-node.mjs": "f6d695e60e5964448947ed9f835526efa0f84e3764fb8acdd7f765e3bbe4fa3e",
     "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-powershell.ps1": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9",
     "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/parity-revision-8-local.json": "28bc61ede21e0b8041c1951b1327c948642d0712170048f17ce2bab9653562ef",
     "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/parity-revision-8-local.md": "840641fd2b2814104a78f7fe0d4106ac70c4688056237003770d7ec7874e97c0",
@@ -75,6 +75,43 @@ def main() -> int:
         failures.append("AGENTS.md must route mutable Wayfinder status to current-state.md")
     if "v1-candidate-revision-" in agents_text or "five passing entries" in agents_text:
         failures.append("AGENTS.md must not duplicate mutable candidate or hosted status")
+    if not all(
+        marker in agents_text
+        for marker in ("approval-response.md", "affirmative", "rejection", "Never begin the next task automatically")
+    ):
+        failures.append("AGENTS.md must route approval turns to the maintainer approval-response protocol")
+
+    maintainer_root = ROOT / "plugins/wayfinder-maintainer/skills/wayfinder-maintainer"
+    maintainer_skill = (maintainer_root / "SKILL.md").read_text(encoding="utf-8")
+    if not all(
+        marker in maintainer_skill
+        for marker in ("Before asking the owner", "when processing the owner's response", "references/approval-response.md")
+    ):
+        failures.append("maintainer skill must route approval questions and responses to approval-response.md")
+    approval_path = maintainer_root / "references/approval-response.md"
+    approval_text = approval_path.read_text(encoding="utf-8") if approval_path.is_file() else ""
+    if not all(
+        marker in approval_text
+        for marker in (
+            "## Explicit affirmative response",
+            "## Explicit rejection or revision request",
+            "## Conditional response",
+            "## Ambiguous response",
+            "one material question per turn",
+            "copy-ready prompt",
+        )
+    ):
+        failures.append("canonical approval-response reference is missing required response behavior")
+    workflow_text = (maintainer_root / "references/workflow.md").read_text(encoding="utf-8")
+    if "[approval-response protocol](approval-response.md) is mandatory" not in workflow_text:
+        failures.append("maintainer workflow must route approval handling to approval-response.md")
+    handoff_source = (maintainer_root / "scripts/maintain.py").read_text(encoding="utf-8")
+    if not all(
+        marker in handoff_source
+        for marker in ("Approval response", "references/approval-response.md", "stop without beginning that task")
+    ):
+        failures.append("maintainer handoff generator must carry the approval-response reminder")
+
     runtime_skill = (ROOT / "plugins/wayfinder/skills/wayfinder/SKILL.md").read_text(encoding="utf-8")
     if "candidate revision 8" in runtime_skill.lower() or "candidate revision 9" in runtime_skill.lower():
         failures.append("runtime skill must not duplicate mutable candidate status")

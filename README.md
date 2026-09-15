@@ -3,7 +3,7 @@
 Wayfinder is a portable agent plugin for building, maintaining, validating, and selectively consulting a durable, repository-owned project record. The repository also contains an independently installable maintainer plugin for contract development, conformance testing, and certification.
 
 > [!IMPORTANT]
-> Wayfinder is not activated for runtime use. The exact `v1-candidate-revision-9` frozen bytes and local evidence are owner-accepted, but the release is unactivated and the eight-environment certification matrix has not been run for revision 9. Installing or forking this repository does not change that status.
+> Wayfinder is not activated for runtime use. The `v1-candidate-revision-10` Windows correction is owner-accepted, but it has no revision-10 hosted evidence; accepted revision-9 evidence is historical and cannot certify the revised source. Installing or forking this repository does not change that status.
 
 ## Packages
 
@@ -16,12 +16,12 @@ Each package uses one canonical skill tree and includes manifests for the Agent 
 
 ## Repository status
 
-- Candidate: `v1-candidate-revision-9`
+- Candidate: `v1-candidate-revision-10`
 - Contract: frozen
 - Release: unactivated
 - Common conformance suite: 305 cases
-- Accepted local adapter parity: all three adapters passed 305/305; 900 normalized invocations agreed
-- Environment matrix: one of eight exact entries has passing evidence; completion is not claimed
+- Accepted local adapter parity: revision 9 only; all three adapters passed 305/305 and 900 normalized invocations agreed
+- Environment matrix: revision 10 has no hosted entries; Windows or full-family certification is not claimed
 
 See [architecture](docs/architecture.md), [compatibility](docs/compatibility.md), [certification](docs/certification.md), and [migration provenance](docs/migration-provenance.md).
 

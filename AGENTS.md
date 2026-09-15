@@ -10,6 +10,7 @@
 
 - For changes to Wayfinder itself, first read the complete maintainer `SKILL.md` and `references/current-state.md`.
 - Read `references/workflow.md` when changing, testing, certifying, publishing, or activating Wayfinder. Read only design-record sections routed by current state or the maintainer skill; read the complete chronology only when reopening an accepted decision, changing evidence governance, or recording an accepted outcome.
+- Before requesting or processing an explicit acceptance, authorization, or approval, follow the maintainer [approval-response protocol](plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/approval-response.md). An affirmative requires the bounded new-session handoff and stop; a rejection requires the facilitated one-material-question-per-turn interview. Never begin the next task automatically.
 - Treat current state as the default boundary. A later explicit owner instruction may authorize a named bounded tranche; quote its scope and exclusions before acting, and do not infer authority for a later tranche.
 - Run the canonical maintainer doctor with Python 3.11 or newer before and after maintenance work.
 - Preserve accepted evidence and frozen governed bytes. Never overwrite or relabel an evidence file.

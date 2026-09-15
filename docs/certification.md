@@ -1,9 +1,9 @@
 # Certification
 
-- **Status:** Bounded matrix incomplete; hosted execution not yet run
+- **Status:** Candidate revision 10 correction accepted; full eight-entry hosted rerun authorized but not begun; bounded matrix incomplete
 - **Last updated:** 2026-09-14
 
-The current target is the owner-accepted, frozen, unactivated `v1-candidate-revision-9`. Its local candidate and parity evidence is accepted; hosted certification remains separately unauthorized. The exact required matrix contains eight entries:
+The current target is the frozen, unactivated `v1-candidate-revision-10`, whose Windows correction is owner-accepted. Accepted revision-9 local and hosted results remain historical and cannot certify revision 10. The full eight-entry revision-10 hosted rerun is authorized as a separate new-session task but has not begun. The exact required matrix contains eight entries:
 
 | Adapter runtime | macOS | Linux | Windows |
 | --- | --- | --- | --- |

@@ -1,6 +1,6 @@
 {
   "name": "wayfinder-maintainer",
-  "version": "1.0.0-rc.9",
+  "version": "1.0.0-rc.10",
   "description": "Maintain, test, and certify the Wayfinder executable contract and adapters.",
   "author": {
     "name": "David Amos",

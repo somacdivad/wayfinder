@@ -2,7 +2,7 @@
   "format": "wayfinder-executable-contract",
   "schemaVersion": 1,
   "contractVersion": 1,
-  "candidateRevision": 9,
+  "candidateRevision": 10,
   "status": "frozen",
   "governedScopes": [
     {

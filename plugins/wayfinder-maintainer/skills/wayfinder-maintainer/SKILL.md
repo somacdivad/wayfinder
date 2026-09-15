@@ -17,6 +17,8 @@ Maintain the Wayfinder skill without treating passing hashes or fixture counts a
 
 Routine maintenance does not require the full chronological record. Read the exact routed sections in `current-state.md` when prior rationale affects the task. Read the complete [design record](references/design-record.md) only when reopening a decision, changing evidence governance, or recording an accepted outcome; use bounded non-overlapping reads if necessary.
 
+Before asking the owner for acceptance, authorization, or approval, and when processing the owner's response to such a request, read and follow the canonical [approval-response protocol](references/approval-response.md).
+
 ## Efficient execution
 
 - Use `maintain.py describe` (or `context`) for canonical paths, candidate identity, case counts, adapter registry, runtime requirements, and the current approval boundary.

@@ -25,7 +25,7 @@ from typing import Any, Iterable
 
 CONTRACT_VERSION = 1
 SCHEMA_VERSION = 1
-CANDIDATE_REVISION = 9
+CANDIDATE_REVISION = 10
 RELEASE_ID = f"v1-candidate-revision-{CANDIDATE_REVISION}"
 CONTRACT_STATUS = "frozen"
 RELEASE_STATUS = "unactivated-frozen"

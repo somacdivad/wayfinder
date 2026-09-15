@@ -2,7 +2,13 @@
 
 All notable packaging and repository changes are recorded here. Contract history and certification status remain authoritative in the maintainer design record.
 
-## 1.0.0-rc.9 — Unreleased
+## 1.0.0-rc.10 — Unreleased
+
+- Advance the frozen, unactivated contract to `v1-candidate-revision-10` for the bounded Windows workspace-identity and Node.js non-link reparse corrections.
+- Preserve the 305-case fixture corpus, frozen expected outputs, accepted evidence, and disabled activation state.
+- Record owner acceptance of the correction and separate authorization for an eight-entry hosted rerun; no revision-10 hosted evidence or certification claim exists yet.
+
+## 1.0.0-rc.9 — 2026-09-14
 
 - Advance the frozen, unactivated contract to `v1-candidate-revision-9` for the bounded Windows process-probe and unsupported-special-file corrections.
 
