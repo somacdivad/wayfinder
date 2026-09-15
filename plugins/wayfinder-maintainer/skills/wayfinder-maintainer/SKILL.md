@@ -15,6 +15,8 @@ Use `maintain.py plan list`, `plan read --id ID --history`, and `plan create/upd
 
 Implement the approved PR sequence continuously within its named authority, pausing for material deviations or named checkpoints. Stack only genuine dependencies using native GitHub stacks; if support is unavailable, pause to propose a fallback. Request the owner's review on all ready PRs here in chat with one consolidated version-bound question. Keep review requests, feedback, and approval in chat: do not post review-request comments, factual tags, or review notifications on PRs. Finish all authorized local persistence before sending the chat request, then stop without polling until the owner returns. Version-bound explicit approval permits eligible merging subject to protections and dependencies; review completion alone does not.
 
+Before creating or updating a PR description, read and use the target repository's PR template (`.github/pull_request_template.md` in this repository). Complete its sections and preserve its headings and checklists; do not replace it with a freeform description. Link the living plan and exact approved revision, and mark checks only for verified passing outcomes. Keep failed, pending, skipped, and unavailable checks unchecked and explain their status. When using `gh --body-file`, populate the file from the template explicitly.
+
 ## Start with compact state
 
 1. Read the applicable repository instructions and [current maintainer state](references/current-state.md).
