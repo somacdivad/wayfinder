@@ -29,6 +29,8 @@ Routine maintenance starts with the compact state and [design-record guide](refe
 
 Before asking the owner for acceptance, authorization, or approval, and when processing the owner's response to such a request, read and follow the canonical [approval-response protocol](references/approval-response.md).
 
+For hosted performance investigations, identify each authorized run as measurement-only or correctness/full-validation-performance before execution. For measurement-only runs, collect diagnostics and cancel the exact run’s remaining ordinary validation. For correctness or full-validation-performance runs, retain required full coverage and timings. Cancelled coverage remains unavailable; this policy never waives PR readiness checks or changes certification/publication governance.
+
 ## Efficient execution
 
 - Use `maintain.py describe` (or `context`) for canonical paths, candidate identity, case counts, adapter registry, runtime requirements, and the current approval boundary.
