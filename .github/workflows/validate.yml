@@ -32,20 +32,15 @@ jobs:
           package-manager-cache: false
       - name: Install checksum-verified PowerShell 7.6.6
         run: bash .github/scripts/install-powershell.sh
+      - name: Measure PowerShell startup and adapter loading
+        timeout-minutes: 5
+        env:
+          WAYFINDER_POWERSHELL_RUNTIME: pwsh
+        run: python scripts/measure_powershell_startup.py --samples 16 --output "$RUNNER_TEMP/powershell-startup-diagnostics.json"
       - name: Run full ordinary repository verification with timings
+        if: always()
         env:
           WAYFINDER_NODE_RUNTIME: node
           WAYFINDER_POWERSHELL_RUNTIME: pwsh
-          # Temporary same-revision baseline comparison: rerun attempts 1/2/3 use 1/2/4.
-          # Replace with the selected fixed worker count after the measurement checkpoint.
-          WAYFINDER_PERFORMANCE_BENCHMARK: 'true'
-        run: |
-          jobs=2
-          if [ "$WAYFINDER_PERFORMANCE_BENCHMARK" = true ]; then
-            case "$GITHUB_RUN_ATTEMPT" in
-              1) jobs=1 ;;
-              2) jobs=2 ;;
-              3) jobs=4 ;;
-            esac
-          fi
-          python scripts/run_repository_verification.py --powershell-jobs "$jobs" --output "$RUNNER_TEMP/verification-timings"
+        # Two workers accompany this diagnostic checkpoint; no final count is selected.
+        run: python scripts/run_repository_verification.py --powershell-jobs 2 --output "$RUNNER_TEMP/verification-timings"

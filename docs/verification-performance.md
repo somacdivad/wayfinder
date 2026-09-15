@@ -73,3 +73,35 @@ is selected and no three-run readiness validation is started. Draft PR #9 remain
 not ready. Sharding, reduced coverage, larger runners, adapter changes and other
 adapter parallelism require an explicit revised decision. These logs and timings
 are diagnostic observations, not accepted certification evidence.
+
+## Proposed startup diagnostic checkpoint
+
+`scripts/measure_powershell_startup.py --samples 16 --output /new/report.json`
+compares an empty `pwsh`, adapter invalid-command rejection, package `probe`, and
+discovery in a temporary valid manifest fixture. It uses the same `-NoLogo`,
+`-NoProfile`, `-NonInteractive` flags as conformance. Every sample starts a fresh
+process; no persistent adapter process or adapter modification is introduced.
+The first observation of each scenario is recorded separately, followed by 16
+samples each at one, two and four workers: 196 total process invocations.
+
+Each group reports individual wall durations, median/p95, batch wall time and
+aggregate child user/system CPU time, major page faults, block I/O counts and
+context switches. Fixture preparation is outside measurement. First observations
+are not guaranteed cold-cache measurements. Differences between scenarios estimate
+additional costs; they do not precisely partition runtime initialization, parsing,
+module loading, validation or OS caching. Aggregate CPU and I/O counters provide
+clues about contention, not a profiler trace.
+
+The output is exclusively created, reports incomplete until every measurement
+passes, and stays separate from governed results. Existing reports, unexpected
+results and the unchanged 15-second invocation timeout fail the diagnostic.
+Adapter bytes are checked unchanged after measurement. The Ubuntu workflow caps
+the diagnostic step at five minutes and still runs ordinary full coverage with
+two PowerShell workers, even after diagnostic failure. This is a diagnostic
+configuration, not selection of the final worker count or an under-ten-minute claim.
+
+Hosted execution awaits approval of the complete diagnostic revision. That approval
+would permit one branch update and ordinary validation attempt, log inspection and
+local findings persistence, followed by a pause for the next measured plan decision.
+The performance acceptance target and frozen/evidence/certification exclusions stay
+unchanged. Local PowerShell coverage remains unavailable.
