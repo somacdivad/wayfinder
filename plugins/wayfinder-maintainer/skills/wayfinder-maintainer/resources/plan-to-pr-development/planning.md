@@ -42,3 +42,5 @@ Stop interviewing and present the complete plan only when:
 Do not seek certainty about every minor implementation detail. Also do not call a plan complete while leaving consequential defaults to the implementer. If a later finding materially alters approved scope, design, authority, or acceptance, preserve the last approval and interview the revision before dependent work proceeds.
 
 Use the [template](plan-template.md), [research method](research-method.md), and [plan management](plan-management.md) for the saved result. Trace decisions to their sources and verification using the lightweight approach in [planning research](research/planning-and-acceptance.md).
+
+For version-bound review packets, durable delivery receipts and shared reporting, read [local review and verification CLI](reliability-cli.md).
