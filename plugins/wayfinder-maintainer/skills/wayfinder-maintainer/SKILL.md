@@ -15,6 +15,8 @@ Use `maintain.py plan list`, `plan read --id ID --history`, and `plan create/upd
 
 Implement the approved PR sequence continuously within its named authority, pausing for material deviations or named checkpoints. Stack only genuine dependencies using native GitHub stacks; if support is unavailable, pause to propose a fallback. Request the owner's review on all ready PRs here in chat with one consolidated version-bound question. Keep review requests, feedback, and approval in chat: do not post review-request comments, factual tags, or review notifications on PRs. Finish all authorized local persistence before sending the chat request, then stop without polling until the owner returns. Version-bound explicit approval permits eligible merging subject to protections and dependencies; review completion alone does not.
 
+Before creating or updating a PR description, read and use the target repository's PR template (`.github/pull_request_template.md` in this repository). Complete its sections and preserve its headings and checklists; do not replace it with a freeform description. Link the living plan and exact approved revision, and mark checks only for verified passing outcomes. Keep failed, pending, skipped, and unavailable checks unchecked and explain their status. When using `gh --body-file`, populate the file from the template explicitly.
+
 ## Start with compact state
 
 1. Read the applicable repository instructions and [current maintainer state](references/current-state.md).
@@ -26,6 +28,8 @@ Implement the approved PR sequence continuously within its named authority, paus
 Routine maintenance starts with the compact state and [design-record guide](references/design-record/README.md). Discover history with `maintain.py record list`, then use `record read --id ID --history` for exact routed records. Before reopening a decision, changing evidence governance, or recording an accepted outcome, read the complete affected history and all decisive linked authority/evidence sources. Expand on conflicts or missing dependencies; unrelated chronology is not a routine prerequisite. The [legacy entrypoint](references/design-record.md) retains old heading anchors as navigation only.
 
 Before asking the owner for acceptance, authorization, or approval, and when processing the owner's response to such a request, read and follow the canonical [approval-response protocol](references/approval-response.md).
+
+For hosted performance investigations, identify each authorized run as measurement-only or correctness/full-validation-performance before execution. For measurement-only runs, collect diagnostics and cancel the exact run’s remaining ordinary validation. For correctness or full-validation-performance runs, retain required full coverage and timings. Cancelled coverage remains unavailable; this policy never waives PR readiness checks or changes certification/publication governance.
 
 ## Efficient execution
 

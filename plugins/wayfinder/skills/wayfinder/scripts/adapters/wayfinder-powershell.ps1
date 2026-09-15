@@ -7,8 +7,8 @@ $ErrorActionPreference = 'Stop'
 
 $script:AdapterId = 'powershell-v1'
 $script:AdapterRelativePath = 'scripts/adapters/wayfinder-powershell.ps1'
-$script:SkillRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$script:ContractRoot = Join-Path $script:SkillRoot 'assets/contract-v1'
+$script:SkillRoot = [IO.Path]::GetDirectoryName([IO.Path]::GetDirectoryName($PSScriptRoot))
+$script:ContractRoot = [IO.Path]::Combine($script:SkillRoot,'assets/contract-v1')
 $script:Utf8Strict = [System.Text.UTF8Encoding]::new($false, $true)
 $script:Utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 $script:JsonStringOptions = [System.Text.Json.JsonSerializerOptions]::new()
@@ -1306,29 +1306,50 @@ function Test-WfGovernedTextProfile {
     if($text.Contains("`r")-or-not$text.EndsWith("`n")-or$text.EndsWith("`n`n")){Throw-Wf 2 'text.newline' 'Governed package text must use LF and one terminal LF.' ([ordered]@{path=$Path})}
 }
 
+function Get-WfProbeFiles {
+    param([string]$LiteralPath)
+    $options = [IO.EnumerationOptions]::new()
+    $options.RecurseSubdirectories = $false
+    $options.IgnoreInaccessible = $false
+    $options.AttributesToSkip = [IO.FileAttributes]0
+    $pending = [Collections.Generic.Stack[IO.DirectoryInfo]]::new()
+    $pending.Push([IO.DirectoryInfo]::new($LiteralPath))
+    while ($pending.Count -gt 0) {
+        $directory = $pending.Pop()
+        foreach ($entry in $directory.EnumerateFileSystemInfos('*',$options)) {
+            if (($entry.Attributes -band ([IO.FileAttributes]::Hidden -bor [IO.FileAttributes]::System)) -ne 0) { continue }
+            if (($entry.Attributes -band [IO.FileAttributes]::Directory) -ne 0) {
+                if ($null -eq $entry.LinkTarget -and ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) -eq 0) {
+                    $pending.Push([IO.DirectoryInfo]::new($entry.FullName))
+                }
+            } else { $entry }
+        }
+    }
+}
+
 function Invoke-WfProbe {
-    $releasePath=Join-Path $script:ContractRoot 'release.json'
+    $releasePath=[IO.Path]::Combine($script:ContractRoot,'release.json')
     try{$release=Read-WfJsonFile $releasePath 2}catch [WayfinderFailure]{if($_.Exception.StableCode-in@('json.invalid','text.invalid-utf8','text.invalid-unicode','text.bom','text.newline','json.duplicate-key','json.number')){Throw-Wf 2 'package.release-invalid' 'Release descriptor is invalid.'};throw}
     Assert-WfClosedObject $release @('format','schemaVersion','releaseId','status','contractVersion','contractManifest','adapters','certifications') @('format','schemaVersion','releaseId','status','contractVersion','contractManifest','adapters','certifications') 2
     if($release.format-ne'wayfinder-contract-release'-or$release.schemaVersion-ne1){Throw-Wf 2 'package.release-invalid' 'Release identity differs.'};if($release.contractVersion-ne1){Throw-Wf 2 'package.contract-version' 'Release contract version differs.'}
     if($release.releaseId-notmatch'^v1-candidate-revision-[1-9][0-9]*$'-or$release.status-notin@('unactivated-candidate','unactivated-frozen','activated-frozen')){Throw-Wf 2 'package.release-schema' 'Release identity/status is outside the schema.'}
     Assert-WfClosedObject $release.contractManifest @('path','sha256') @('path','sha256') 2;if($release.contractManifest.path-ne'assets/contract-v1/contract.json'){Throw-Wf 2 'package.release-invalid' 'Contract manifest path differs.'}
     Assert-WfArray $release.adapters 2;Assert-WfArray $release.certifications 2
-    $contractPath=Join-Path $script:SkillRoot $release.contractManifest.path
+    $contractPath=[IO.Path]::Combine($script:SkillRoot,$release.contractManifest.path)
     if(-not[IO.File]::Exists($contractPath)){Throw-Wf 2 'package.missing-resource' 'Contract manifest is missing.'};if((Get-WfSha256File $contractPath)-ne$release.contractManifest.sha256){Throw-Wf 2 'package.resource-digest' 'Contract manifest digest differs.'}
     $contract=Read-WfJsonFile $contractPath 2;Assert-WfClosedObject $contract @('format','schemaVersion','contractVersion','candidateRevision','status','governedScopes','governedResources','registries') @('format','schemaVersion','contractVersion','candidateRevision','status','governedScopes','governedResources','registries') 2
     if($contract.format-ne'wayfinder-executable-contract'-or$contract.schemaVersion-ne1-or$contract.contractVersion-ne1){Throw-Wf 2 'package.contract-version' 'Contract manifest identity differs.'}
     if($release.releaseId-ne("v1-candidate-revision-"+$contract.candidateRevision)){Throw-Wf 2 'package.release-schema' 'Release and contract revisions disagree.'};if(($contract.status-eq'frozen')-ne($release.status-in@('unactivated-frozen','activated-frozen'))){Throw-Wf 2 'package.release-schema' 'Release and contract lifecycle statuses disagree.'}
-    $schema=Read-WfJsonFile (Join-Path $script:ContractRoot 'schemas/release.schema.json') 2
+    $schema=Read-WfJsonFile ([IO.Path]::Combine($script:ContractRoot,'schemas/release.schema.json')) 2
     $releaseIdShape=$schema.properties.releaseId;if(($releaseIdShape.Contains('const')-and$releaseIdShape.const-ne$release.releaseId)-or($releaseIdShape.Contains('pattern')-and$release.releaseId-notmatch$releaseIdShape.pattern)){Throw-Wf 2 'package.release-schema' 'Release ID disagrees with release schema.'}
     $statusShape=$schema.properties.status;if(($statusShape.Contains('const')-and$statusShape.const-ne$release.status)-or($statusShape.Contains('enum')-and$statusShape.enum-notcontains$release.status)){Throw-Wf 2 'package.release-schema' 'Release status disagrees with release schema.'}
     $adapterPaths=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal);$adapterIds=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal);$self=$null
-    foreach($adapter in $release.adapters){Assert-WfClosedObject $adapter @('id','path','sha256') @('id','path','sha256') 2;if($adapter.id-notmatch'^[a-z0-9]+(?:-[a-z0-9]+)*-v1$'-or$adapter.path-notmatch'^scripts/adapters/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:py|mjs|ps1)$'){Throw-Wf 2 'package.adapter-entry' 'Adapter registry entry has invalid identity.'};if(-not$adapterPaths.Add($adapter.path)-or-not$adapterIds.Add($adapter.id)){Throw-Wf 2 'package.adapter-entry' 'Adapter registry entries must be unique.'};$path=Join-Path $script:SkillRoot $adapter.path;if(-not[IO.File]::Exists($path)){Throw-Wf 2 'package.missing-resource' 'Registered adapter is missing.'};if((Get-WfSha256File $path)-ne$adapter.sha256){if($adapter.path-eq$script:AdapterRelativePath){Throw-Wf 2 'package.adapter-digest' 'Executing adapter digest differs from registry.'};Throw-Wf 2 'package.adapter-digest' 'Registered adapter digest differs.'};if($adapter.path-eq$script:AdapterRelativePath){$self=$adapter}}
+    foreach($adapter in $release.adapters){Assert-WfClosedObject $adapter @('id','path','sha256') @('id','path','sha256') 2;if($adapter.id-notmatch'^[a-z0-9]+(?:-[a-z0-9]+)*-v1$'-or$adapter.path-notmatch'^scripts/adapters/[a-z0-9]+(?:-[a-z0-9]+)*\.(?:py|mjs|ps1)$'){Throw-Wf 2 'package.adapter-entry' 'Adapter registry entry has invalid identity.'};if(-not$adapterPaths.Add($adapter.path)-or-not$adapterIds.Add($adapter.id)){Throw-Wf 2 'package.adapter-entry' 'Adapter registry entries must be unique.'};$path=[IO.Path]::Combine($script:SkillRoot,$adapter.path);if(-not[IO.File]::Exists($path)){Throw-Wf 2 'package.missing-resource' 'Registered adapter is missing.'};if((Get-WfSha256File $path)-ne$adapter.sha256){if($adapter.path-eq$script:AdapterRelativePath){Throw-Wf 2 'package.adapter-digest' 'Executing adapter digest differs from registry.'};Throw-Wf 2 'package.adapter-digest' 'Registered adapter digest differs.'};if($adapter.path-eq$script:AdapterRelativePath){$self=$adapter}}
     if($null-eq$self-or$self.id-ne$script:AdapterId){Throw-Wf 2 'package.adapter-entry' 'Executing adapter identity is absent or mismatched.'}
     Assert-WfArray $contract.governedResources 2;Assert-WfArray $contract.governedScopes 2;$resourcePaths=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
-    foreach($resource in $contract.governedResources){Assert-WfClosedObject $resource @('path','role','sha256') @('path','role','sha256') 2;if(-not$resourcePaths.Add($resource.path)){Throw-Wf 2 'package.duplicate-resource' 'Governed resource is duplicated.'};$path=Join-Path $script:SkillRoot $resource.path;if(-not[IO.File]::Exists($path)){Throw-Wf 2 'package.missing-resource' 'Governed resource is missing.' ([ordered]@{path=$resource.path})};$bytes=[IO.File]::ReadAllBytes($path);if((Get-WfSha256Bytes $bytes)-ne$resource.sha256){Throw-Wf 2 'package.resource-digest' 'Governed resource digest differs.' ([ordered]@{path=$resource.path})};Test-WfGovernedTextProfile $resource.path $bytes}
-    foreach($scope in $contract.governedScopes){$path=Join-Path $script:SkillRoot $scope.path;if($scope.recursive){foreach($file in Get-ChildItem -LiteralPath $path -Recurse -File){$relative=[IO.Path]::GetRelativePath($script:SkillRoot,$file.FullName).Replace([IO.Path]::DirectorySeparatorChar,'/');if(-not$resourcePaths.Contains($relative)){Throw-Wf 2 'package.unlisted-resource' 'A governed-scope resource is unlisted.' ([ordered]@{path=$relative})}}}else{if(-not$resourcePaths.Contains($scope.path)){Throw-Wf 2 'package.unlisted-resource' 'A governed resource is unlisted.'}}}
-    $known=Read-WfJsonFile (Join-Path $script:ContractRoot 'known-answer.json') 2;$count=0
+    foreach($resource in $contract.governedResources){Assert-WfClosedObject $resource @('path','role','sha256') @('path','role','sha256') 2;if(-not$resourcePaths.Add($resource.path)){Throw-Wf 2 'package.duplicate-resource' 'Governed resource is duplicated.'};$path=[IO.Path]::Combine($script:SkillRoot,$resource.path);if(-not[IO.File]::Exists($path)){Throw-Wf 2 'package.missing-resource' 'Governed resource is missing.' ([ordered]@{path=$resource.path})};$bytes=[IO.File]::ReadAllBytes($path);if((Get-WfSha256Bytes $bytes)-ne$resource.sha256){Throw-Wf 2 'package.resource-digest' 'Governed resource digest differs.' ([ordered]@{path=$resource.path})};Test-WfGovernedTextProfile $resource.path $bytes}
+    foreach($scope in $contract.governedScopes){$path=[IO.Path]::Combine($script:SkillRoot,$scope.path);if($scope.recursive){foreach($file in Get-WfProbeFiles $path){$relative=[IO.Path]::GetRelativePath($script:SkillRoot,$file.FullName).Replace([IO.Path]::DirectorySeparatorChar,'/');if(-not$resourcePaths.Contains($relative)){Throw-Wf 2 'package.unlisted-resource' 'A governed-scope resource is unlisted.' ([ordered]@{path=$relative})}}}else{if(-not$resourcePaths.Contains($scope.path)){Throw-Wf 2 'package.unlisted-resource' 'A governed resource is unlisted.'}}}
+    $known=Read-WfJsonFile ([IO.Path]::Combine($script:ContractRoot,'known-answer.json')) 2;$count=0
     foreach($item in $known.sha256){$bytes=[byte[]]@($item.utf8);if((Get-WfSha256Bytes $bytes)-ne$item.expected){Throw-Wf 2 'probe.known-answer' 'SHA-256 known answer differs.'};$count++}
     foreach($item in $known.nfc){$s=[string]::new([char[]]@($item.codePoints|ForEach-Object{[char]$_}));if($s.Normalize([Text.NormalizationForm]::FormC)-ne$item.expected){Throw-Wf 2 'probe.known-answer' 'NFC known answer differs.'};$count++}
     foreach($item in $known.canonicalJson){if((ConvertTo-WfCanonicalJson $item.input)-ne$item.expected){Throw-Wf 2 'probe.known-answer' 'Canonical JSON known answer differs.'};$count++}

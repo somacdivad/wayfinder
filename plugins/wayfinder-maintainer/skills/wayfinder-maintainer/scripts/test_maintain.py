@@ -125,8 +125,8 @@ class ContextTests(unittest.TestCase):
         code, raw = capture(maintain.describe_command, "json", "complete-evidence", 65536)
         self.assertEqual(code, 0)
         value = json.loads(raw)["data"]
-        self.assertEqual(value["candidate"]["releaseId"], "v1-candidate-revision-10")
-        self.assertEqual({item["id"] for item in value["adapterRegistry"]}, set(maintain.ACCEPTED_ADAPTER_DIGESTS))
+        self.assertEqual(value["candidate"]["releaseId"], "v1-candidate-revision-11")
+        self.assertEqual({item["id"] for item in value["adapterRegistry"]}, set(maintain.CURRENT_CANDIDATE_ADAPTER_DIGESTS))
         self.assertTrue(value["routing"])
 
     def test_current_state_is_exact_and_historical_evidence_is_preserved(self) -> None:
@@ -513,7 +513,7 @@ class EvidenceTests(unittest.TestCase):
     def test_evidence_refuses_overwrite(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
-            target = root / "candidate-revision-10-local.json"
+            target = root / "candidate-revision-11-local.json"
             target.write_text("preserve\n", encoding="utf-8")
             with mock.patch.object(maintain, "doctor", return_value=0):
                 code, output = capture(maintain.evidence_command, root)

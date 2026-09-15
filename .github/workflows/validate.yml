@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
+      - name: Record verification start
+        run: echo "WAYFINDER_VERIFICATION_STARTED=$(date +%s.%N)" >> "$GITHUB_ENV"
       - name: Check out exact revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -30,23 +32,17 @@ jobs:
           package-manager-cache: false
       - name: Install checksum-verified PowerShell 7.6.6
         run: bash .github/scripts/install-powershell.sh
-      - name: Validate repository and package manifests
-        run: python scripts/validate_repository.py
-      - name: Run maintainer doctor
+      - name: Profile costly conformance fixtures
+        timeout-minutes: 10
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          WAYFINDER_NODE_RUNTIME: node
+          WAYFINDER_POWERSHELL_RUNTIME: pwsh
+        run: python scripts/profile_conformance_costs.py --output "$RUNNER_TEMP/conformance-cost-profile"
+      - name: Run full ordinary repository verification with timings
+        if: always()
         env:
           WAYFINDER_NODE_RUNTIME: node
           WAYFINDER_POWERSHELL_RUNTIME: pwsh
-        run: python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py doctor
-      - name: Run canonical maintainer regressions
-        env:
-          WAYFINDER_NODE_RUNTIME: node
-          WAYFINDER_POWERSHELL_RUNTIME: pwsh
-        run: python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py self-test
-      - name: Run all registered adapters against the common suite
-        env:
-          WAYFINDER_NODE_RUNTIME: node
-          WAYFINDER_POWERSHELL_RUNTIME: pwsh
-        run: |
-          python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py test --adapter python-reference-v1
-          python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py test --adapter node-v1
-          python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py test --adapter powershell-v1
+        # Two workers accompany this diagnostic checkpoint; no final count is selected.
+        run: python scripts/run_repository_verification.py --powershell-jobs 2 --output "$RUNNER_TEMP/verification-timings"

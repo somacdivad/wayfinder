@@ -7,11 +7,11 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
-const RELEASE_ID = "v1-candidate-revision-10";
+const RELEASE_ID = "v1-candidate-revision-11";
 const RELEASE_STATUS = "unactivated-frozen";
 const CONTRACT_STATUS = "frozen";
 const CONTRACT_VERSION = 1;
-const CANDIDATE_REVISION = 10;
+const CANDIDATE_REVISION = 11;
 const ADAPTER_ID = "node-v1";
 const ADAPTER_PATH = "scripts/adapters/wayfinder-node.mjs";
 const RELEASE_PATH = "assets/contract-v1/release.json";

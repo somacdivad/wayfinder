@@ -2,7 +2,7 @@
   "format": "wayfinder-executable-contract",
   "schemaVersion": 1,
   "contractVersion": 1,
-  "candidateRevision": 10,
+  "candidateRevision": 11,
   "status": "frozen",
   "governedScopes": [
     {
@@ -67,7 +67,7 @@
     {
       "path": "assets/contract-v1/conformance/v1/expected/probe-deterministic.json",
       "role": "fixture-expected",
-      "sha256": "282340c3e8ae68fd313a1d2313f8e64e120bb78df2ed93c529550c23efad14c2"
+      "sha256": "d02b1cc57986c0ce8ceec03e521cc8b1f34b71f7368c547af7eac7763963d0f2"
     },
     {
       "path": "assets/contract-v1/conformance/v1/expected/render-brief.md",

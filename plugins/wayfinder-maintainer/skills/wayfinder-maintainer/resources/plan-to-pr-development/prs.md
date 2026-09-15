@@ -10,6 +10,8 @@ Prefer the smallest useful change that answers a concrete question or delivers a
 
 For each planned PR, state its purpose, base/dependencies, implemented outcome, preservation/compatibility constraints, verification, and whether it can merge independently. Record task-specific refinements, not speculative PRs with no known content. Reassess deep stacks when lower-layer changes repeatedly cause rebases or design rework; stabilize the uncertain boundary or split independent work out.
 
+Read and use the target repository's PR template before creating or updating its description. In this repository, start from `.github/pull_request_template.md`, complete every section, and preserve the headings and checklists. Link the living plan and exact approved revision. Check only verified passing items; explain failed, pending, skipped and unavailable outcomes beside unchecked items. An explicit `gh --body-file` replaces automatic template handling, so build that file from the template rather than writing a freeform body.
+
 These recommendations synthesize [Google small-change guidance](https://github.com/google/eng-practices/blob/master/review/developer/small-cls.md), [DORA small-batch research](https://dora.dev/capabilities/working-in-small-batches/), and review-comprehension findings discussed in the workflow research. No cited study validates a universal line-count or stack-depth cutoff for this repository.
 
 ## Independent PRs and dependent stacks
