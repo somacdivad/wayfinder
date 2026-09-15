@@ -1,0 +1,17 @@
+<!-- WAYFINDER-DESIGN-RECORD:BEGIN -->
+```json
+{"authorities":[{"locator":"conversation:current/rr-c5c1ed3b-f0e7-4674-8667-f1e99e122407/remaining-prefix-approval","quotation":"yes"}],"candidateRevision":null,"date":"2026-09-15","format":"wayfinder-design-record","id":"wr-0044","kind":"decision","legacy":null,"outcome":"accepted","predecessors":["wr-0043"],"schemaVersion":1,"sources":["record:wr-0041","record:wr-0043","file:docs/plans/development/wp-b3ca451d-2e0e-45f1-a709-e38cd9b461b2-review-and-verification-reliability/reviews/rr-c5c1ed3b-f0e7-4674-8667-f1e99e122407/packet.json","review-request:rr-c5c1ed3b-f0e7-4674-8667-f1e99e122407/member:4","review-request:rr-c5c1ed3b-f0e7-4674-8667-f1e99e122407/member:5","review-request:rr-c5c1ed3b-f0e7-4674-8667-f1e99e122407/member:6"],"summary":"Owner approved exact replacement request rr-c5c1ed3b-f0e7-4674-8667-f1e99e122407 for eligible remaining-prefix merging of PRs #4–#6.","title":"Owner approved replacement remaining-stack versions","topic":"governance"}
+```
+<!-- WAYFINDER-DESIGN-RECORD:END -->
+
+## Owner approved replacement remaining-stack versions
+
+The owner answered “yes” to the single unresolved chat question approving replacement request rr-c5c1ed3b-f0e7-4674-8667-f1e99e122407. Packet SHA-256: 9f1e48533ba8de4fb245a6d538b63a6f4ba7347432b2a76e7b550725e619db5b. Approved plan snapshot revision 25 remains unchanged.
+
+- PR #4: head `3a7fbcdf81ae0e02676b6bbe32d482d6e79a1fcc`, base and merge base `b01e8e0b2984988092b07c2da56a4cb8cdf38dd4`, reviewed diff SHA-256 `38d9867d619d6966cb79422a8884435be1b9a58b641cfb4ab9c81aa7d0b10f7a`.
+- PR #5: head `2570af7f7f86022361ccbba45e05c755bc610ac6`, base and merge base `3a7fbcdf81ae0e02676b6bbe32d482d6e79a1fcc`, reviewed diff SHA-256 `845faa0f17e467b8c9d2fffd693586002371e1e2487f99d5b6153a83d2e4f7db`.
+- PR #6: head `241c309e18399b37bab8533cefa919f78eca3e9e`, base and merge base `2570af7f7f86022361ccbba45e05c755bc610ac6`, reviewed diff SHA-256 `b8d0ddb0c46509fa47f4bc0b3908c330818565739aa403cd1aa185e1e43891ea`.
+
+Authority: accept the identified remaining PR versions and permit bottom-up merging of the remaining native stack prefix through PR #6 into candidate-revision-9-certification using the documented asynchronous operation, only after all current checks, protections and dependencies are satisfied; verify individual outcomes without assuming atomic success. Submit the documented native asynchronous remaining-prefix operation only after all current member checks, identities, protections and dependencies satisfy the approval. No merge is claimed by this acceptance record. Persist actual results separately. A new closure/persistence PR requires its own version-bound chat review; preserve these reviewed heads before integration.
+
+All packet exclusions remain: main integration; Initialize correction; candidate reopening or advancement; frozen contract/adapters and accepted evidence edits/promotion/publication/downloads; certification expansion/claims/dispatch; publication/activation/releases/tags/registry changes; GitHub settings or protection bypass; authentication/dependencies/services/hooks/MCP additions; live-project changes. The unchanged missing-PowerShell local limitation is accepted, never reported passed. Historical review packets, receipts, accepted examples and approval snapshots remain immutable. Review communication stays entirely in chat. No later project or new delegation is authorized.
