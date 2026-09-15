@@ -1,0 +1,17 @@
+<!-- WAYFINDER-DESIGN-RECORD:BEGIN -->
+```json
+{"authorities":[],"candidateRevision":null,"date":"2026-09-15","format":"wayfinder-design-record","id":"wr-0042","kind":"verification","legacy":null,"outcome":"recorded","predecessors":["wr-0041"],"schemaVersion":1,"sources":["record:wr-0041","https://github.com/somacdivad/wayfinder/pull/3","https://docs.github.com/en/rest/pulls/pulls?apiVersion=2026-03-10#merge-a-pull-request-asynchronously"],"summary":"Native asynchronous merge integrated #3; GitHub restacked #4/#5 heads and changed #6 reviewed diff, stopping further merging for renewed version-bound review.","title":"PR #3 integrated and remaining stack requires renewed review","topic":"governance"}
+```
+<!-- WAYFINDER-DESIGN-RECORD:END -->
+
+## PR #3 integrated and remaining stack requires renewed review
+
+Owner approval wr-0041 authorized eligible bottom-up merging of exact request rr-bd2c66d7-af9b-4cb6-9fa4-183fab7dd315 versions. The documented asynchronous API was used for bottom PR #3 with expected head 53c954422b394a8bb468962eb3208bb158d1382b, enabled merge-commit method and default merge action. Operation dbc375a4-8411-4e81-9c5b-6e42fc21ad6d returned verified merged outcome b01e8e0b2984988092b07c2da56a4cb8cdf38dd4 into candidate-revision-9-certification. PR #3 is closed/merged; its reviewed head is unchanged. Main was not touched.
+
+GitHub then automatically restacked the open stack, changing #4 head from 7cecf1f137b7f05aaf00d0068c168ec6c30544ab to 3a7fbcdf81ae0e02676b6bbe32d482d6e79a1fcc and #5 head from ab98b2197a74ed6adfc10cc46b899057e4e4cd8c to 2570af7f7f86022361ccbba45e05c755bc610ac6. Fetched remote refs report GitHub-generated forced updates; the agent submitted no force push, rebase, unstack operation, settings change or PR-head modification. #6 remains at 6615c68c162208ee62fed401282b3c55a02f541f but its base changed to the restacked #5.
+
+Exact tree-object comparison shows all three open PR file trees unchanged from their reviewed versions. The #4 and #5 reviewed diff hashes remain 38d9867d619d6966cb79422a8884435be1b9a58b641cfb4ab9c81aa7d0b10f7a and 845faa0f17e467b8c9d2fffd693586002371e1e2487f99d5b6153a83d2e4f7db, respectively. #6 three-dot reviewed diff changed to 425f3f11c41bafd1467a3106b2cd3a7de44dc499d8ba8bae6eb528f01221e4ff because its old lineage no longer contains the rewritten #5 head. File-tree identity does not exempt changed head/diff from the approved renewal rule.
+
+The attempted next eligibility check stopped at identity mismatch before any #4 merge request was submitted. No #4–#6 merge is claimed. Their previous approval is historical and ineligible for these changed identities/diff. Prepare replacement request rr-c5c1ed3b-f0e7-4674-8667-f1e99e122407 for #4–#6 with exact-version verification and current observations, then request renewed approval in chat and stop without polling until owner return. Use existing local immutable artifacts and preserve old packets/approval provenance. A remaining-prefix asynchronous merge, if explicitly approved and all members are eligible, merges the prefix bottom-up within the documented operation; do not claim atomic success and verify each actual result.
+
+The authorized outcome is partial integration, not completion or closure. Initialize, main integration, candidate/frozen bytes/evidence/publication/activation/settings/authentication/dependencies and live-project exclusions remain unchanged. Record/persist this outcome and current-state routing locally without modifying the reviewed PR heads; any later persistence PR requires its own review.
