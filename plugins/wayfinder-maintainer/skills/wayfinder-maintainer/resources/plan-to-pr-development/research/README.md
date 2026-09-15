@@ -8,5 +8,6 @@ Research date: 2026-09-15. These briefs record source-grounded findings and the 
 | Mandatory plan core, traceability, depth, and completion | [Planning and acceptance](planning-and-acceptance.md) |
 | Coherent PR boundaries, batch size, stacks, and integration | [PRs and stacks](prs-and-stacks.md) |
 | Bounded delegation, centralized verification, and checkpoints | [Implementation and delegation](implementation-and-delegation.md) |
+| Session-audit mitigations: approval referents, receipt-based resumption, accurate result accounting | [Review and reporting reliability](session-review-reliability.md) — advisory follow-up research; proposed adaptations are not accepted workflow changes |
 
 The direct evidence is strongest for context-sensitive elicitation, feedback from smaller batches, and the importance of change understanding. The exact CLI, one-question-per-turn rhythm, approval snapshots, and decision-triggered pauses are workflow design choices combining evidence with explicit owner preferences. No source establishes one universally optimal template, PR line count, stack depth, or number of agents.

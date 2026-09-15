@@ -60,3 +60,5 @@ An interrupted write may leave a lock/staging state. Inspect ownership, current 
 ## Resumption
 
 Read current state, the active plan, its last approved snapshot, and affected decision history. Inspect worktree/branch and PR head identities. Reconcile progress with actual results before continuing. Existing ephemeral checkpoints may help routing only after verification; they never substitute for plan or current-state authority. At final review handoff, persist progress and routing before tagging the owner, then stop without polling or scheduled monitoring.
+
+For version-bound review packets, durable delivery receipts and shared reporting, read [local review and verification CLI](reliability-cli.md).
