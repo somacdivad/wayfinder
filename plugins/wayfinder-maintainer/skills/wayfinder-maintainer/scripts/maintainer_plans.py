@@ -119,6 +119,7 @@ def load_store(repository: Path, *, writer: bool = False) -> list[dict[str, Any]
     if not writer and (root / '.plan-write.lock').exists():
         raise ValueError('unfinished or active plan writer; inspect the lock before explicit cleanup')
     entries = []
+    auxiliary_files = []
     snapshots: dict[str, dict[int, dict[str, Any]]] = {}
     for directory, folders, files in os.walk(root, followlinks=False):
         for name in folders + files:
@@ -134,6 +135,10 @@ def load_store(repository: Path, *, writer: bool = False) -> list[dict[str, Any]
                 continue
             if name.startswith('.pending-'):
                 raise ValueError('unfinished plan writer artifact; inspect before explicit cleanup')
+            import maintainer_review
+            if maintainer_review.auxiliary_path(relative):
+                auxiliary_files.append(relative)
+                continue
             if name != 'plan.md' and not re.fullmatch(r'revision-[1-9][0-9]*\.md', name):
                 raise ValueError(f'unrecognized file in plan store: {relative}')
             raw = read_regular(safe_path(root, relative))
@@ -182,6 +187,11 @@ def load_store(repository: Path, *, writer: bool = False) -> list[dict[str, Any]
         if approved == metadata['revision'] and item['raw'] != versions[approved]['raw']:
             raise ValueError('current approved revision differs from exact snapshot')
         item['approvals'] = versions
+    for relative in auxiliary_files:
+        if not any(relative.startswith(str(Path(item['path']).parent) + '/' + category + '/') for item in entries for category in ('reviews', 'deliveries', 'verification')):
+            raise ValueError('orphan reliability artifact')
+    import maintainer_review
+    maintainer_review.integrity(repository, entries)
     return entries
 
 
