@@ -37,4 +37,4 @@ Expand planning for uncertain behavior, interfaces, governance, compatibility, o
 
 Stack only genuine dependencies and prefer independent PRs otherwise. Delegate only bounded useful work with explicit ownership when parallel benefit exceeds coordination cost; the lead verifies integration. Suggest an early example or experiment when uncertainty could cause substantial rework. Require a pause for material changes to scope, design, authority, or acceptance criteria, and for checkpoints named in the approved plan. Verify each PR and cumulative integration; broaden or repeat checks only when changed surfaces or new concerns justify it.
 
-For version-bound review packets, durable delivery receipts and shared reporting, read [local review and verification CLI](reliability-cli.md).
+For immutable approval packets, delivery receipts and shared reporting, read [local reliability CLI](reliability-cli.md). The checkpoint templates confer no live review or platform authority.
