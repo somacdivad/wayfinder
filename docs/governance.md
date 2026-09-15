@@ -14,3 +14,5 @@ The default branch should require pull requests, repository validation, stale-re
 All action dependencies are pinned to full commit SHAs. Workflows do not use `pull_request_target`, do not execute untrusted code with write credentials, and do not install application dependencies. Dependabot may propose action-SHA updates, which require source review.
 
 Evidence and plugin identities use separate tag namespaces. A green certification workflow never publishes a plugin, marks a release latest, or changes activation state.
+
+Use the maintainer [local reliability CLI](../plugins/wayfinder-maintainer/skills/wayfinder-maintainer/resources/plan-to-pr-development/reliability-cli.md) for immutable version-bound review packets, supplied delivery receipts and shared verification summaries under repository plan folders. Accepted decisions stay in design history and current authorization in current state. Local validation never authenticates owner approval, accesses GitHub or proves merge eligibility.

@@ -20,3 +20,5 @@ Link the living plan and approved revision. State this PR's concern, observable 
 ## Review and integration
 
 State remaining checkpoints, limitations, and any material departures from the approved plan. Link prerequisite/dependent PRs and distinguish this PR's verification from cumulative verification. Request owner review when the complete delivery is ready, then stop without polling. Merge only after identified, version-bound explicit approval and required checks/protections.
+
+Report passed/skipped/failed/unavailable outcomes separately, required local coverage and explicit plan exceptions, plus distinct GitHub check observations. At final handoff use one consolidated version-bound review packet; per-PR notices contain no competing approval question. Save terminal delivery receipts only within the approved plan, then stop until owner return.
