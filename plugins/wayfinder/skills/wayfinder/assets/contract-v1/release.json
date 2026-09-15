@@ -1,28 +1,28 @@
 {
   "format": "wayfinder-contract-release",
   "schemaVersion": 1,
-  "releaseId": "v1-candidate-revision-10",
+  "releaseId": "v1-candidate-revision-11",
   "status": "unactivated-frozen",
   "contractVersion": 1,
   "contractManifest": {
     "path": "assets/contract-v1/contract.json",
-    "sha256": "0d8507c4a8b48fa976c1402b057755da28f896a3feeacf914c35b18a035dc341"
+    "sha256": "b6df2288740af2ffeae56bf3f9c7fbcdf0c048fb62036d5341429c6a237103e8"
   },
   "adapters": [
     {
       "id": "python-reference-v1",
       "path": "scripts/adapters/wayfinder.py",
-      "sha256": "e0b89ba35f223567efe2545d323d816dbaeeedfa8de8fb784fcc7b1c347cb596"
+      "sha256": "1be3db1e3cc91e65717e9b4b7361617f3847db95cf539b9d1ff0a04be9283115"
     },
     {
       "id": "node-v1",
       "path": "scripts/adapters/wayfinder-node.mjs",
-      "sha256": "f6d695e60e5964448947ed9f835526efa0f84e3764fb8acdd7f765e3bbe4fa3e"
+      "sha256": "1adbea25d68cfaa604041cdad2887888ef186dfd37df80596a60e78efaf78db1"
     },
     {
       "id": "powershell-v1",
       "path": "scripts/adapters/wayfinder-powershell.ps1",
-      "sha256": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9"
+      "sha256": "0e98ba294ac78bd3e042737d885af657554754584943c28007949e7b5b12baa0"
     }
   ],
   "certifications": []

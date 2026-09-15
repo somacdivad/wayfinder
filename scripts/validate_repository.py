@@ -16,11 +16,11 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT / "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts"))
 import maintain as maintainer
 EXPECTED_DIGESTS = {
-    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/contract.json": "0d8507c4a8b48fa976c1402b057755da28f896a3feeacf914c35b18a035dc341",
-    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/release.json": "581e85c34eb5539d0af0e69128877fe57601600ed59366db13076a366524a083",
-    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder.py": "e0b89ba35f223567efe2545d323d816dbaeeedfa8de8fb784fcc7b1c347cb596",
-    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-node.mjs": "f6d695e60e5964448947ed9f835526efa0f84e3764fb8acdd7f765e3bbe4fa3e",
-    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-powershell.ps1": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9",
+    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/contract.json": "b6df2288740af2ffeae56bf3f9c7fbcdf0c048fb62036d5341429c6a237103e8",
+    "plugins/wayfinder/skills/wayfinder/assets/contract-v1/release.json": "0294bedf854de061301df758878d8d665fef22154183ae9b349293229da0b09f",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder.py": "1be3db1e3cc91e65717e9b4b7361617f3847db95cf539b9d1ff0a04be9283115",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-node.mjs": "1adbea25d68cfaa604041cdad2887888ef186dfd37df80596a60e78efaf78db1",
+    "plugins/wayfinder/skills/wayfinder/scripts/adapters/wayfinder-powershell.ps1": "0e98ba294ac78bd3e042737d885af657554754584943c28007949e7b5b12baa0",
     "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/parity-revision-8-local.json": "28bc61ede21e0b8041c1951b1327c948642d0712170048f17ce2bab9653562ef",
     "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/parity-revision-8-local.md": "840641fd2b2814104a78f7fe0d4106ac70c4688056237003770d7ec7874e97c0",
     "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/matrix-revision-8-python-reference-v1-macos-20260914T125208Z.json": "6b43c2f0b41e83d76218e363651d6353ab62561426e4c7abf997cb561aa3fd78",

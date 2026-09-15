@@ -34,25 +34,25 @@ $prefixSource = $adapterSource.Substring(0,$prefixLength)
 $timer.Restart()
 # TRANSFORM-GUARD:BEGIN
 $originalAssignments = @(
-    '$script:SkillRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent',
-    '$script:ContractRoot = Join-Path $script:SkillRoot ''assets/contract-v1'''
-)
-$replacementAssignments = @(
     '$script:SkillRoot = [IO.Path]::GetDirectoryName([IO.Path]::GetDirectoryName($PSScriptRoot))',
     '$script:ContractRoot = [IO.Path]::Combine($script:SkillRoot,''assets/contract-v1'')'
+)
+$replacementAssignments = @(
+    '$script:SkillRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent',
+    '$script:ContractRoot = Join-Path $script:SkillRoot ''assets/contract-v1'''
 )
 foreach ($assignment in $originalAssignments) {
     $matches = @($fullAst.EndBlock.Statements | Where-Object { $_ -is [System.Management.Automation.Language.AssignmentStatementAst] -and $_.Extent.Text -ceq $assignment })
     if ($matches.Count -ne 1 -or [regex]::Matches($adapterSource,[regex]::Escape($assignment)).Count -ne 1) { throw 'Startup assignment is missing, duplicated or not top-level.' }
 }
 # TRANSFORM-GUARD:END
-if ($Variant -eq 'dotnet') {
+if ($Variant -eq 'original') {
     for ($assignmentIndex=0; $assignmentIndex -lt 2; $assignmentIndex++) {
         $prefixSource = $prefixSource.Replace($originalAssignments[$assignmentIndex],$replacementAssignments[$assignmentIndex])
     }
 }
 $timer.Stop()
-if ($Variant -eq 'dotnet') { $componentTimes.startupTransformation = $timer.Elapsed.TotalSeconds }
+if ($Variant -eq 'original') { $componentTimes.startupTransformation = $timer.Elapsed.TotalSeconds }
 $prefixDigest = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.UTF8Encoding]::new($false,$true).GetBytes($prefixSource))).ToLowerInvariant()
 $timer.Restart()
 $prefixAst = [System.Management.Automation.Language.Parser]::ParseInput($prefixSource,$AdapterPath,[ref]$tokens,[ref]$parseErrors)
@@ -101,6 +101,6 @@ try {
     if (-not $byteEquality) { throw 'Private output byte comparison failed.' }
 } finally { if ($ownsTemporary) { [IO.File]::Delete($temporaryPath) } }
 if ([Convert]::ToBase64String([IO.File]::ReadAllBytes($AdapterPath)) -cne [Convert]::ToBase64String($adapterBytes)) { throw 'Adapter bytes changed.' }
-$report = [ordered]@{format='wayfinder-powershell-startup-prototype-observation';schemaVersion=1;scenario=$Scenario;variant=$Variant;diagnosticCounterfactual=($Variant -eq 'dotnet');prefixSha256=$prefixDigest;contractRoot=$script:ContractRoot;modulesAfterProbe=$modulesAfterProbe;modulesAfterFormatting=$modulesAfterFormatting;adapterSha256=$sourceDigest;adapterPath=$AdapterPath;skillRoot=$script:SkillRoot;prefixLength=$prefixSource.Length;sourceLength=$adapterSource.Length;runtimeVersion=$PSVersionTable.PSVersion.ToString();times=$componentTimes;modulesBefore=$modulesBefore;modulesBeforeLoad=$modulesBeforeLoad;modulesAfter=$modulesAfter;payload=$payload;formattedText=$firstText;repeatedTexts=$repeatedTexts;outputByteEquality=$byteEquality}
+$report = [ordered]@{format='wayfinder-powershell-startup-prototype-observation';schemaVersion=1;scenario=$Scenario;variant=$Variant;diagnosticCounterfactual=($Variant -eq 'original');prefixSha256=$prefixDigest;contractRoot=$script:ContractRoot;modulesAfterProbe=$modulesAfterProbe;modulesAfterFormatting=$modulesAfterFormatting;adapterSha256=$sourceDigest;adapterPath=$AdapterPath;skillRoot=$script:SkillRoot;prefixLength=$prefixSource.Length;sourceLength=$adapterSource.Length;runtimeVersion=$PSVersionTable.PSVersion.ToString();times=$componentTimes;modulesBefore=$modulesBefore;modulesBeforeLoad=$modulesBeforeLoad;modulesAfter=$modulesAfter;payload=$payload;formattedText=$firstText;repeatedTexts=$repeatedTexts;outputByteEquality=$byteEquality}
 # Reporting is deliberately outside every measured component interval.
 [Console]::Out.WriteLine((ConvertTo-Json -InputObject $report -Depth 50 -Compress))

@@ -38,10 +38,10 @@ SCENARIOS = (
     ('probe-dotnet', 'probe', 'dotnet'),
 )
 ASSIGNMENTS = (
-    ("$script:SkillRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent",
-     "$script:SkillRoot = [IO.Path]::GetDirectoryName([IO.Path]::GetDirectoryName($PSScriptRoot))"),
-    ("$script:ContractRoot = Join-Path $script:SkillRoot 'assets/contract-v1'",
-     "$script:ContractRoot = [IO.Path]::Combine($script:SkillRoot,'assets/contract-v1')"),
+    ("$script:SkillRoot = [IO.Path]::GetDirectoryName([IO.Path]::GetDirectoryName($PSScriptRoot))",
+     "$script:SkillRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent"),
+    ("$script:ContractRoot = [IO.Path]::Combine($script:SkillRoot,'assets/contract-v1')",
+     "$script:ContractRoot = Join-Path $script:SkillRoot 'assets/contract-v1'"),
 )
 
 def expected_prefix(source: str) -> int:
@@ -56,7 +56,7 @@ def prototype_prefix(source: str, variant: str) -> str:
         if source.count(original) != 1:
             raise ValueError('startup assignment missing or duplicated')
     prefix = source[:-len('Invoke-WfMain $args\nexit $script:ExitCode\n')]
-    if variant == 'dotnet':
+    if variant == 'original':
         for original, replacement in ASSIGNMENTS:
             prefix = prefix.replace(original, replacement)
     return prefix
@@ -72,13 +72,13 @@ def validate_observation(report: dict, scenario: str, digest: str, source: str,
             or report['format'] != 'wayfinder-powershell-startup-prototype-observation'
             or type(report['schemaVersion']) is not int or report['schemaVersion'] != 1
             or report['variant'] != mode
-            or report['diagnosticCounterfactual'] is not (mode == 'dotnet')
+            or report['diagnosticCounterfactual'] is not (mode == 'original')
             or report['prefixSha256'] != hashlib.sha256(prefix.encode()).hexdigest()
             or report['contractRoot'] != str(SKILL / 'assets/contract-v1')
             or report['prefixLength'] != len(prefix.encode('utf-16-le')) // 2):
         raise ValueError('startup prototype report/provenance differs')
     labels = _base.TIMERS - ({'probeWork'} if scenario == 'minimal' else set())
-    labels |= {'startupTransformation'} if mode == 'dotnet' else set()
+    labels |= {'startupTransformation'} if mode == 'original' else set()
     if not isinstance(report['times'], dict) or set(report['times']) != labels:
         raise ValueError('startup prototype timer labels differ')
     for value in report['times'].values():
@@ -86,7 +86,7 @@ def validate_observation(report: dict, scenario: str, digest: str, source: str,
             raise ValueError('invalid startup prototype time')
     after_load = [] if mode == 'dotnet' else MANAGEMENT
     # Probe invokes unchanged package checks using Management commands; minimal does not.
-    after_work = MANAGEMENT if scenario == 'probe' else after_load
+    after_work = after_load
     if (report['modulesBefore'] != [] or report['modulesBeforeLoad'] != []
             or report['modulesAfter'] != after_load
             or report['modulesAfterProbe'] != after_work

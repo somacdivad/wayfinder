@@ -112,7 +112,7 @@ class StatusTests(unittest.TestCase):
             self.copy_targets(root)
             readme = root / "README.md"
             before = readme.read_text()
-            readme.write_text(before.replace("v1-candidate-revision-10", "v1-candidate-revision-99", 1))
+            readme.write_text(before.replace("v1-candidate-revision-11", "v1-candidate-revision-99", 1))
             self.assertEqual(status_tools.projection_drift(root, self.status), ["README.md"])
             self.assertEqual(status_tools.write_targets(root, self.status), ["README.md"])
             self.assertEqual(readme.read_text(), before)

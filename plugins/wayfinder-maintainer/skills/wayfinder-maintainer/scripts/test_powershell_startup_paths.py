@@ -21,10 +21,10 @@ class StartupPathTests(unittest.TestCase):
         source=d.ADAPTER.read_text();digest=hashlib.sha256(d.ADAPTER.read_bytes()).hexdigest();prefix=d.prototype_prefix(source,variant)
         payload={'format':'wayfinder-command-result','schemaVersion':1,'ok':True,'command':'probe','code':'ok','data':{},'diagnostics':[]}
         if scenario=='probe':payload['data']={'adapter':{'id':'powershell-v1','path':'scripts/adapters/wayfinder-powershell.ps1','sha256':digest},'environment':{'version':'7.6.6'}}
-        text=json.dumps(payload);after=[] if variant=='dotnet' else d.MANAGEMENT;work=d.MANAGEMENT if scenario=='probe' else after
+        text=json.dumps(payload);after=[] if variant=='dotnet' else d.MANAGEMENT;work=after
         labels=d._base.TIMERS-({'probeWork'} if scenario=='minimal' else set())
-        if variant=='dotnet':labels|={'startupTransformation'}
-        report=dict(format='wayfinder-powershell-startup-prototype-observation',schemaVersion=1,scenario=scenario,variant=variant,diagnosticCounterfactual=variant=='dotnet',prefixSha256=hashlib.sha256(prefix.encode()).hexdigest(),contractRoot=str(d.SKILL/'assets/contract-v1'),adapterSha256=digest,adapterPath=str(d.ADAPTER),skillRoot=str(d.SKILL),runtimeVersion='7.6.6',prefixLength=len(prefix.encode('utf-16-le'))//2,sourceLength=len(source.encode('utf-16-le'))//2,times={k:0.01 for k in labels},modulesBefore=[],modulesBeforeLoad=[],modulesAfter=copy.deepcopy(after),modulesAfterProbe=copy.deepcopy(work),modulesAfterFormatting=copy.deepcopy(work),payload=payload,formattedText=text,repeatedTexts=[text]*3,outputByteEquality=True)
+        if variant=='original':labels|={'startupTransformation'}
+        report=dict(format='wayfinder-powershell-startup-prototype-observation',schemaVersion=1,scenario=scenario,variant=variant,diagnosticCounterfactual=variant=='original',prefixSha256=hashlib.sha256(prefix.encode()).hexdigest(),contractRoot=str(d.SKILL/'assets/contract-v1'),adapterSha256=digest,adapterPath=str(d.ADAPTER),skillRoot=str(d.SKILL),runtimeVersion='7.6.6',prefixLength=len(prefix.encode('utf-16-le'))//2,sourceLength=len(source.encode('utf-16-le'))//2,times={k:0.01 for k in labels},modulesBefore=[],modulesBeforeLoad=[],modulesAfter=copy.deepcopy(after),modulesAfterProbe=copy.deepcopy(work),modulesAfterFormatting=copy.deepcopy(work),payload=payload,formattedText=text,repeatedTexts=[text]*3,outputByteEquality=True)
         return report,digest,source
 
     def cohorts(self):
@@ -39,7 +39,7 @@ class StartupPathTests(unittest.TestCase):
         return entries,digest,source
 
     def test_transform_is_exact_and_requires_unique_source(self):
-        source=d.ADAPTER.read_text();before=d.ADAPTER.read_bytes();prefix=d.prototype_prefix(source,'dotnet')
+        source=d.ADAPTER.read_text();before=d.ADAPTER.read_bytes();prefix=d.prototype_prefix(source,'original')
         self.assertNotIn(d.ASSIGNMENTS[0][0],prefix);self.assertIn(d.ASSIGNMENTS[1][1],prefix)
         self.assertEqual(d.ADAPTER.read_bytes(),before)
         for changed in (source.replace(d.ASSIGNMENTS[0][0],''),source.replace(d.ASSIGNMENTS[0][0],d.ASSIGNMENTS[0][0]+'\n'+d.ASSIGNMENTS[0][0]),source+'unexpected\n'):
@@ -56,14 +56,14 @@ class StartupPathTests(unittest.TestCase):
                 with self.assertRaises(ValueError):d.validate_observation(bad,scenario,digest,source,variant)
 
     def test_timer_shape_and_output_equality(self):
-        report,digest,source=self.fixture(variant='dotnet')
+        report,digest,source=self.fixture(variant='original')
         for value in (True,-1,float('nan'),float('inf'),'1'):
             bad=copy.deepcopy(report);bad['times']['startupTransformation']=value
-            with self.assertRaises(ValueError):d.validate_observation(bad,'minimal',digest,source,'dotnet')
+            with self.assertRaises(ValueError):d.validate_observation(bad,'minimal',digest,source,'original')
         bad=copy.deepcopy(report);bad['times']['probeWork']=0
-        with self.assertRaises(ValueError):d.validate_observation(bad,'minimal',digest,source,'dotnet')
+        with self.assertRaises(ValueError):d.validate_observation(bad,'minimal',digest,source,'original')
         report['repeatedTexts'][0]='different'
-        with self.assertRaises(ValueError):d.validate_observation(report,'minimal',digest,source,'dotnet')
+        with self.assertRaises(ValueError):d.validate_observation(report,'minimal',digest,source,'original')
 
     def test_exact_rounds_and_paired_results(self):
         entries,digest,source=self.cohorts();d.validate_cohorts(entries,digest,source)

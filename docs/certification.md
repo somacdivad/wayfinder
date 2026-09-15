@@ -1,10 +1,10 @@
 # Certification
 
 <!-- WAYFINDER-GENERATED:CERTIFICATION-STATUS:BEGIN -->
-- **Status:** Candidate 10 publication readiness **NOT-READY**; dispatch authorized: false; activation disabled
-- **Last updated:** 2026-09-14
+- **Status:** Candidate 11 publication readiness **NOT-READY**; dispatch authorized: false; activation disabled
+- **Last updated:** 2026-09-15
 
-The current target is `v1-candidate-revision-10` (contract frozen, release unactivated-frozen). Hosted evidence accepted: true. GitHub Actions run `34921918384`, attempt `1`, at source commit `82a2bb994e7ef8d2ffda7317e0687b0c7230aa54` passed all 8 exact entries with 305/305 cases each. The exact 27 files remain preserved at `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/hosted/run-34921918384-attempt-1`.
+The current target is `v1-candidate-revision-11` (contract frozen, release unactivated-frozen). Hosted evidence accepted: true. GitHub Actions run `34921918384`, attempt `1`, at source commit `82a2bb994e7ef8d2ffda7317e0687b0c7230aa54` passed all 8 exact entries with 305/305 cases each. The exact 27 files remain preserved at `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/hosted/run-34921918384-attempt-1`.
 
 ## Verified hosted observations
 

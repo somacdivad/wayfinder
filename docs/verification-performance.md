@@ -293,3 +293,45 @@ Approved complete revision26 extends the isolated in-memory prototype through th
 The driver sets process-local no-bytecode controls before helper imports. A fresh Python subprocess regression, without canonical `-B` or inherited `PYTHONDONTWRITEBYTECODE`, checks standalone imports produce no cache files. This addresses the prior hosted helper side effect. Source/path/prefix/helper provenance, module transitions through probe/formatting and exact paired payload/formatter/private-file outputs remain mandatory. The full .NET variant must keep Management absent through formatting; partial variants may defer loading into unchanged commands.
 
 Exactly one diagnostic-only hosted attempt is authorized, with all pins/checksum/timeouts and ordinary validation definition preserved. Cancel the exact run immediately after diagnostics finish, success or failure; if already terminal, preserve its actual outcome and explain why cancellation did not apply. No retry, full-suite benchmark, frozen candidate reopening or delivered adapter optimization is inferred. After local findings pause for a measured revision decision; draft PR9 remains not ready, and full ten-minute acceptance remains unmet. Relevant filesystem behavior is described in [Microsoft Get-ChildItem documentation](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-childitem?view=powershell-7.4); the pinned-runtime compatibility control, rather than documentation alone, verifies this Linux diagnostic helper.
+
+## Probe/package module-avoidance measurement checkpoint — 2026-09-15
+
+Diagnostic-only run [35023832211 attempt 1](https://github.com/somacdivad/wayfinder/actions/runs/35023832211) tested source head 44a5b0dc4c07365bf5cdf97139c0ce8abcd9b512 and merge fc898a74ade5193ff7775fc80186ec5d61057e77. The diagnostic step succeeded; remaining validation was force-cancelled and terminal metadata confirmed completed/cancelled. This is not a full validation pass or full-job benchmark. No retry or additional push is authorized.
+
+Independent terminal-log validation found exactly one compatibility control and45 observations (five cohorts, separate first round and eight alternating sample rounds). Source/runtime/wrapper bindings, exact observation schemas/order, finite durations, module transitions, unchanged frozen adapter bytes, payload/formatter/private-file equality and recomputed summaries/paired differences passed. The control passed all five real recursive governed scopes and owned empty/nested/hidden/literal/unicode/file-link/directory-link/broken-link/cycle/missing-root fixtures. Permission-denial comparison passed, not unavailable. The full prototype kept Management absent after initialization, probe and formatting; partial path-only variants still loaded it during enumeration.
+
+| Cohort | Median whole process (s) | Initialization (s) | Probe work (s) |
+| --- | ---: | ---: | ---: |
+| Empty process | 0.175 | — | — |
+| Original | 1.602 | 0.560 | 0.324 |
+| .NET startup | 1.586 | 0.031 | 0.857 |
+| .NET startup and seven probe paths | 1.517 | 0.030 | 0.774 |
+| .NET startup, paths and enumeration | 1.454 | 0.029 | 0.272 |
+
+Original versus full median whole-process reduction is0.148s (9.2%); median matched-round saving is0.129s and all eight matched rounds are faster. Startup-only postpones module cost into probe rather than eliminating it. Seven path substitutions help but unchanged enumeration still triggers loading; replacing enumeration eliminates that transition while preserving measured package work. These results support module autoloading and module-backed path/enumeration operations as a substantial initialization/probe cost. They do not establish that module loading explains all PowerShell slowness.
+
+Whole-process numbers include diagnostic-only AST guards, in-memory transformation (full variant median0.207s), repeated formatting and report production. Stage medians cannot be added or deducted to predict registered-adapter performance. No production adapter improvement, full305-case savings, worker-count choice, under-ten-minute job or three-run acceptance series was measured. A separately approved governed adapter-change and full verification plan is required before changing frozen bytes or claiming validation improvement.
+
+Terminal log SHA-256:608eda88f94f7a1d19736aaa261f6e453e7958b5d6c179ca5c09d82cc38b83e5. Original adapter SHA-256:b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9. Wrapper SHA-256:9ca8f90ab18d898a191a8fc738188d1a899562785751b6be1a20e5a8dfbd3b77. Read-only terminal logs are diagnostic findings, not published/accepted certification evidence.
+
+Local canonical self-test:159 tests,154 passed,5 genuine PowerShell-unavailable skips,0 failures; standalone bytecode regression passed. Focused Python conformance3/3 and repository validation passed. Local PowerShell remains unavailable; hosted control and positive transformation guards executed, but full hosted canonical regression/conformance coverage remains unavailable after cancellation. Draft PR9 remains not review ready. Candidate, frozen bytes, accepted history/evidence and activation/publication facts remain unchanged. Findings persist locally only; stop for one measured revision decision without another implementation, push, run, candidate reopening or merge.
+
+## Governed production candidate implementation — pending hosted validation
+
+The owner-approved revision 31 authorizes candidate revision 11 for the measured
+PowerShell changes: .NET path construction at startup and seven probe-local
+paths, plus a .NET governed-scope enumerator. The candidate keeps package
+digest verification, resource registration, schemas, known answers, output
+formatting, case coverage, and the existing 15-second per-invocation timeout.
+Python, Node, and the deterministic probe fixture carry only the required
+revision-11 identity updates.
+
+The validation workflow no longer runs a diagnostic-only experiment. It runs
+ordinary complete repository verification and records whole-job/check timings
+with two PowerShell workers. Local package, repository, maintainer self-test,
+and focused Python checks pass; local PowerShell remains unavailable and is not
+claimed as a pass. Hosted complete correctness, serial/parallel result
+compatibility, complete-validation timing, and three consecutive complete
+passing runs under ten minutes remain required before owner review readiness.
+No performance improvement is claimed until those complete hosted measurements
+finish.

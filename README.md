@@ -4,7 +4,7 @@ Wayfinder is a portable agent plugin for building, maintaining, validating, and 
 
 <!-- WAYFINDER-GENERATED:README-BANNER:BEGIN -->
 > [!IMPORTANT]
-> Wayfinder `v1-candidate-revision-10` has accepted passing hosted evidence; evidence publication is **NOT-READY**; dispatch authorized: false. Runtime activation is disabled. Installing or forking this repository does not change that status.
+> Wayfinder `v1-candidate-revision-11` has accepted passing hosted evidence; evidence publication is **NOT-READY**; dispatch authorized: false. Runtime activation is disabled. Installing or forking this repository does not change that status.
 <!-- WAYFINDER-GENERATED:README-BANNER:END -->
 
 ## Packages
@@ -21,7 +21,7 @@ Each package uses one canonical skill tree and includes manifests for the Agent 
 <!-- WAYFINDER-GENERATED:README-STATUS:BEGIN -->
 ## Repository status
 
-- Candidate: `v1-candidate-revision-10`
+- Candidate: `v1-candidate-revision-11`
 - Contract: frozen
 - Release: unactivated-frozen
 - Activation: disabled

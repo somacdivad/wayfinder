@@ -79,10 +79,23 @@ ACCEPTED_MATRIX_BINDINGS = {
     "fixtureIndexSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6",
     "expectedOutputsSha256": "9d149d3b3603547b509803b3bfb119b79e40db41f97e848f76554f5dccbf1b94",
 }
+CURRENT_CANDIDATE_BINDINGS = {
+    "releaseId": "v1-candidate-revision-11",
+    "releaseSha256": "0294bedf854de061301df758878d8d665fef22154183ae9b349293229da0b09f",
+    "contractVersion": 1,
+    "contractSha256": "b6df2288740af2ffeae56bf3f9c7fbcdf0c048fb62036d5341429c6a237103e8",
+    "fixtureIndexSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6",
+    "expectedOutputsSha256": "e6a7e6630bbf9cb44afe2dc12854e18473960894c987f11194c7627308237290",
+}
 ACCEPTED_ADAPTER_DIGESTS = {
     "python-reference-v1": "e0b89ba35f223567efe2545d323d816dbaeeedfa8de8fb784fcc7b1c347cb596",
     "node-v1": "f6d695e60e5964448947ed9f835526efa0f84e3764fb8acdd7f765e3bbe4fa3e",
     "powershell-v1": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9",
+}
+CURRENT_CANDIDATE_ADAPTER_DIGESTS = {
+    "python-reference-v1": "1be3db1e3cc91e65717e9b4b7361617f3847db95cf539b9d1ff0a04be9283115",
+    "node-v1": "1adbea25d68cfaa604041cdad2887888ef186dfd37df80596a60e78efaf78db1",
+    "powershell-v1": "0e98ba294ac78bd3e042737d885af657554754584943c28007949e7b5b12baa0",
 }
 ACCEPTED_PARITY_EVIDENCE_DIGESTS = {
     "parity-revision-8-local.json": "28bc61ede21e0b8041c1951b1327c948642d0712170048f17ce2bab9653562ef",
@@ -828,7 +841,7 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
         add("release-schema-status", release_schema["properties"]["status"] == {"enum": ["unactivated-candidate", "unactivated-frozen", "activated-frozen"]})
         add(
             "probe-oracle-identity",
-            probe_expected["releaseId"] == "v1-candidate-revision-9"
+            probe_expected["releaseId"] == expected_release_id
             and release["releaseId"] == expected_release_id
             and probe_expected["contractVersion"] == contract["contractVersion"]
             and probe_expected["status"] == release["status"],
@@ -1026,7 +1039,7 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
         actual_adapters = {item["id"]: item["sha256"] for item in release["adapters"]}
         add(
             "current-candidate-bindings",
-            actual_bindings == ACCEPTED_MATRIX_BINDINGS and actual_adapters == ACCEPTED_ADAPTER_DIGESTS,
+            actual_bindings == CURRENT_CANDIDATE_BINDINGS and actual_adapters == CURRENT_CANDIDATE_ADAPTER_DIGESTS,
             json.dumps({"package": actual_bindings, "adapters": actual_adapters}, sort_keys=True),
         )
     except Exception as exc:
@@ -1056,9 +1069,9 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
             current_parity = load_json(current_parity_path)
             current_adapters = {item["id"]: item["sha256"] for item in current_parity.get("adapters", [])}
             current_parity_bound = (
-                current_parity.get("package", {}).get("releaseSha256") == ACCEPTED_MATRIX_BINDINGS["releaseSha256"]
-                and current_parity.get("package", {}).get("contractSha256") == ACCEPTED_MATRIX_BINDINGS["contractSha256"]
-                and current_adapters == ACCEPTED_ADAPTER_DIGESTS
+                current_parity.get("package", {}).get("releaseSha256") == CURRENT_CANDIDATE_BINDINGS["releaseSha256"]
+                and current_parity.get("package", {}).get("contractSha256") == CURRENT_CANDIDATE_BINDINGS["contractSha256"]
+                and current_adapters == CURRENT_CANDIDATE_ADAPTER_DIGESTS
                 and current_parity.get("summary") == {"total": 305, "passed": 305, "failed": 0}
                 and current_parity.get("agreement", {}).get("normalizedInvocationCount") == 900
             )

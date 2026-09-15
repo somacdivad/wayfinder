@@ -7,17 +7,17 @@
 {
   "format": "wayfinder-maintainer-status",
   "schemaVersion": 1,
-  "asOf": "2026-09-14",
+  "asOf": "2026-09-15",
   "requirements": {"maintainerPythonMinimum": "3.11"},
   "candidate": {
-    "releaseId": "v1-candidate-revision-10",
-    "candidateRevision": 10,
-    "packageVersion": "1.0.0-rc.10",
+    "releaseId": "v1-candidate-revision-11",
+    "candidateRevision": 11,
+    "packageVersion": "1.0.0-rc.11",
     "contractStatus": "frozen",
     "releaseStatus": "unactivated-frozen",
     "activation": "disabled",
-    "contractSha256": "0d8507c4a8b48fa976c1402b057755da28f896a3feeacf914c35b18a035dc341",
-    "releaseSha256": "581e85c34eb5539d0af0e69128877fe57601600ed59366db13076a366524a083"
+    "contractSha256": "b6df2288740af2ffeae56bf3f9c7fbcdf0c048fb62036d5341429c6a237103e8",
+    "releaseSha256": "0294bedf854de061301df758878d8d665fef22154183ae9b349293229da0b09f"
   },
   "conformance": {"caseCount": 305},
   "hostedEvidence": {
@@ -58,12 +58,12 @@
 
 ## Current identity
 
-- Candidate: `v1-candidate-revision-10` (contract `frozen`, release `unactivated-frozen`).
+- Candidate: `v1-candidate-revision-11` (contract `frozen`, release `unactivated-frozen`).
 - Activation: **disabled**. The runtime skill remains non-operational.
-- Contract: `0d8507c4a8b48fa976c1402b057755da28f896a3feeacf914c35b18a035dc341`.
-- Release: `581e85c34eb5539d0af0e69128877fe57601600ed59366db13076a366524a083`.
-- Fixture index: `a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6`; expected-output set: `9d149d3b3603547b509803b3bfb119b79e40db41f97e848f76554f5dccbf1b94`.
-- Registered adapters: `python-reference-v1` `e0b89ba35f223567efe2545d323d816dbaeeedfa8de8fb784fcc7b1c347cb596`, `node-v1` `f6d695e60e5964448947ed9f835526efa0f84e3764fb8acdd7f765e3bbe4fa3e`, `powershell-v1` `b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9`.
+- Contract: `b6df2288740af2ffeae56bf3f9c7fbcdf0c048fb62036d5341429c6a237103e8`.
+- Release: `0294bedf854de061301df758878d8d665fef22154183ae9b349293229da0b09f`.
+- Fixture index: `a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6`; expected-output set: `e6a7e6630bbf9cb44afe2dc12854e18473960894c987f11194c7627308237290`.
+- Registered adapters: `python-reference-v1` `1be3db1e3cc91e65717e9b4b7361617f3847db95cf539b9d1ff0a04be9283115`, `node-v1` `1adbea25d68cfaa604041cdad2887888ef186dfd37df80596a60e78efaf78db1`, `powershell-v1` `0e98ba294ac78bd3e042737d885af657554754584943c28007949e7b5b12baa0`.
 - Historical revision-8 accepted parity evidence: `parity-revision-8-local.json` `28bc61ede21e0b8041c1951b1327c948642d0712170048f17ce2bab9653562ef`, `parity-revision-8-local.md` `840641fd2b2814104a78f7fe0d4106ac70c4688056237003770d7ec7874e97c0`.
 - Historical revision-8 accepted macOS matrix evidence: `matrix-revision-8-python-reference-v1-macos-20260914T125208Z.json` `6b43c2f0b41e83d76218e363651d6353ab62561426e4c7abf997cb561aa3fd78`, `matrix-revision-8-python-reference-v1-macos-20260914T125208Z.md` `8a81084ab64a18bac8d59694bc81233035cc0f02434a36d8106dfc0f2cc1c11c`.
 - Accepted revision-9 local evidence, proposal, and freeze acceptance: `candidate-revision-9-local.json` `b7c9b046d2970c308530d2ba05893213fbf81445e96c4b355a9c3863c4fe734a`, `candidate-revision-9-local.md` `99a5ef242b1e96e966d1fe9cff3549565008520451921bc1e9d7abfc3237d264`, `freeze-acceptance-revision-9.json` `a934affb933fac7ad994257453afda952b6e81d7852e791f60389ebce4767088`, `freeze-acceptance-revision-9.md` `2f0c4bb8859bb3f7f0356038922678673544ddf45907bcdb680670813a581691`, `parity-revision-9-local.json` `3643fe1fb86a1c1fa99e7f47489e0f0c4965c56dbe86c6c01622d31887de9d4c`, `parity-revision-9-local.md` `11f3f7436b96c2be98e5efeb8fb2fb29bb373ba8826ea38b0594aeba806c00f5`, `proposed-freeze-revision-9.json` `9baf19c1f17848b7f0b1b12ff0e821472358f2aadde3dafa4f423194cb5e916c`, `proposed-freeze-revision-9.md` `b75d8862b47a16b13c4862643e7551d44777c98348cd9608f5c5aebd1ff8855f`.
@@ -151,3 +151,5 @@ Startup prototype run 35021476856 attempt1 completed/failure on head 9aef6de8851
 The owner answered "Yes" to preparing the next isolated probe/package experiment and standalone helper fix. The complete replacement proposal is saved in the active plan: one fresh compatibility-control process plus45 timed original/startup/path/enumeration variant observations, no frozen-adapter changes, one diagnostic-only run cancelled after diagnostics. This is scope preparation, not complete-version implementation approval. Implementation/push/CI remain paused pending explicit approval of the saved complete revision; all exclusions and prior findings remain intact.
 
 The owner approved complete isolated probe/package revision 26 (SHA-256 2ba4a206906cad2f983f5f15aa7c9df68af262ad0e36896dbb0387907547f374) with "Yes". Its immutable approval snapshot authorizes continuous independent in-memory probe/package prototype, compatibility preflight and bytecode fix implementation/tests/docs, commits/non-force push and template-based draft PR #9 update, one diagnostic-only hosted attempt, exact-run cancellation after diagnostics, read-only logs and local findings/record/plan/routing persistence, then measured review stop. All frozen adapter/contract/candidate/evidence bytes and facts remain unchanged. No further attempt, candidate reopening, publication/certification/activation/settings/authentication/dependencies or merging/main integration is authorized. Local PowerShell remains unavailable.
+
+Probe/package prototype run35023832211 attempt1 completed/cancelled after successful diagnostics on head44a5b0dc4c07365bf5cdf97139c0ce8abcd9b512, tested mergefc898a74ade5193ff7775fc80186ec5d61057e77. One compatibility control (including permissions) and45 observations passed independent terminal-log validation. Full prototype kept Management absent through probe/formatting and identical package payload/output: initialization0.560→0.029s, probe work0.324→0.272s, whole diagnostic1.602→1.454s; median matched saving0.129s, all eight rounds faster. Diagnostic overhead remains included and no full-suite/job improvement is established. Full validation was intentionally cancelled/unavailable. Findings saved locally and plan changes-requested; stop for one measured revision decision. No additional push/run, frozen-adapter/candidate reopening or evidence/publication/activation/merge authority; draft PR9 remains not ready.

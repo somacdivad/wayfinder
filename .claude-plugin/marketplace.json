@@ -8,7 +8,7 @@
       "name": "wayfinder",
       "source": "./plugins/wayfinder",
       "description": "Build and maintain a durable project record. Current candidate is unactivated.",
-      "version": "1.0.0-rc.10",
+      "version": "1.0.0-rc.11",
       "category": "productivity"
     }
   ]

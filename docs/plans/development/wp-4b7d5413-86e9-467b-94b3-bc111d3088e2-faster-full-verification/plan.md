@@ -1,6 +1,6 @@
 <!-- WAYFINDER-PLAN:BEGIN -->
 ```json
-{"approval":{"locator":"conversation:2026-09-15/dotnet-prototype/revision-26-approval","quotation":"Yes"},"approvalHistory":{"13":"7ba91b47b3d7de807ef029bb53a8dc7018b47592d49e7ebb71efa98f38a1b618","2":"a77c853e193ceb7867c14e66d36f1f474ae922edb304c364ddd9598a3459513b","20":"acd35dc3dc013611e1d0cf8b39aff9ce7811391785e307a0c9cf0feb76622a33","23":"fffc2342077b2549322670bd61a1bec786fb46346af8beaaad72dc44ddcfef15","27":"70d8f7e802db64f266faf07cb0e47084bfbf1e2641cbce1e5d588b1e6ca31dbc","9":"6b717fb40fdbaad10f8545712a4fd97598e639366fbd3e550097ce99d7e6ea48"},"approvedRevision":27,"approvedSha256":"70d8f7e802db64f266faf07cb0e47084bfbf1e2641cbce1e5d588b1e6ca31dbc","format":"wayfinder-plan","id":"wp-4b7d5413-86e9-467b-94b3-bc111d3088e2","records":[],"revision":28,"schemaVersion":1,"slug":"faster-full-verification","status":"implementing","subject":"development","summary":"Preserve full PR conformance coverage with bounded process-isolated case execution and a ten-minute measurement checkpoint.","title":"Faster full repository verification","updated":"2026-09-15"}
+{"approval":{"locator":"conversation:2026-09-15/dotnet-prototype/revision-26-approval","quotation":"Yes"},"approvalHistory":{"13":"7ba91b47b3d7de807ef029bb53a8dc7018b47592d49e7ebb71efa98f38a1b618","2":"a77c853e193ceb7867c14e66d36f1f474ae922edb304c364ddd9598a3459513b","20":"acd35dc3dc013611e1d0cf8b39aff9ce7811391785e307a0c9cf0feb76622a33","23":"fffc2342077b2549322670bd61a1bec786fb46346af8beaaad72dc44ddcfef15","27":"70d8f7e802db64f266faf07cb0e47084bfbf1e2641cbce1e5d588b1e6ca31dbc","9":"6b717fb40fdbaad10f8545712a4fd97598e639366fbd3e550097ce99d7e6ea48"},"approvedRevision":27,"approvedSha256":"70d8f7e802db64f266faf07cb0e47084bfbf1e2641cbce1e5d588b1e6ca31dbc","format":"wayfinder-plan","id":"wp-4b7d5413-86e9-467b-94b3-bc111d3088e2","records":[],"revision":29,"schemaVersion":1,"slug":"faster-full-verification","status":"changes-requested","subject":"development","summary":"Preserve full PR conformance coverage with bounded process-isolated case execution and a ten-minute measurement checkpoint.","title":"Faster full repository verification","updated":"2026-09-15"}
 ```
 <!-- WAYFINDER-PLAN:END -->
 
@@ -311,3 +311,25 @@ Research references for the compatibility boundary: Microsoft Get-ChildItem docu
 ## Probe/package prototype implementation progress
 
 The independent probe wrapper/driver, one-control preflight and eleven regressions are implemented. Canonical local self-test passed154/159 with five genuine PowerShell-unavailable skips, zero failures and bytecode. Repository validator and whitespace checks passed. Actual hosted transform/path/module/enumeration coverage remains pending; local PowerShell is unavailable. Next is the authorized commit/non-force push, template-based PR update and one diagnostic-only attempt, cancelled immediately after diagnostics finish, followed by local findings and measured review stop.
+
+## Probe/package module-avoidance measurement checkpoint — 2026-09-15
+
+Diagnostic-only run [35023832211 attempt 1](https://github.com/somacdivad/wayfinder/actions/runs/35023832211) tested source head 44a5b0dc4c07365bf5cdf97139c0ce8abcd9b512 and merge fc898a74ade5193ff7775fc80186ec5d61057e77. The diagnostic step succeeded; remaining validation was force-cancelled and terminal metadata confirmed completed/cancelled. This is not a full validation pass or full-job benchmark. No retry or additional push is authorized.
+
+Independent terminal-log validation found exactly one compatibility control and45 observations (five cohorts, separate first round and eight alternating sample rounds). Source/runtime/wrapper bindings, exact observation schemas/order, finite durations, module transitions, unchanged frozen adapter bytes, payload/formatter/private-file equality and recomputed summaries/paired differences passed. The control passed all five real recursive governed scopes and owned empty/nested/hidden/literal/unicode/file-link/directory-link/broken-link/cycle/missing-root fixtures. Permission-denial comparison passed, not unavailable. The full prototype kept Management absent after initialization, probe and formatting; partial path-only variants still loaded it during enumeration.
+
+| Cohort | Median whole process (s) | Initialization (s) | Probe work (s) |
+| --- | ---: | ---: | ---: |
+| Empty process | 0.175 | — | — |
+| Original | 1.602 | 0.560 | 0.324 |
+| .NET startup | 1.586 | 0.031 | 0.857 |
+| .NET startup and seven probe paths | 1.517 | 0.030 | 0.774 |
+| .NET startup, paths and enumeration | 1.454 | 0.029 | 0.272 |
+
+Original versus full median whole-process reduction is0.148s (9.2%); median matched-round saving is0.129s and all eight matched rounds are faster. Startup-only postpones module cost into probe rather than eliminating it. Seven path substitutions help but unchanged enumeration still triggers loading; replacing enumeration eliminates that transition while preserving measured package work. These results support module autoloading and module-backed path/enumeration operations as a substantial initialization/probe cost. They do not establish that module loading explains all PowerShell slowness.
+
+Whole-process numbers include diagnostic-only AST guards, in-memory transformation (full variant median0.207s), repeated formatting and report production. Stage medians cannot be added or deducted to predict registered-adapter performance. No production adapter improvement, full305-case savings, worker-count choice, under-ten-minute job or three-run acceptance series was measured. A separately approved governed adapter-change and full verification plan is required before changing frozen bytes or claiming validation improvement.
+
+Terminal log SHA-256:608eda88f94f7a1d19736aaa261f6e453e7958b5d6c179ca5c09d82cc38b83e5. Original adapter SHA-256:b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9. Wrapper SHA-256:9ca8f90ab18d898a191a8fc738188d1a899562785751b6be1a20e5a8dfbd3b77. Read-only terminal logs are diagnostic findings, not published/accepted certification evidence.
+
+Local canonical self-test:159 tests,154 passed,5 genuine PowerShell-unavailable skips,0 failures; standalone bytecode regression passed. Focused Python conformance3/3 and repository validation passed. Local PowerShell remains unavailable; hosted control and positive transformation guards executed, but full hosted canonical regression/conformance coverage remains unavailable after cancellation. Draft PR9 remains not review ready. Candidate, frozen bytes, accepted history/evidence and activation/publication facts remain unchanged. Findings persist locally only; stop for one measured revision decision without another implementation, push, run, candidate reopening or merge.
