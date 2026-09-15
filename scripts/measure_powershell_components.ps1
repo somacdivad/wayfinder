@@ -1,8 +1,10 @@
 # Independent diagnostics only; the registered adapter is never rewritten.
 param([Parameter(Mandatory)][string]$AdapterPath,
-      [Parameter(Mandatory)][ValidateSet('minimal','probe')][string]$Scenario)
+      [Parameter(Mandatory)][ValidateSet('minimal','probe','import-only')][string]$Scenario,
+      [ValidateSet('natural','preloaded','import-only')][string]$ManagementMode = 'natural')
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
+if (($Scenario -eq 'import-only') -ne ($ManagementMode -eq 'import-only')) { throw 'Scenario/module mode mismatch.' }
 # PREFIX-GUARD:BEGIN
 function Get-DiagnosticPrefixLength {
 param($Ast,[string]$Source)
@@ -16,11 +18,31 @@ return $prefixLength
 # PREFIX-GUARD:END
 $componentTimes = [ordered]@{}
 $modulesBefore = @(Get-Module | ForEach-Object { [ordered]@{name=$_.Name;version=$_.Version.ToString()} })
+if (@($modulesBefore | Where-Object { $_.name -eq 'Microsoft.PowerShell.Management' }).Count -ne 0) { throw 'Management already loaded before measurement.' }
+$modulesAfterImport = $null
 $timer = [Diagnostics.Stopwatch]::StartNew()
 $adapterBytes = [IO.File]::ReadAllBytes($AdapterPath)
 $adapterSource = [Text.UTF8Encoding]::new($false,$true).GetString($adapterBytes)
 $timer.Stop(); $componentTimes.sourceReadDecode = $timer.Elapsed.TotalSeconds
 $sourceDigest = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($adapterBytes)).ToLowerInvariant()
+$expectedSkillRoot = [IO.Path]::GetDirectoryName([IO.Path]::GetDirectoryName([IO.Path]::GetDirectoryName($AdapterPath)))
+if ($ManagementMode -eq 'import-only') {
+    $timer.Restart()
+    Import-Module Microsoft.PowerShell.Management -ErrorAction Stop
+    $timer.Stop(); $componentTimes.managementImport = $timer.Elapsed.TotalSeconds
+    $modulesAfterImport = @(Get-Module | ForEach-Object { [ordered]@{name=$_.Name;version=$_.Version.ToString()} })
+    $adapterDirectory = [IO.Path]::GetDirectoryName($AdapterPath)
+    $timer.Restart()
+    $controlSkillRoot = Split-Path (Split-Path $adapterDirectory -Parent) -Parent
+    $controlContractRoot = Join-Path $controlSkillRoot 'assets/contract-v1'
+    $timer.Stop(); $componentTimes.managementPathSetup = $timer.Elapsed.TotalSeconds
+    if ($controlSkillRoot -cne $expectedSkillRoot -or $controlContractRoot -cne [IO.Path]::Combine($expectedSkillRoot,'assets/contract-v1')) { throw 'Module-only path setup differs.' }
+    $modulesAfter = @(Get-Module | ForEach-Object { [ordered]@{name=$_.Name;version=$_.Version.ToString()} })
+    if ([Convert]::ToBase64String([IO.File]::ReadAllBytes($AdapterPath)) -cne [Convert]::ToBase64String($adapterBytes)) { throw 'Adapter bytes changed.' }
+    $report = [ordered]@{format='wayfinder-powershell-module-control-observation';schemaVersion=1;scenario=$Scenario;managementMode=$ManagementMode;adapterSha256=$sourceDigest;adapterPath=$AdapterPath;skillRoot=$expectedSkillRoot;runtimeVersion=$PSVersionTable.PSVersion.ToString();times=$componentTimes;modulesBefore=$modulesBefore;modulesAfterImport=$modulesAfterImport;modulesAfter=$modulesAfter;pathSetup=[ordered]@{skillRoot=$controlSkillRoot;contractRoot=$controlContractRoot};pathEquality=$true}
+    [Console]::Out.WriteLine((ConvertTo-Json -InputObject $report -Depth 50 -Compress))
+    exit 0
+}
 $tokens = $null; $parseErrors = $null
 $timer.Restart()
 $fullAst = [System.Management.Automation.Language.Parser]::ParseInput($adapterSource,$AdapterPath,[ref]$tokens,[ref]$parseErrors)
@@ -36,6 +58,14 @@ $timer.Restart()
 $initializationBlock = $prefixAst.GetScriptBlock()
 $timer.Stop(); $componentTimes.scriptBlockCreation = $timer.Elapsed.TotalSeconds
 if ($initializationBlock.File -cne $AdapterPath) { throw 'Diagnostic source path metadata differs.' }
+$modulesBeforeLoad = @(Get-Module | ForEach-Object { [ordered]@{name=$_.Name;version=$_.Version.ToString()} })
+if (@($modulesBeforeLoad | Where-Object { $_.name -eq 'Microsoft.PowerShell.Management' }).Count -ne 0) { throw 'Management loaded before intended load interval.' }
+if ($ManagementMode -eq 'preloaded') {
+    $timer.Restart()
+    Import-Module Microsoft.PowerShell.Management -ErrorAction Stop
+    $timer.Stop(); $componentTimes.managementImport = $timer.Elapsed.TotalSeconds
+    $modulesAfterImport = @(Get-Module | ForEach-Object { [ordered]@{name=$_.Name;version=$_.Version.ToString()} })
+}
 $timer.Restart()
 . $initializationBlock
 $timer.Stop(); $componentTimes.loadInitialization = $timer.Elapsed.TotalSeconds
@@ -71,6 +101,6 @@ try {
     if (-not $byteEquality) { throw 'Private output byte comparison failed.' }
 } finally { if ($ownsTemporary) { [IO.File]::Delete($temporaryPath) } }
 if ([Convert]::ToBase64String([IO.File]::ReadAllBytes($AdapterPath)) -cne [Convert]::ToBase64String($adapterBytes)) { throw 'Adapter bytes changed.' }
-$report = [ordered]@{format='wayfinder-powershell-component-observation';schemaVersion=1;scenario=$Scenario;adapterSha256=$sourceDigest;adapterPath=$AdapterPath;skillRoot=$script:SkillRoot;prefixLength=$prefixLength;sourceLength=$adapterSource.Length;runtimeVersion=$PSVersionTable.PSVersion.ToString();times=$componentTimes;modulesBefore=$modulesBefore;modulesAfter=$modulesAfter;payload=$payload;formattedText=$firstText;repeatedTexts=$repeatedTexts;outputByteEquality=$byteEquality}
+$report = [ordered]@{format='wayfinder-powershell-component-observation';schemaVersion=2;scenario=$Scenario;managementMode=$ManagementMode;adapterSha256=$sourceDigest;adapterPath=$AdapterPath;skillRoot=$script:SkillRoot;prefixLength=$prefixLength;sourceLength=$adapterSource.Length;runtimeVersion=$PSVersionTable.PSVersion.ToString();times=$componentTimes;modulesBefore=$modulesBefore;modulesBeforeLoad=$modulesBeforeLoad;modulesAfterImport=$modulesAfterImport;modulesAfter=$modulesAfter;payload=$payload;formattedText=$firstText;repeatedTexts=$repeatedTexts;outputByteEquality=$byteEquality}
 # Reporting is deliberately outside every measured component interval.
 [Console]::Out.WriteLine((ConvertTo-Json -InputObject $report -Depth 50 -Compress))

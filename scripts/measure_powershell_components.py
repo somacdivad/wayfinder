@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Serial component diagnostics, separate from governed conformance results."""
+"""Serial module-loading diagnostics, separate from governed conformance results."""
 from __future__ import annotations
+
 import argparse
 import hashlib
 import json
@@ -11,6 +12,7 @@ import statistics
 import subprocess
 import time
 from pathlib import Path
+
 try:
     import resource
 except ImportError:
@@ -23,10 +25,21 @@ WRAPPER = ROOT / 'scripts/measure_powershell_components.ps1'
 TIMERS = {'sourceReadDecode', 'fullSourceParse', 'diagnosticPrefixParse',
           'scriptBlockCreation', 'loadInitialization', 'probeWork', 'formatFirst',
           'formatRepeat1', 'formatRepeat2', 'formatRepeat3', 'privateFileWrite'}
-FIELDS = {'format', 'schemaVersion', 'scenario', 'adapterSha256', 'adapterPath',
-          'skillRoot', 'prefixLength', 'sourceLength', 'runtimeVersion', 'times',
-          'modulesBefore', 'modulesAfter', 'payload', 'formattedText',
-          'repeatedTexts', 'outputByteEquality'}
+COMMON_FIELDS = {'format', 'schemaVersion', 'scenario', 'managementMode',
+                 'adapterSha256', 'adapterPath', 'skillRoot', 'runtimeVersion',
+                 'times', 'modulesBefore', 'modulesAfterImport', 'modulesAfter'}
+FIELDS = COMMON_FIELDS | {'prefixLength', 'sourceLength', 'modulesBeforeLoad',
+                          'payload', 'formattedText', 'repeatedTexts', 'outputByteEquality'}
+CONTROL_FIELDS = COMMON_FIELDS | {'pathSetup', 'pathEquality'}
+MANAGEMENT = [{'name': 'Microsoft.PowerShell.Management', 'version': '7.0.0.0'}]
+SCENARIOS = (
+    ('empty-process', 'empty-process', 'natural'),
+    ('import-only', 'import-only', 'import-only'),
+    ('minimal-natural', 'minimal', 'natural'),
+    ('minimal-preloaded', 'minimal', 'preloaded'),
+    ('probe-natural', 'probe', 'natural'),
+    ('probe-preloaded', 'probe', 'preloaded'),
+)
 
 
 def expected_prefix(source: str) -> int:
@@ -34,32 +47,50 @@ def expected_prefix(source: str) -> int:
     suffix = 'Invoke-WfMain $args\nexit $script:ExitCode\n'
     if not source.endswith(suffix):
         raise ValueError('unexpected adapter dispatch boundary')
-    # PowerShell AST offsets are UTF-16 code units.
     return len(source[:-len(suffix)].encode('utf-16-le')) // 2
 
 
-def validate_observation(report: dict, scenario: str, digest: str, source: str) -> None:
-    if (not isinstance(report, dict) or set(report) != FIELDS
-            or report['format'] != 'wayfinder-powershell-component-observation'
-            or report['schemaVersion'] != 1 or report['scenario'] != scenario
+def validate_observation(report: dict, scenario: str, digest: str, source: str,
+                         mode: str = 'natural') -> None:
+    control = scenario == 'import-only'
+    expected_format = ('wayfinder-powershell-module-control-observation' if control
+                       else 'wayfinder-powershell-component-observation')
+    if (scenario not in ('minimal', 'probe', 'import-only')
+            or mode not in ('natural', 'preloaded', 'import-only')
+            or control != (mode == 'import-only')
+            or not isinstance(report, dict)
+            or set(report) != (CONTROL_FIELDS if control else FIELDS)
+            or report['format'] != expected_format
+            or type(report['schemaVersion']) is not int
+            or report['schemaVersion'] != (1 if control else 2)
+            or report['scenario'] != scenario or report['managementMode'] != mode
             or report['adapterSha256'] != digest or report['adapterPath'] != str(ADAPTER)
-            or report['skillRoot'] != str(SKILL)
-            or report['prefixLength'] != expected_prefix(source)
-            or report['sourceLength'] != len(source.encode('utf-16-le')) // 2
-            or not isinstance(report['runtimeVersion'], str) or not report['runtimeVersion']
-            or report['outputByteEquality'] is not True):
-        raise ValueError('component report binding or shape differs')
-    if not isinstance(report['times'], dict) or set(report['times']) != TIMERS:
-        raise ValueError('component timer labels differ')
+            or report['skillRoot'] != str(SKILL) or report['runtimeVersion'] != '7.6.6'):
+        raise ValueError('diagnostic report binding or shape differs')
+    labels = ({'sourceReadDecode', 'managementImport', 'managementPathSetup'} if control
+              else TIMERS | ({'managementImport'} if mode == 'preloaded' else set()))
+    if not isinstance(report['times'], dict) or set(report['times']) != labels:
+        raise ValueError('diagnostic timer labels differ')
     for value in report['times'].values():
         if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
-            raise ValueError('component times must be finite and nonnegative')
-    for modules in (report['modulesBefore'], report['modulesAfter']):
-        if not isinstance(modules, list) or any(not isinstance(m, dict) or set(m) != {'name', 'version'}
-                or not all(isinstance(v, str) and v for v in m.values()) for m in modules):
-            raise ValueError('invalid module inventory')
+            raise ValueError('diagnostic times must be finite and nonnegative')
+    if (report['modulesBefore'] != [] or report['modulesAfter'] != MANAGEMENT
+            or report['modulesAfterImport'] != (None if mode == 'natural' else MANAGEMENT)
+            or (not control and report['modulesBeforeLoad'] != [])):
+        raise ValueError('unexpected Management module transition')
+    if control:
+        if (report['pathEquality'] is not True or report['pathSetup'] !=
+                {'skillRoot': str(SKILL), 'contractRoot': str(SKILL / 'assets/contract-v1')}):
+            raise ValueError('import-only path equality differs')
+        return
+    if (type(report['prefixLength']) is not int or report['prefixLength'] != expected_prefix(source)
+            or type(report['sourceLength']) is not int
+            or report['sourceLength'] != len(source.encode('utf-16-le')) // 2
+            or report['outputByteEquality'] is not True):
+        raise ValueError('component source boundary or output bytes differ')
     payload = report['payload']
-    if (not isinstance(payload, dict) or set(payload) != {'format','schemaVersion','ok','command','code','data','diagnostics'}
+    if (not isinstance(payload, dict) or set(payload) !=
+            {'format', 'schemaVersion', 'ok', 'command', 'code', 'data', 'diagnostics'}
             or payload['format'] != 'wayfinder-command-result' or payload['schemaVersion'] != 1
             or payload['ok'] is not True or payload['command'] != 'probe' or payload['code'] != 'ok'
             or payload['diagnostics'] != [] or not isinstance(payload['data'], dict)):
@@ -68,7 +99,8 @@ def validate_observation(report: dict, scenario: str, digest: str, source: str) 
         if payload['data'] != {} or report['times']['probeWork'] != 0:
             raise ValueError('minimal scenario performed probe work')
     else:
-        if payload['data'].get('adapter') != {'id':'powershell-v1','path':'scripts/adapters/wayfinder-powershell.ps1','sha256':digest}:
+        if payload['data'].get('adapter') != {'id': 'powershell-v1',
+                'path': 'scripts/adapters/wayfinder-powershell.ps1', 'sha256': digest}:
             raise ValueError('probe adapter identity differs')
         if payload['data'].get('environment', {}).get('version') != report['runtimeVersion']:
             raise ValueError('probe runtime identity differs')
@@ -78,7 +110,8 @@ def validate_observation(report: dict, scenario: str, digest: str, source: str) 
         raise ValueError('formatter output disagrees across calls or with payload')
 
 
-def measure_one(command: list[str], scenario: str, digest: str, source: str) -> dict:
+def measure_one(command: list[str], scenario: str, digest: str, source: str,
+                mode: str = 'natural') -> dict:
     before = resource.getrusage(resource.RUSAGE_CHILDREN) if resource else None
     started = time.perf_counter()
     result = subprocess.run(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
@@ -86,19 +119,86 @@ def measure_one(command: list[str], scenario: str, digest: str, source: str) -> 
     wall = time.perf_counter() - started
     after = resource.getrusage(resource.RUSAGE_CHILDREN) if resource else None
     if result.returncode or result.stderr:
-        raise ValueError(f'component process failed: exit={result.returncode}; stderr={result.stderr.decode("utf-8", errors="replace")[:3000]}')
+        raise ValueError(f'diagnostic process failed: exit={result.returncode}; '
+                         f'stderr={result.stderr.decode("utf-8", errors="replace")[:3000]}')
     observation = None
     if scenario == 'empty-process':
         if result.stdout:
             raise ValueError('empty baseline produced output')
     else:
         if not result.stdout.endswith(b'\n') or len(result.stdout.splitlines()) != 1:
-            raise ValueError('expected exactly one component JSON line')
+            raise ValueError('expected exactly one diagnostic JSON line')
         observation = json.loads(result.stdout.decode('utf-8'))
-        validate_observation(observation, scenario, digest, source)
-    return {'wallSeconds':wall, 'childUserSeconds':after.ru_utime-before.ru_utime if after else None,
-            'childSystemSeconds':after.ru_stime-before.ru_stime if after else None,
-            'exit':result.returncode, 'components':observation}
+        validate_observation(observation, scenario, digest, source, mode)
+    return {'wallSeconds': wall, 'childUserSeconds': after.ru_utime-before.ru_utime if after else None,
+            'childSystemSeconds': after.ru_stime-before.ru_stime if after else None,
+            'exit': result.returncode, 'components': observation}
+
+
+def validate_cohorts(entries: list[dict], digest: str, source: str) -> None:
+    if [e['scenario'] for e in entries] != [s[0] for s in SCENARIOS]:
+        raise ValueError('diagnostic scenarios missing or reordered')
+    seen = set()
+    for entry, (name, scenario, mode) in zip(entries, SCENARIOS):
+        if set(entry) != {'scenario', 'firstObservation', 'samples'} or len(entry['samples']) != 8:
+            raise ValueError('invalid cohort shape or sample count')
+        for observation, round_number in zip([entry['firstObservation'], *entry['samples']], range(9)):
+            if set(observation) != {'wallSeconds', 'childUserSeconds', 'childSystemSeconds',
+                                    'exit', 'components', 'round', 'order'}:
+                raise ValueError('invalid process observation shape')
+            order = list(SCENARIOS if round_number % 2 else reversed(SCENARIOS)) if round_number else list(SCENARIOS)
+            if (type(observation['round']) is not int or observation['round'] != round_number
+                    or type(observation['order']) is not int
+                    or observation['order'] != [s[0] for s in order].index(name)
+                    or observation['exit'] != 0):
+                raise ValueError('invalid round/order/exit binding')
+            binding = (round_number, observation['order'])
+            if binding in seen:
+                raise ValueError('duplicate observation binding')
+            seen.add(binding)
+            for key in ('wallSeconds', 'childUserSeconds', 'childSystemSeconds'):
+                value = observation[key]
+                if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
+                    raise ValueError('invalid process duration or CPU')
+            if scenario == 'empty-process':
+                if observation['components'] is not None:
+                    raise ValueError('empty process unexpectedly has components')
+            else:
+                validate_observation(observation['components'], scenario, digest, source, mode)
+    for start in (2, 4):
+        natural, preloaded = entries[start:start+2]
+        left = [natural['firstObservation'], *natural['samples']]
+        right = [preloaded['firstObservation'], *preloaded['samples']]
+        reference = left[0]['components']
+        for observation in [*left, *right]:
+            component = observation['components']
+            if (component['payload'] != reference['payload']
+                    or component['formattedText'] != reference['formattedText']):
+                raise ValueError('natural/preloaded payload or formatter disagreement')
+
+
+def summarize_cohort(entry: dict) -> dict:
+    samples = entry['samples']
+    summary = {'medianWallSeconds': statistics.median(o['wallSeconds'] for o in samples),
+               'minWallSeconds': min(o['wallSeconds'] for o in samples),
+               'maxWallSeconds': max(o['wallSeconds'] for o in samples), 'medianComponents': {}}
+    if samples[0]['components']:
+        labels = samples[0]['components']['times']
+        summary['medianComponents'] = {k: statistics.median(o['components']['times'][k] for o in samples)
+                                       for k in sorted(labels)}
+        if 'loadInitialization' in labels:
+            combined = [o['components']['times']['loadInitialization'] +
+                        o['components']['times'].get('managementImport', 0) for o in samples]
+            summary['medianImportPlusInitializationSeconds'] = statistics.median(combined)
+    return summary
+
+
+def paired_differences(natural: dict, preloaded: dict) -> list[dict]:
+    return [{'round': left['round'],
+             'initializationDifferenceSeconds': left['components']['times']['loadInitialization'] -
+                                                right['components']['times']['loadInitialization'],
+             'wallDifferenceSeconds': left['wallSeconds'] - right['wallSeconds']}
+            for left, right in zip(natural['samples'], preloaded['samples'])]
 
 
 def main() -> int:
@@ -106,7 +206,7 @@ def main() -> int:
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     if platform.system() != 'Linux' or resource is None:
-        parser.error('component diagnostics require the existing Linux runner')
+        parser.error('module diagnostics require the existing Linux runner')
     with args.output.open('x', encoding='utf-8', newline='\n') as output:
         output.write('{"complete":false}\n'); output.flush()
         raw = ADAPTER.read_bytes(); source = raw.decode('utf-8'); expected_prefix(source)
@@ -115,30 +215,48 @@ def main() -> int:
         entries = [a for a in release['adapters'] if a['id'] == 'powershell-v1']
         if len(entries) != 1 or entries[0]['sha256'] != digest or entries[0]['path'] != 'scripts/adapters/wayfinder-powershell.ps1':
             raise ValueError('registered adapter digest or identity differs')
-        base = [os.environ.get('WAYFINDER_POWERSHELL_RUNTIME','pwsh'),'-NoLogo','-NoProfile','-NonInteractive']
-        report = {'format':'wayfinder-powershell-component-diagnostics','schemaVersion':1,'complete':False,
-                  'sourceCommit':os.environ.get('GITHUB_SHA'),'runId':os.environ.get('GITHUB_RUN_ID'),
-                  'attempt':os.environ.get('GITHUB_RUN_ATTEMPT'),'adapterSha256':digest,
-                  'wrapperSha256':hashlib.sha256(WRAPPER.read_bytes()).hexdigest(), 'scenarios':[]}
-        for scenario in ('empty-process','minimal','probe'):
-            command = base + (['-Command','exit 0'] if scenario == 'empty-process' else
-                              ['-File',str(WRAPPER),'-AdapterPath',str(ADAPTER),'-Scenario',scenario])
-            observations = [measure_one(command,scenario,digest,source) for _ in range(9)]
-            versions = {o['components']['runtimeVersion'] for o in observations if o['components']}
-            if len(versions) > 1:
-                raise ValueError('runtime version changed within scenario')
-            entry = {'scenario':scenario,'firstObservation':observations[0],'samples':observations[1:],
-                     'medianWallSeconds':statistics.median(o['wallSeconds'] for o in observations[1:]),
-                     'medianComponents':{key:statistics.median(o['components']['times'][key] for o in observations[1:])
-                                         for key in sorted(TIMERS)} if scenario != 'empty-process' else {}}
-            report['scenarios'].append(entry)
-            print('POWERSHELL-COMPONENT ' + json.dumps(entry,separators=(',',':')),flush=True)
+        base = [os.environ.get('WAYFINDER_POWERSHELL_RUNTIME', 'pwsh'), '-NoLogo', '-NoProfile', '-NonInteractive']
+        wrapper_raw = WRAPPER.read_bytes()
+        binding = {'sourceCommit': os.environ.get('GITHUB_SHA'), 'runId': os.environ.get('GITHUB_RUN_ID'),
+                   'attempt': os.environ.get('GITHUB_RUN_ATTEMPT'), 'adapterSha256': digest,
+                   'wrapperSha256': hashlib.sha256(wrapper_raw).hexdigest(), 'expectedObservations': 54}
+        print('POWERSHELL-MODULE-BINDING ' + json.dumps(binding, separators=(',', ':')), flush=True)
+        cohorts = {name: {'scenario': name, 'firstObservation': None, 'samples': []}
+                   for name, _, _ in SCENARIOS}
+        for round_number in range(9):
+            order = SCENARIOS if round_number == 0 or round_number % 2 else tuple(reversed(SCENARIOS))
+            for index, (name, scenario, mode) in enumerate(order):
+                command = base + (['-Command', 'exit 0'] if scenario == 'empty-process' else
+                                  ['-File', str(WRAPPER), '-AdapterPath', str(ADAPTER),
+                                   '-Scenario', scenario, '-ManagementMode', mode])
+                observation = measure_one(command, scenario, digest, source, mode)
+                observation.update(round=round_number, order=index)
+                if round_number == 0:
+                    cohorts[name]['firstObservation'] = observation
+                else:
+                    cohorts[name]['samples'].append(observation)
+                print('POWERSHELL-MODULE-OBSERVATION ' + json.dumps(
+                    {'scenario': name, 'observation': observation}, separators=(',', ':')), flush=True)
+        ordered = list(cohorts.values())
+        validate_cohorts(ordered, digest, source)
+        summaries = [{'scenario': e['scenario'], **summarize_cohort(e)} for e in ordered]
+        pairs = [{'payload': ordered[i]['scenario'].split('-')[0],
+                  'roundDifferences': paired_differences(ordered[i], ordered[i+1])} for i in (2, 4)]
         if ADAPTER.read_bytes() != raw:
             raise ValueError('adapter bytes changed during diagnostics')
-        report['complete'] = True
-        output.seek(0); output.truncate(); json.dump(report,output,indent=2); output.write('\n')
-    print('PowerShell component report complete; 27 observations; adapter bytes unchanged.',flush=True)
+        if WRAPPER.read_bytes() != wrapper_raw:
+            raise ValueError('wrapper bytes changed during diagnostics')
+        report = {'format': 'wayfinder-powershell-module-diagnostics', 'schemaVersion': 1, 'complete': True,
+                  'sourceCommit': os.environ.get('GITHUB_SHA'), 'runId': os.environ.get('GITHUB_RUN_ID'),
+                  'attempt': os.environ.get('GITHUB_RUN_ATTEMPT'), 'adapterSha256': digest,
+                  'wrapperSha256': binding['wrapperSha256'],
+                  'scenarios': ordered, 'summaries': summaries, 'pairedDifferences': pairs}
+        output.seek(0); output.truncate(); json.dump(report, output, indent=2); output.write('\n')
+    print('POWERSHELL-MODULE-SUMMARY ' + json.dumps(
+        {'summaries': summaries, 'pairedDifferences': pairs}, separators=(',', ':')), flush=True)
+    print('PowerShell module report complete; 54 observations; adapter bytes unchanged.', flush=True)
     return 0
+
 
 if __name__ == '__main__':
     raise SystemExit(main())

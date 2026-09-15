@@ -203,3 +203,59 @@ The owner authorized pushing this two-line correction to start one replacement
 full ordinary validation. The diagnostic design and all coverage constraints stay
 unchanged; after that replacement, findings are persisted locally and work pauses.
 No further attempt, optimization or merging is implied.
+
+## Completed component diagnostic findings
+
+[Replacement run 35016030202 attempt 1](https://github.com/somacdivad/wayfinder/actions/runs/35016030202/attempts/1) passed on head d5b5bbc4115c1592ad46a520425aa5190b520dd7, tested merge 999aec0fb691c552ffe3dc8b721f05b4c038ba0d. Job 104539566230 ran 19:50:37–20:11:42 UTC: 21m05s. All 27 expected observations were reconciled with exact source/path/runtime bindings, finite nonnegative timings, identical first/repeated formatter text, output byte equality and unchanged frozen adapter bytes. Hosted doctor passed 36/36, canonical self-test 135/135 with zero skips/bytecode, and all 305 cases per adapter passed with 900 invocations each. Complete log SHA-256 f5f5e0821fd8cef4f0f90ac0d8196a63ccced9c1f33c34347650658c5cbf5485. No Actions artifacts were downloaded and none of these diagnostics are accepted certification evidence.
+
+| Median component | Minimal payload | Real probe payload |
+| --- | ---: | ---: |
+| External process wall | 1.108104s | 1.438942s |
+| Source read/decode | 0.006436s | 0.006390s |
+| Full source parse | 0.066464s | 0.064836s |
+| Extra diagnostic-prefix parse | 0.030864s | 0.029909s |
+| Script-block creation | 0.000985s | 0.000961s |
+| Loading/initialization | 0.595564s | 0.585764s |
+| Probe work | 0 | 0.332729s |
+| First display formatter | 0.025961s | 0.017213s |
+| Three repeated formatter calls | 0.002779/0.003370/0.002445s | 0.015480/0.007823/0.007574s |
+| Private UTF-8 file write | 0.005767s | 0.005017s |
+
+Empty PowerShell median was 0.169829s. Loading/initialization is the largest observed component, roughly nine times full-source parsing in these probes. Probe work is substantial; display formatting and file output are smaller. All 18 component observations had no loaded modules before initialization and Microsoft.PowerShell.Management 7.0.0.0 afterward. Module autoloading is a specific lead inside the loading/initialization interval, but its individual cost versus remaining execution/deferred compilation is not isolated. Do not claim that module import alone causes the full overhead. The wrapper/in-memory prefix changes compilation/cache state, prefix parsing is diagnostic overhead, formatter first-use follows earlier probe work in that scenario, and file output is not stdout latency; these medians are not an exact ordinary-startup decomposition.
+
+Ordinary timings: repository 0.339s, doctor 4.564s, self-test 35.083s, Python 349.863s, Node 50.260s, PowerShell with two workers 789.428s. Setup/precheck 32.682s includes component diagnostics; it is not solely installation setup. Checks total 1229.544s and wrapper total 1262.227s. The full job remains above ten minutes; no final worker count, three-run readiness series, target waiver or owner PR readiness is established.
+
+This bounded diagnostic operation is complete. Findings/progress remain local to avoid triggering another run. Draft PR #9 remains not ready for owner review/merging. No further push, CI, diagnosis or optimization is authorized automatically. Next is one measured revision-scope decision in chat; a complete replacement plan requires explicit approval before implementation/execution. The suggested diagnostic scope is separating Management module autoload from remaining initialization/deferred compilation, preserving adapter/frozen bytes. Local PowerShell remains unavailable; existing candidate/evidence/publication/activation facts and all exclusions are unchanged.
+
+## Management module isolation checkpoint
+
+The approved follow-up measures 54 serial fresh processes: empty PowerShell,
+import-only control, and natural/preloaded minimal and real probe payloads. Each
+scenario has one first observation and eight subsequent samples; alternating
+round order reduces systematic drift. First observations are not cold-cache proof.
+
+In preloaded scenarios, core `Import-Module` runs immediately before the unchanged
+in-memory adapter prefix. Import-only controls separately time import and the
+same two `Split-Path` parent operations plus `Join-Path` used by adapter setup.
+Core `Get-Module` inventories verify Management absence/presence around stages.
+No module installation, automatic-variable override, preference/profile change,
+modified adapter file or conformance process reuse is introduced.
+
+Versioned diagnostic schemas separately validate component/control stages and
+path/module identities. Natural/preloaded payload and formatted text must match;
+formatter/file bytes, frozen adapter source, wrapper hash, sample/round ordering
+and successful exits are checked. Combined import/initialization medians use
+per-observation sums. Whole-process wall and child CPU remain separate measures.
+
+Pre-import may warm shared assemblies, JIT and command discovery or simply move
+work earlier. A smaller residual initialization stage is a diagnostic finding,
+not a delivered optimization or an exact causal decomposition. Prior component
+medians provide context, not a same-source comparison. All prior findings remain
+preserved, including the cancelled initial component attempt.
+
+One full ordinary Ubuntu validation attempt is authorized with this five-minute
+diagnostic step, 15-second subprocess timeout and existing 30-minute job timeout.
+All 305 cases per adapter remain required; Python/Node stay serial and PowerShell
+uses two workers. Ordinary checks run after diagnostic failure. After the attempt,
+findings are persisted locally and work pauses; ten-minute readiness and merging
+remain blocked.
