@@ -82,7 +82,7 @@ The accepted hierarchical record-store implementation and closure remain preserv
 
 ## Pending action and design-record routes
 
-Plan-to-PR Development is approved for implementation and PR delivery, not yet implementation-accepted. Its approved scope is routed through `wr-0035` and `maintain.py plan read --id wp-47a553ae-2a54-4dbe-a2dc-74c817521a08 --history`. Complete only the named plan, its PR verification and review packet. Preserve the prerequisite's exact bytes, frozen identity/evidence, and all exclusions above; do not begin another project or Initialize publication correction. At owner review handoff, persist factual progress and stop without polling or follow-up work.
+Plan-to-PR Development is implemented and delivered for owner review, not yet implementation-accepted or merged. Read `wr-0035` for approved scope, `wr-0036` for factual verification and limitations, and `maintain.py plan read --id wp-47a553ae-2a54-4dbe-a2dc-74c817521a08 --history` for the living awaiting-review plan and preserved approval. Native stack 7 orders [prerequisite #3](https://github.com/somacdivad/wayfinder/pull/3), [planning #4](https://github.com/somacdivad/wayfinder/pull/4), [CLI #5](https://github.com/somacdivad/wayfinder/pull/5), and [workflow #6](https://github.com/somacdivad/wayfinder/pull/6) toward `candidate-revision-9-certification`. Local checks pass except the preserved unavailable-PowerShell doctor baseline; applicable PR CI was observed pending, with no hosted pass asserted. Finish the final review requests, then stop and do nothing until the owner returns. Review completion alone is not merge approval. Preserve all exclusions above; do not begin Initialize publication correction or another project.
 
 Discover with `maintain.py record list`; read exact affected history with `record read --id ID --history`. See the [record-store guide](design-record/README.md). Routed record IDs:
 
@@ -109,5 +109,6 @@ Discover with `maintain.py record list`; read exact affected history with `recor
 - `wr-0033` for the completed migration and CLI verification and unavailable PowerShell limitation; its historical pending acceptance is superseded by `wr-0034`.
 - `wr-0034` for the accepted reviewed migration and implementation, persisted terminal closure, and no-later-tranche boundary.
 - `wr-0035` for the approved Plan-to-PR Development project, superseding named implementation authority, PR target and preserved exclusions.
+- `wr-0036` for implemented delivery, exact prerequisite preservation, native stack, local checks, unavailable/runtime and pending-CI limitations, and owner-review stop; not implementation acceptance or closure.
 
 Before reopening a decision, changing evidence governance, or recording an accepted outcome, read the complete affected history and decisive linked authority/evidence. Expand on conflicts or missing dependencies; unrelated chronology is not a routine prerequisite. Add new outcomes with `record add --input FILE`, and explicitly update current-state routing when acceptance or closure requires persistence.

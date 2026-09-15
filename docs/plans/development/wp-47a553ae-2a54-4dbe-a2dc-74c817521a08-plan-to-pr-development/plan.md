@@ -1,6 +1,6 @@
 <!-- WAYFINDER-PLAN:BEGIN -->
 ```json
-{"approval":{"locator":"conversation:current/plan-to-pr-development/implementation-authorization","quotation":"Implement the proposed plan."},"approvalHistory":{},"approvedRevision":2,"approvedSha256":null,"format":"wayfinder-plan","id":"wp-47a553ae-2a54-4dbe-a2dc-74c817521a08","records":["wr-0026","wr-0034"],"revision":2,"schemaVersion":1,"slug":"plan-to-pr-development","status":"approved","subject":"development","summary":"Research-backed interviews, durable approved plans, plan CLI, continuous implementation and owner-reviewed native PR stacks.","title":"Plan-to-PR Development","updated":"2026-09-15"}
+{"approval":{"locator":"conversation:current/plan-to-pr-development/implementation-authorization","quotation":"Implement the proposed plan."},"approvalHistory":{"2":"d07cb0c542c123499877b3b1497129d87de00956a17fc1fd9e43593d5f7296e3"},"approvedRevision":2,"approvedSha256":"d07cb0c542c123499877b3b1497129d87de00956a17fc1fd9e43593d5f7296e3","format":"wayfinder-plan","id":"wp-47a553ae-2a54-4dbe-a2dc-74c817521a08","records":["wr-0026","wr-0034","wr-0035","wr-0036"],"revision":3,"schemaVersion":1,"slug":"plan-to-pr-development","status":"awaiting-review","subject":"development","summary":"Research-backed interviews, durable approved plans, plan CLI, continuous implementation and owner-reviewed native PR stacks.","title":"Plan-to-PR Development","updated":"2026-09-15"}
 ```
 <!-- WAYFINDER-PLAN:END -->
 
@@ -110,3 +110,20 @@ Test meaningful scenarios covering:
 Run canonical maintainer self-tests, repository validation, proportional conformance checks, whitespace checks, and pre/post full doctors. Disclose the existing missing-PowerShell baseline; do not install a runtime or report that check as passed.
 
 Acceptance requires a discoverable workflow, usable plan CLI, preserved approved snapshots and history, documented heuristics, reviewed PR delivery, and unchanged frozen candidate and evidence. Research and plan files will be persisted during implementation; this planning session changes no repository files.
+
+## Execution progress — 2026-09-15
+
+The approved scope and decisions above remain unchanged. Research resources, plan CLI, and workflow integration are implemented. Exact approved revision 2 remains preserved at its original SHA-256 d07cb0c542c123499877b3b1497129d87de00956a17fc1fd9e43593d5f7296e3. This progress does not imply implementation acceptance or integration.
+
+Native GitHub stack 7 delivers:
+
+1. [PR #3 — exact accepted record-store prerequisite](https://github.com/somacdivad/wayfinder/pull/3), head codex/plan-to-pr-01-record-store, base candidate-revision-9-certification.
+2. [PR #4 — researched planning foundations](https://github.com/somacdivad/wayfinder/pull/4), head codex/plan-to-pr-02-planning, base PR #3's head.
+3. [PR #5 — bounded plan CLI and approval integrity](https://github.com/somacdivad/wayfinder/pull/5), head codex/plan-to-pr-03-plan-cli, base PR #4's head.
+4. [PR #6 — workflow/context/handoff integration](https://github.com/somacdivad/wayfinder/pull/6), head codex/plan-to-pr-04-workflow, base PR #5's head.
+
+All phase resources were authored together in the planning layer to keep linked resources coherent. Executable tooling and active governance remain their own upper layers. No scope, acceptance criteria, authority, or dependency changes were made. No merge group is required.
+
+Verification and original authority are preserved in wr-0035 and wr-0036. All 53 prerequisite commit paths/digests match the accepted captured inventory. Isolated exact planning/CLI layers passed repository validation and canonical self-tests (77 and 91 tests). Cumulative implementation passed repository validation, 94 canonical tests with one unavailable PowerShell executable check skipped and zero bytecode, two focused Python conformance cases, whitespace checks, and independent forward scenarios. Full doctor passes 35/36 checks; only the recorded missing pwsh runtime fails, as at baseline. Local Python 3.12.14 and Node 22.22.3 do not establish hosted pinned runtime certification. Applicable validate CI was observed IN_PROGRESS on all PRs; no hosted pass is asserted.
+
+Owner-review requests are the final delivery operation. At that handoff, stop and do nothing until the owner returns: no polling, active waits, scheduled monitoring, auto-merge, or further implementation. Implementation acceptance, approved eligible merging, integrated outcome recording, and closure remain pending. Review completion alone does not authorize merging. Final head/check identities are supplied in the PR review packet; current-state alone owns current authorization/candidate/evidence/activation/publication facts. All approved exclusions remain in force.
