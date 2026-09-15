@@ -169,17 +169,20 @@ class OperationalEfficiencyTests(unittest.TestCase):
         self.assertIn("[approval-response protocol](approval-response.md) is mandatory", workflow)
 
     def test_self_test_discovers_all_modules_without_bytecode(self) -> None:
-        completed = subprocess.CompletedProcess([], 0, stdout="", stderr="Ran 21 tests in 1.0s\n\nOK\n")
+        accounting = dict(unit='test-case', testsRun=21, passed=20, skipped=1, expectedFailures=0, unexpectedSuccesses=0, caseFailures=0, caseErrors=0, subtestEvents=[], fixtureErrors=[], interrupted=False, skipReasons=['unavailable runtime'])
+        completed = subprocess.CompletedProcess([], 0, stdout=json.dumps({'results': accounting, 'suiteSuccessful': True, 'events': []}), stderr='ordinary test logs')
         with (
             mock.patch.object(maintain, "repository_bytecode_artifacts", side_effect=[[], []]),
+            mock.patch.object(maintain, 'fingerprint', return_value={'head': 'a' * 40, 'sha256': 'b' * 64}),
             mock.patch.object(maintain.subprocess, "run", return_value=completed) as run,
         ):
             code, output = capture(maintain.self_test_command, "json")
         self.assertEqual(code, 0, output)
         self.assertEqual(json.loads(output)["data"]["tests"], 21)
         command = run.call_args.args[0]
-        self.assertEqual(command[1:4], ["-m", "unittest", "discover"])
-        self.assertIn("test_*.py", command)
+        self.assertTrue(command[1].endswith('maintainer_unittest.py'))
+        self.assertEqual(json.loads(output)['data']['passed'], 20)
+        self.assertEqual(json.loads(output)['data']['skipped'], 1)
         self.assertEqual(run.call_args.kwargs["env"]["PYTHONDONTWRITEBYTECODE"], "1")
 
     def test_self_test_refuses_preexisting_bytecode(self) -> None:

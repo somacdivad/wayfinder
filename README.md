@@ -55,3 +55,5 @@ Changes to either plugin use [Plan-to-PR Development](plugins/wayfinder-maintain
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
+
+Maintainer development supports local version-bound review packets, immutable delivery receipts and consistent verification summaries through `maintain.py review`, `delivery` and `verification`. See [local reliability CLI](plugins/wayfinder-maintainer/skills/wayfinder-maintainer/resources/plan-to-pr-development/reliability-cli.md). These records live beside repository plans and do not activate Wayfinder or establish certification.

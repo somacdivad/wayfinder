@@ -8,7 +8,9 @@ For [Plan-to-PR Development](../resources/plan-to-pr-development/README.md), exp
 
 Read [plan management](../resources/plan-to-pr-development/plan-management.md) when persisting a plan approval or revision, [implementation](../resources/plan-to-pr-development/implementation.md) when continuing approved work, and [review](../resources/plan-to-pr-development/review.md) at PR handoff or on the owner's return. Do not apply the legacy new-session stop to an approved development plan. Outside that plan or when an owner specifies a narrower tranche, retain the bounded handoff and stop below. Passing a checkpoint never authorizes another project, candidate reopening, publication, activation, or a separately governed action.
 
-After requesting reviews on all ready PRs, stop and do nothing until the owner returns: no polling, active waits, scheduled monitoring, auto-merge, or extra implementation. Review completion alone permits inspection, not merging. Explicit approval on GitHub or here must bind identified PRs and reviewed versions; merging remains subject to checks, protections, dependencies, and plan merge groups.
+Use one consolidated request bound to exact PR heads and reviewed diffs, with explicit subset decisions. Per-PR factual notices refer to that request without competing approval questions. Preserve superseded packets and retained unchanged-member decision provenance through the [local reliability CLI](../resources/plan-to-pr-development/reliability-cli.md). Multiple active or ambiguous requests require clarification. Neither local validation nor delivery acknowledgment infers approval.
+
+When the approved plan explicitly includes terminal receipt persistence, immediately save returned review-comment IDs/URLs after tagging, or save an uncertain submission outcome. Then stop and do nothing until the owner returns: no polling, active waits, scheduled monitoring, auto-merge, or extra implementation. Review completion alone permits inspection, not merging. Explicit approval on GitHub or here must bind identified PRs and reviewed versions; merging remains subject to checks, protections, dependencies, and plan merge groups.
 
 ## Before asking for approval
 
@@ -21,13 +23,15 @@ State all of the following in one self-contained approval packet:
 5. Whether approval permits continuous work within the named development plan, or requires a detailed new-session handoff and stop outside it. State the final review stop explicitly.
 6. One explicit decision question.
 
+A changed PR head or reviewed diff requires a replacement packet and renewed approval; prior explicit approval covers only unchanged named versions. Base/merge-base movement requires comparing the actual diff, not trusting the head alone.
+
 Identify the next bounded task before asking whenever one exists. If the workflow is terminal, provide a clearly labeled closure or verification handoff instead of inventing unauthorized product work. The handoff may identify final verification, archival, or closure as the next bounded activity only when it is actually authorized or eligible.
 
 ## Explicit affirmative response
 
 Process an unambiguous affirmative in this order:
 
-1. Bind it to the most recent unresolved explicit approval question.
+1. Bind it to the single unambiguous unresolved explicit approval question and its identified members/versions. If multiple questions are ambiguously pending, ask for clarification rather than guessing.
 2. Restate the exact interpreted decision and boundary.
 3. Check the established workflow and current authority to determine whether a durable acceptance record is required.
 4. When authorized and required, persist only the accepted outcome with `maintain.py record add --input FILE` and explicitly update `current-state.md` routing in the same authorized record task. Plan approval also uses `maintain.py plan update` to preserve the exact approved snapshot. Persistence of an already accepted decision does not require another acceptance of that decision. Read the complete affected history and decisive authority/evidence first, using `record list` and `record read --id ID --history`; see [the record-store guide](design-record/README.md). Do not infer acceptance of implementation from plan approval. Commits and pushes require authority from the approved plan or exact tranche.
@@ -87,6 +91,10 @@ For material ambiguity, leave the checkpoint pending and ask one concise clarifi
 
 ## Conflicting or superseding responses
 
-Bind an answer only to the most recent unresolved explicit approval question. If multiple decisions are pending, do not guess which one the owner answered; ask one concise clarification question.
+Bind an answer only to the single unambiguous unresolved explicit approval question. If multiple decisions are pending, do not guess which one the owner answered; ask one concise clarification question.
 
 A later explicit owner correction supersedes an earlier interpretation. If affected implementation has begun, stop it, reconcile the changed scope and worktree, and prepare a material plan revision rather than silently continuing. Never treat approval of one checkpoint as approval of adjacent work outside the approved plan.
+
+## Terminal delivery uncertainty
+
+Persist prepared intent before sending; save only acknowledged facts returned by the tool. If a submission times out, save uncertain delivery and stop, without blind retries or polling. On explicit owner return, reconcile actual comment receipts through existing authorized tools and append the observation before considering a resend. An operation marker aids discovery but does not provide server-side idempotency or exactly-once delivery. If local receipt saving fails after a successful submission, retain the tool acknowledgment in the handoff and stop; never claim the receipt was saved. Outside a plan that explicitly includes receipt persistence, retain the immediate post-request stop.

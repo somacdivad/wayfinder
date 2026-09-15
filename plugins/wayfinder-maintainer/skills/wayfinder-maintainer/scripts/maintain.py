@@ -30,7 +30,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import maintainer_records as records
 import maintainer_plans as plans
-from maintainer_checkpoint import create_checkpoint, verify_checkpoint
+import maintainer_review as reliability
+from maintainer_checkpoint import create_checkpoint, verify_checkpoint, fingerprint
 from maintainer_output import COMPLETE_MAX_BYTES, PREVIEW_MAX_BYTES, bounded_chunk, emit_json, envelope, make_cursor, read_cursor
 from maintainer_status import parse_status, projection_drift, rendered_targets, write_targets
 
@@ -322,6 +323,7 @@ def current_context() -> dict[str, Any]:
         ("approval-response", COMPANION_ROOT / "references/approval-response.md", "full"),
         ("plan-to-pr-development", COMPANION_ROOT / "resources/plan-to-pr-development/README.md", "full"),
         ("plan-management", COMPANION_ROOT / "resources/plan-to-pr-development/plan-management.md", "full"),
+        ("reliability-cli", COMPANION_ROOT / "resources/plan-to-pr-development/reliability-cli.md", "full"),
         ("bounded-context-research", COMPANION_ROOT / "references/research/2026-09-14-bounded-context-and-tool-output-management.md", "full"),
         ("opportunities-addendum", COMPANION_ROOT / "references/research/2026-09-14-broader-wayfinder-opportunities-addendum.md", "full"),
     ]
@@ -620,46 +622,48 @@ def self_test_command(output_format: str) -> int:
         else:
             print(f"FAIL self-test bytecode-present: {', '.join(before)}")
         return 1
+    started = dt.datetime.now(dt.timezone.utc).isoformat()
+    provenance = fingerprint(REPOSITORY_ROOT)
     with tempfile.TemporaryDirectory(prefix="wayfinder-maintainer-cache-") as cache_root:
         completed = subprocess.run(
-            [
-                sys.executable, "-m", "unittest", "discover",
-                "-s", str(COMPANION_ROOT / "scripts"), "-p", "test_*.py", "-v",
-            ],
-            cwd=REPOSITORY_ROOT,
-            env=command_environment(cache_root),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=False,
+            [sys.executable, str(COMPANION_ROOT / "scripts/maintainer_unittest.py"), str(COMPANION_ROOT / "scripts")],
+            cwd=REPOSITORY_ROOT, env=command_environment(cache_root),
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False,
         )
-    combined = completed.stdout + completed.stderr
-    match = re.search(r"Ran ([0-9]+) tests?", combined)
-    discovered = int(match.group(1)) if match else 0
-    skip_match = re.search(r"skipped=([0-9]+)", combined)
-    skipped = int(skip_match.group(1)) if skip_match else 0
-    skip_reasons = re.findall(r"\.\.\. skipped ['\"](.+?)['\"]", combined)
     after = repository_bytecode_artifacts()
-    ok = completed.returncode == 0 and discovered > 0 and not after
+    try:
+        structured = records.strict_json(completed.stdout.encode('utf-8'))
+        reliability.shape(structured, {'results', 'suiteSuccessful', 'events'})
+        reliability.result_valid(structured['results'])
+        reliability.flags(structured, ['suiteSuccessful'])
+        accounting = structured['results']
+        ok = completed.returncode == 0 and structured['suiteSuccessful'] and accounting['testsRun'] > 0 and not after
+    except (ValueError, KeyError, TypeError):
+        accounting = None
+        ok = False
     result = {
-        "ok": ok,
-        "code": "ok" if ok else "self-test.failed",
-        "tests": discovered,
-        "skipped": skipped,
-        "skipReasons": skip_reasons,
-        "exitCode": completed.returncode,
-        "bytecodeArtifacts": after,
+        'ok': ok, 'code': 'ok' if ok else 'self-test.failed',
+        'tests': accounting['testsRun'] if accounting else 0,
+        'passed': accounting['passed'] if accounting else 0,
+        'skipped': accounting['skipped'] if accounting else 0,
+        'skipReasons': accounting['skipReasons'] if accounting else [],
+        'results': accounting, 'suiteSuccessful': ok,
+        'exitCode': completed.returncode, 'bytecodeArtifacts': after,
+        'provenance': {'command': 'maintain.py self-test', 'selection': 'all maintainer-owned test_*.py modules',
+                       'testedCommit': provenance['head'], 'worktreeSha256': provenance['sha256'],
+                       'runtime': platform.python_implementation() + ' ' + platform.python_version(),
+                       'startedAt': started, 'finishedAt': dt.datetime.now(dt.timezone.utc).isoformat()},
     }
-    if output_format == "json":
-        emit_json(command="self-test", response_class="complete-evidence", scope={"kind": "maintainer-regressions", "id": "all"}, data=result,
-                  returned_items=discovered, total_items=discovered)
-    elif output_format == "verbose" or not ok:
-        print(combined, end="" if combined.endswith("\n") else "\n")
-        print(f"summary passed={str(ok).lower()} tests={discovered} skipped={skipped} bytecode={len(after)}")
+    if output_format == 'json':
+        emit_json(command='self-test', response_class='complete-evidence', scope={'kind': 'maintainer-regressions', 'id': 'all'}, data=result,
+                  returned_items=result['tests'], total_items=result['tests'])
     else:
-        print(f"OK self-test tests={discovered} skipped={skipped} bytecode=0")
-        for reason in skip_reasons:
-            print(f"UNAVAILABLE {reason}")
+        if output_format == 'verbose' or not ok:
+            print(completed.stderr, end='' if completed.stderr.endswith('\n') else '\n')
+        print(f"{'PASS' if ok else 'FAIL'} self-test: suiteSuccessful={str(ok).lower()}")
+        for reason in result['skipReasons']:
+            print('UNAVAILABLE skipped test: ' + reason)
+        print(f"summary testsRun={result['tests']} passed={result['passed']} skipped={result['skipped']} expectedFailures={accounting['expectedFailures'] if accounting else 0} unexpectedSuccesses={accounting['unexpectedSuccesses'] if accounting else 0} bytecode={len(after)} accountingComplete={str(accounting is not None).lower()}")
     return 0 if ok else 1
 
 
@@ -2613,6 +2617,7 @@ def handoff_command(kind: str, objective: str, exclusions: list[str], plan_id: s
         print("- After explicit acceptance, record only the accepted outcome when required, provide a detailed copy-ready prompt for the next bounded task in a new session, and stop without beginning that task.")
     else:
         print("- Continue only the approved plan's named implementation after reconciling scope and current authority; pause for material deviations and named checkpoints. Persist exact plan approvals and required accepted outcomes without inferring implementation acceptance.")
+        print("- Use local review/delivery/verification records and one consolidated version-bound question. If explicitly authorized by the plan, immediately save returned receipts or uncertain delivery outcomes before the terminal stop.")
         print("- At owner PR review handoff, stop and do nothing until the owner returns: no polling, active waits, scheduled monitoring, auto-merge, or additional implementation. Version-bound explicit approval permits eligible merging subject to checks and protections; review completion alone does not.")
     print("- After rejection or a material revision request, leave the checkpoint pending and interview with one material question per turn until the reason for rejection, required correction, needed evidence, and acceptance criteria are understood.")
     print("\nDo not infer authorization for later work. Present material changes for explicit approval and stop at the active tranche boundary.")
@@ -2850,6 +2855,25 @@ def main(argv: list[str]) -> int:
         if name == "update":
             selected.add_argument("--id", required=True)
             selected.add_argument("--expected-sha256", required=True)
+    for group, actions in (('review', ('create', 'read', 'validate', 'supersede')), ('delivery', ('append', 'read')), ('verification', ('capture', 'render'))):
+        selected_group = subparsers.add_parser(group, help='Local immutable development ' + group + ' records; no network or inferred approval.')
+        actions_parser = selected_group.add_subparsers(dest=group + '_command', required=True)
+        for action in actions:
+            selected = actions_parser.add_parser(action)
+            selected.add_argument('--plan-id', required=True)
+            selected.add_argument('--format', choices=('summary', 'full', 'json'), default='summary')
+            selected.add_argument('--max-bytes', type=int)
+            selected.add_argument('--cursor')
+            if action in ('create', 'supersede', 'append', 'capture'):
+                selected.add_argument('--input', type=Path, required=True, help='Closed schemas: resources/plan-to-pr-development/reliability-cli.md')
+                selected.add_argument('--dry-run', action='store_true')
+                selected.add_argument('--expected-store-sha256', help='Required once artifact history exists; read and reconcile first.')
+            if group == 'delivery':
+                selected.add_argument('--request-id', required=True)
+            elif action not in ('create', 'capture'):
+                selected.add_argument('--id', required=True)
+            if group == 'review' and action == 'validate':
+                selected.add_argument('--observations', type=Path, help='Explicit current platform identities; supplied locally, never fetched.')
     record_section_parser = subparsers.add_parser("record-section", help="Compatibility alias: read the unique record with this legacy heading.")
     record_section_parser.add_argument("--heading", required=True)
     record_section_parser.add_argument("--format", choices=("summary", "full", "json"), default="full")
@@ -2939,6 +2963,13 @@ def main(argv: list[str]) -> int:
             return plans.update_command(repository, args.id, args.input, args.expected_sha256, args.dry_run, args.format, maximum)
         except (OSError, ValueError, TypeError) as exc:
             return plans.error("plan " + args.plan_command, exc, args.format)
+    if args.command in {'review', 'delivery', 'verification'}:
+        if args.cursor and getattr(args, args.command + '_command') in {'create', 'supersede', 'append', 'capture'}:
+            parser.error('write operations do not accept continuation cursors')
+        try:
+            return reliability.command(plan_repository_root(), args)
+        except (ValueError, OSError) as exc:
+            return plans.error(args.command, exc, args.format)
     if args.command == "evidence":
         return evidence_command(args.output)
     if args.command == "freeze-proposal":
