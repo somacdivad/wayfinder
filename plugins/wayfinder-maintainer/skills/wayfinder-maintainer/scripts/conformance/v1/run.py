@@ -37,6 +37,7 @@ OBSERVATION_ROOT: Path | None = None
 OBSERVATION_CASE: str | None = None
 DIFFERENTIAL_MODE = False
 INVOCATION_COUNT = 0
+PROFILE_INVOCATIONS: list[dict[str, Any]] | None = None
 
 
 class CaseFailure(Exception):
@@ -97,6 +98,7 @@ def invoke(adapter: Path, args: list[str], *, cwd: Path | None = None, env: dict
     ):
         process_env["WAYFINDER_TEST_MODE"] = "1"
         process_env["WAYFINDER_TEST_CLOCK"] = "2026-09-13T12:34:56Z"
+    process_started = time.perf_counter()
     completed = subprocess.run(
         [*adapter_command(adapter), *args],
         cwd=str(cwd) if cwd else None,
@@ -123,6 +125,10 @@ def invoke(adapter: Path, args: list[str], *, cwd: Path | None = None, env: dict
         raise CaseFailure("failed command did not write a human diagnostic to stderr")
     if b"Traceback" in completed.stdout or b"Traceback" in completed.stderr:
         raise CaseFailure("traceback contaminated command output")
+    process_seconds = time.perf_counter() - process_started
+    if PROFILE_INVOCATIONS is not None:
+        PROFILE_INVOCATIONS.append({"case": OBSERVATION_CASE, "arguments": list(args),
+                                    "seconds": process_seconds, "exit": completed.returncode})
     if OBSERVATIONS is not None:
         root = str(OBSERVATION_ROOT) if OBSERVATION_ROOT is not None else ""
 
@@ -2546,11 +2552,12 @@ def failed_case(case: dict[str, Any], detail: str) -> dict[str, Any]:
 
 def measured_case(skill_root: Path, adapter: Path, case: dict[str, Any], differential_mode: bool) -> tuple[dict[str, Any], dict[str, Any]]:
     # Spawn isolates globals between workers; reset these between each worker's tasks.
-    global OBSERVATION_CASE, OBSERVATION_ROOT, DIFFERENTIAL_MODE, INVOCATION_COUNT
+    global OBSERVATION_CASE, OBSERVATION_ROOT, DIFFERENTIAL_MODE, INVOCATION_COUNT, PROFILE_INVOCATIONS
     OBSERVATION_CASE = OBSERVATION_ROOT = None
     DIFFERENTIAL_MODE = differential_mode
     INVOCATION_COUNT = 0
     started = time.perf_counter()
+    first_invocation = len(PROFILE_INVOCATIONS) if PROFILE_INVOCATIONS is not None else None
     try:
         execute_case(skill_root, adapter, case)
         result = {"id": case["id"], "category": case["category"], "rules": case["rules"], "status": "passed"}
@@ -2558,7 +2565,12 @@ def measured_case(skill_root: Path, adapter: Path, case: dict[str, Any], differe
         result = failed_case(case, str(exc))
     finally:
         OBSERVATION_CASE = OBSERVATION_ROOT = None
-    timing = {"id": case["id"], "seconds": time.perf_counter() - started, "adapterInvocations": INVOCATION_COUNT}
+    elapsed = time.perf_counter() - started
+    timing = {"id": case["id"], "seconds": elapsed, "adapterInvocations": INVOCATION_COUNT}
+    if first_invocation is not None:
+        adapter_seconds = sum(item["seconds"] for item in PROFILE_INVOCATIONS[first_invocation:])
+        timing["adapterProcessSeconds"] = adapter_seconds
+        timing["harnessSeconds"] = elapsed - adapter_seconds
     return result, timing
 
 
@@ -2705,11 +2717,12 @@ def write_evidence(skill_root: Path, adapter: Path, cases_path: Path, results: l
 
 
 def main(argv: list[str]) -> int:
-    global DIFFERENTIAL_MODE, OBSERVATIONS
+    global DIFFERENTIAL_MODE, OBSERVATIONS, PROFILE_INVOCATIONS
     parser = argparse.ArgumentParser()
     parser.add_argument("--adapter", type=Path)
     parser.add_argument("--jobs", type=positive_jobs, default=1)
     parser.add_argument("--timings", type=Path, help="Write a new, non-certification timing report separately from results.")
+    parser.add_argument("--profile", type=Path, help="Write a new harness-only process-boundary profile separately from results.")
     parser.add_argument("--evidence-dir", type=Path)
     parser.add_argument("--write-evidence", action="store_true")
     parser.add_argument("--case", action="append", dest="case_ids")
@@ -2721,11 +2734,14 @@ def main(argv: list[str]) -> int:
     if sys.version_info < (3, 11):
         print("conformance runner requires Python 3.11 or newer", file=sys.stderr)
         return 2
-    if args.jobs > 1 and (args.write_evidence or args.observations is not None):
+    if args.jobs > 1 and (args.write_evidence or args.observations is not None or args.profile is not None):
         print("parallel runs cannot write evidence or collect observations", file=sys.stderr)
         return 2
     if args.timings is not None and (args.timings.exists() or args.timings.is_symlink()):
         print(f"timing target already exists: {args.timings}", file=sys.stderr)
+        return 2
+    if args.profile is not None and (args.profile.exists() or args.profile.is_symlink()):
+        print(f"profile target already exists: {args.profile}", file=sys.stderr)
         return 2
     maintainer_root = Path(__file__).resolve().parents[3]
     packaged_root = maintainer_root.parents[2] / "wayfinder" / "skills" / "wayfinder"
@@ -2741,6 +2757,8 @@ def main(argv: list[str]) -> int:
             print(f"observation target already exists: {args.observations}", file=sys.stderr)
             return 2
         OBSERVATIONS = []
+    if args.profile is not None:
+        PROFILE_INVOCATIONS = []
     DIFFERENTIAL_MODE = args.differential_mode
     if args.evidence_dir is not None and not args.write_evidence:
         print("--evidence-dir requires --write-evidence", file=sys.stderr)
@@ -2783,6 +2801,12 @@ def main(argv: list[str]) -> int:
         with args.timings.open("xb") as handle:
             handle.write(pretty({"format": "wayfinder-test-timings", "schemaVersion": 1,
                                  "jobs": args.jobs, "seconds": elapsed, "cases": timings}))
+    if args.profile is not None:
+        args.profile.parent.mkdir(parents=True, exist_ok=True)
+        with args.profile.open("xb") as handle:
+            handle.write(pretty({"format": "wayfinder-conformance-process-profile", "schemaVersion": 1,
+                                 "jobs": args.jobs, "adapter": str(adapter), "cases": timings,
+                                 "invocations": PROFILE_INVOCATIONS}))
     failed = [result for result in results if result["status"] == "failed"]
     if args.observations is not None:
         args.observations.parent.mkdir(parents=True, exist_ok=True)

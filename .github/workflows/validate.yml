@@ -32,6 +32,12 @@ jobs:
           package-manager-cache: false
       - name: Install checksum-verified PowerShell 7.6.6
         run: bash .github/scripts/install-powershell.sh
+      - name: Profile costly conformance fixtures
+        timeout-minutes: 10
+        env:
+          WAYFINDER_NODE_RUNTIME: node
+          WAYFINDER_POWERSHELL_RUNTIME: pwsh
+        run: python scripts/profile_conformance_costs.py --output "$RUNNER_TEMP/conformance-cost-profile"
       - name: Run full ordinary repository verification with timings
         if: always()
         env:

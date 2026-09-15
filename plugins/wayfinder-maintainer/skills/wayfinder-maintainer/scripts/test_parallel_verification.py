@@ -124,7 +124,7 @@ class ParallelVerificationTests(unittest.TestCase):
         doctor.assert_not_called()
 
     def test_parallel_governed_modes_are_rejected_before_execution(self):
-        for extra in (['--write-evidence'], ['--observations', '/unused']):
+        for extra in (['--write-evidence'], ['--observations', '/unused'], ['--profile', '/unused']):
             with mock.patch.object(runner, 'selected_results') as run, contextlib.redirect_stderr(io.StringIO()):
                 self.assertEqual(runner.main(['--jobs', '2', *extra]), 2)
             run.assert_not_called()
@@ -162,6 +162,24 @@ class ParallelVerificationTests(unittest.TestCase):
             self.assertEqual(len(observed['invocations']), 2)
             self.assertEqual([i['case'] for i in observed['invocations']], [r['id'] for r in observed['results']])
             self.assertEqual([i['invocation'] for i in observed['invocations']], [1, 1])
+
+    def test_serial_profile_is_separate_complete_and_non_overwritable(self):
+        with tempfile.TemporaryDirectory() as name:
+            path = Path(name) / 'profile.json'
+            command = [sys.executable, '-B', str(CONFORMANCE / 'run.py'), '--adapter', str(ADAPTER),
+                       '--case', 'command-unknown', '--output', 'json', '--profile', str(path)]
+            completed = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            profile = json.loads(path.read_text())
+            self.assertEqual(profile['format'], 'wayfinder-conformance-process-profile')
+            self.assertEqual(profile['schemaVersion'], 1)
+            self.assertEqual(profile['cases'][0]['id'], 'command-unknown')
+            self.assertGreater(profile['cases'][0]['adapterProcessSeconds'], 0)
+            self.assertGreaterEqual(profile['cases'][0]['harnessSeconds'], 0)
+            self.assertEqual(len(profile['invocations']), 1)
+            again = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(again.returncode, 2)
+            self.assertIn('profile target already exists', again.stderr)
 
 
 class VerificationDriverTests(unittest.TestCase):
