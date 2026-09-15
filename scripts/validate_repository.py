@@ -92,6 +92,7 @@ def main() -> int:
 
     maintainer_root = ROOT / "plugins/wayfinder-maintainer/skills/wayfinder-maintainer"
     failures.extend("design history: " + issue for issue in maintainer.records.integrity_issues(maintainer_root / "references/design-record"))
+    failures.extend("development plans: " + issue for issue in maintainer.plans.integrity_issues(ROOT))
     maintainer_skill = (maintainer_root / "SKILL.md").read_text(encoding="utf-8")
     if not all(
         marker in maintainer_skill

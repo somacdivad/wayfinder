@@ -2549,7 +2549,20 @@ def expect_command(expected_exit: int, expected_code: str, command: list[str]) -
     return 0 if passed else 1
 
 
-def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
+def handoff_command(kind: str, objective: str, exclusions: list[str], plan_id: str | None = None) -> int:
+    plan = None
+    if plan_id is not None:
+        try:
+            plan = next((item for item in plans.load_store(plan_repository_root()) if item['metadata']['id'] == plan_id), None)
+            if plan is None or plan['metadata']['approvedRevision'] is None:
+                raise ValueError('handoff requires an existing explicitly approved plan')
+            if plan['metadata']['status'] not in {'approved', 'implementing', 'awaiting-review'}:
+                raise ValueError('plan is not eligible for implementation or review handoff')
+            if plan_id not in CURRENT_STATE_PATH.read_text(encoding='utf-8'):
+                raise ValueError('plan is not routed by current-state authority')
+        except (OSError, ValueError) as exc:
+            print(f'handoff not generated: {exc}', file=sys.stderr)
+            return 1
     if doctor("quiet") != 0:
         print("maintainer doctor failed; handoff not generated", file=sys.stderr)
         return 1
@@ -2578,6 +2591,10 @@ def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
     print("4. Use `maintain.py self-test` for maintainer regressions and `maintain.py record list`, `record read --id ID --history`, and `record add --input FILE` for design history. Accepted outcomes and closures also require updating current-state routing.")
     print("\nTranche mode\n")
     print(f"- Kind: `{kind}`")
+    if plan is not None:
+        metadata = plan['metadata']
+        print(f"- Development plan: `{plan_id}`; current revision {metadata['revision']}, approved revision {metadata['approvedRevision']}, status `{metadata['status']}`")
+        print(f"- Read exact plan and approvals: `maintain.py plan read --id {plan_id} --history`; read current state for action authority. Scaffolding grants no authority.")
     if kind == "investigation":
         print("- Inspect and report only; do not create evidence, freeze records, publish, activate, or mutate governed bytes unless the objective separately grants that authority.")
     elif kind == "implementation":
@@ -2592,7 +2609,11 @@ def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
             print(f"- {item}")
     print("\nApproval response\n")
     print("- Follow `references/approval-response.md` before asking for approval and when processing the owner's response.")
-    print("- After explicit acceptance, record only the accepted outcome when required, provide a detailed copy-ready prompt for the next bounded task in a new session, and stop without beginning that task.")
+    if plan is None:
+        print("- After explicit acceptance, record only the accepted outcome when required, provide a detailed copy-ready prompt for the next bounded task in a new session, and stop without beginning that task.")
+    else:
+        print("- Continue only the approved plan's named implementation after reconciling scope and current authority; pause for material deviations and named checkpoints. Persist exact plan approvals and required accepted outcomes without inferring implementation acceptance.")
+        print("- At owner PR review handoff, stop and do nothing until the owner returns: no polling, active waits, scheduled monitoring, auto-merge, or additional implementation. Version-bound explicit approval permits eligible merging subject to checks and protections; review completion alone does not.")
     print("- After rejection or a material revision request, leave the checkpoint pending and interview with one material question per turn until the reason for rejection, required correction, needed evidence, and acceptance criteria are understood.")
     print("\nDo not infer authorization for later work. Present material changes for explicit approval and stop at the active tranche boundary.")
     return 0
@@ -2878,6 +2899,7 @@ def main(argv: list[str]) -> int:
     handoff_parser.add_argument("--kind", required=True, choices=("investigation", "implementation", "hosted-review", "acceptance-record"))
     handoff_parser.add_argument("--objective", required=True)
     handoff_parser.add_argument("--exclude", action="append", default=[])
+    handoff_parser.add_argument("--plan-id", help="Existing approved development plan routed by current state; otherwise use the legacy bounded handoff.")
     args = parser.parse_args(argv)
     if hasattr(args, "max_bytes") and args.max_bytes is not None and args.max_bytes < 4:
         parser.error("--max-bytes must be at least 4 for UTF-8-safe output")
@@ -2940,7 +2962,7 @@ def main(argv: list[str]) -> int:
     if args.command == "expect":
         return expect_command(args.expected_exit, args.expected_code, args.target)
     if args.command == "handoff":
-        return handoff_command(args.kind, args.objective, args.exclude)
+        return handoff_command(args.kind, args.objective, args.exclude, args.plan_id)
     return 2
 
 

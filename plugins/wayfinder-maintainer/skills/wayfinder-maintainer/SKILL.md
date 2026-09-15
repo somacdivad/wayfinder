@@ -1,11 +1,19 @@
 ---
 name: wayfinder-maintainer
-description: Maintain, version, test, certify, freeze, or prepare activation of the Wayfinder executable contract and adapters. Use only for work on Wayfinder itself; do not use to initialize, update, validate, or consult an ordinary project record.
+description: Plan and deliver PR-based changes to Wayfinder or Wayfinder-maintainer; maintain, test, certify, freeze, or prepare activation of the executable contract and adapters. Use for either plugin, not an ordinary project record.
 ---
 
 # Wayfinder Maintainer
 
 Maintain the Wayfinder skill without treating passing hashes or fixture counts as proof that its contract artifacts agree semantically.
+
+## Plan-to-PR Development
+
+For changes to either plugin, use [Plan-to-PR Development](resources/plan-to-pr-development/README.md). Read its planning interview and research guidance before establishing a plan; read plan management for storage and approval; then read PR boundaries, implementation, and review guidance as those phases arise. Interview one material question per turn until the plan is decision-complete. Save every plan outside the plugins in `docs/plans` and obtain explicit approval of the complete version.
+
+Use `maintain.py plan list`, `plan read --id ID --history`, and `plan create/update --input FILE [--dry-run]`; inspect subcommand help and [plan management](resources/plan-to-pr-development/plan-management.md) for inputs and exact snapshot/concurrency rules. The living plan owns task scope and progress; accepted decisions and closure belong in design history, with current authorization routed solely through current state.
+
+Implement the approved PR sequence continuously within its named authority, pausing for material deviations or named checkpoints. Stack only genuine dependencies using native GitHub stacks; if support is unavailable, pause to propose a fallback. Request the owner's review on all ready PRs and stop without polling until the owner returns. Version-bound explicit approval permits eligible merging subject to protections and dependencies; review completion alone does not.
 
 ## Start with compact state
 

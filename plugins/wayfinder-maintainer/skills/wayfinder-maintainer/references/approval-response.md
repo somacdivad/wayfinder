@@ -2,6 +2,14 @@
 
 Use this maintainer-only protocol for every explicit acceptance, authorization, or approval checkpoint. Apply it both when asking the decision question and when interpreting the owner's response. It does not turn an ordinary acknowledgment into approval, broaden the active tranche, or authorize adjacent work.
 
+## Development-plan mode
+
+For [Plan-to-PR Development](../resources/plan-to-pr-development/README.md), explicit approval of the complete plan authorizes continuous implementation and the named Git/PR delivery actions within that plan. Planned checkpoints and material revisions still require explicit decisions. The living plan and its exact approval snapshot carry task scope; design records preserve accepted decisions; current state alone owns current authorization and candidate facts.
+
+Read [plan management](../resources/plan-to-pr-development/plan-management.md) when persisting a plan approval or revision, [implementation](../resources/plan-to-pr-development/implementation.md) when continuing approved work, and [review](../resources/plan-to-pr-development/review.md) at PR handoff or on the owner's return. Do not apply the legacy new-session stop to an approved development plan. Outside that plan or when an owner specifies a narrower tranche, retain the bounded handoff and stop below. Passing a checkpoint never authorizes another project, candidate reopening, publication, activation, or a separately governed action.
+
+After requesting reviews on all ready PRs, stop and do nothing until the owner returns: no polling, active waits, scheduled monitoring, auto-merge, or extra implementation. Review completion alone permits inspection, not merging. Explicit approval on GitHub or here must bind identified PRs and reviewed versions; merging remains subject to checks, protections, dependencies, and plan merge groups.
+
 ## Before asking for approval
 
 State all of the following in one self-contained approval packet:
@@ -9,8 +17,8 @@ State all of the following in one self-contained approval packet:
 1. What exact proposal, implementation, result, or record is being accepted.
 2. What exact authority acceptance grants.
 3. What remains excluded.
-4. The single next bounded task that acceptance will make eligible, when one exists.
-5. That the next task will start only from a detailed prompt in a new session and will not begin automatically.
+4. The next bounded activity acceptance makes eligible, when one exists, and whether it remains within the approved plan.
+5. Whether approval permits continuous work within the named development plan, or requires a detailed new-session handoff and stop outside it. State the final review stop explicitly.
 6. One explicit decision question.
 
 Identify the next bounded task before asking whenever one exists. If the workflow is terminal, provide a clearly labeled closure or verification handoff instead of inventing unauthorized product work. The handoff may identify final verification, archival, or closure as the next bounded activity only when it is actually authorized or eligible.
@@ -22,10 +30,10 @@ Process an unambiguous affirmative in this order:
 1. Bind it to the most recent unresolved explicit approval question.
 2. Restate the exact interpreted decision and boundary.
 3. Check the established workflow and current authority to determine whether a durable acceptance record is required.
-4. When authorized and required, persist only the accepted outcome with `maintain.py record add --input FILE` and explicitly update `current-state.md` routing in the same authorized record task. This includes terminal closure: a conversation-only handoff must not leave the same closure pending in repository routing. Persistence of an already accepted decision does not require another acceptance of that decision. Read the complete affected history and decisive authority/evidence first, using `record list` and `record read --id ID --history`; see [the record-store guide](design-record/README.md). Do not infer or record acceptance of adjacent work; commit and push remain separately authorized.
-5. Determine the single next bounded task, or the terminal closure or verification handoff.
-6. Provide a detailed, self-contained, copy-ready prompt for starting that task in a new session.
-7. Stop without beginning the prompt's task.
+4. When authorized and required, persist only the accepted outcome with `maintain.py record add --input FILE` and explicitly update `current-state.md` routing in the same authorized record task. Plan approval also uses `maintain.py plan update` to preserve the exact approved snapshot. Persistence of an already accepted decision does not require another acceptance of that decision. Read the complete affected history and decisive authority/evidence first, using `record list` and `record read --id ID --history`; see [the record-store guide](design-record/README.md). Do not infer acceptance of implementation from plan approval. Commits and pushes require authority from the approved plan or exact tranche.
+5. In development-plan mode, reconcile the decision with the reviewed plan/PR identities, persist required progress and authorization, and continue only the approved activity. For a material revision, preserve the previous snapshot, resolve the revision interview, and obtain approval of the complete replacement before affected implementation resumes. PR approval authorizes eligible merging after the owner returns; it cannot bypass repository protections.
+6. Outside an approved development plan, determine the next bounded task or terminal handoff and provide a detailed, self-contained, copy-ready prompt for starting it in a new session.
+7. Outside that plan, stop without beginning the prompt's task. At a development review handoff, stop until the owner returns. Record actual integration and durable closure with explicit routing; if closure delivery requires a new PR, that artifact needs its own version-bound review, not another acceptance of the prior implementation decision.
 
 The new-session prompt must include:
 
@@ -81,4 +89,4 @@ For material ambiguity, leave the checkpoint pending and ask one concise clarifi
 
 Bind an answer only to the most recent unresolved explicit approval question. If multiple decisions are pending, do not guess which one the owner answered; ask one concise clarification question.
 
-A later explicit owner correction supersedes an earlier interpretation if implementation has not begun. Never treat approval of one checkpoint as approval of adjacent work.
+A later explicit owner correction supersedes an earlier interpretation. If affected implementation has begun, stop it, reconcile the changed scope and worktree, and prepare a material plan revision rather than silently continuing. Never treat approval of one checkpoint as approval of adjacent work outside the approved plan.

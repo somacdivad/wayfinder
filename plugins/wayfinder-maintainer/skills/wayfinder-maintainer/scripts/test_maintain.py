@@ -229,6 +229,51 @@ class OperationalEfficiencyTests(unittest.TestCase):
         self.assertEqual(first.count("Approval response"), 1)
         self.assertIn("Do not infer authorization for later work", first)
 
+    def test_plan_handoff_reconciles_approved_scope_and_review_stop(self) -> None:
+        identifier = 'wp-01234567-89ab-4cde-8f01-23456789abcd'
+        with tempfile.TemporaryDirectory() as raw:
+            state = Path(raw) / 'current-state.md'
+            state.write_text('Current plan: ' + identifier, encoding='utf-8')
+            for status in ('approved', 'implementing', 'awaiting-review'):
+                plan = {'metadata': {'id': identifier, 'revision': 3, 'approvedRevision': 2, 'status': status}}
+                with self.subTest(status=status), mock.patch.object(maintain, 'doctor', return_value=0), mock.patch.object(maintain, 'CURRENT_STATE_PATH', state), mock.patch.object(maintain.plans, 'load_store', return_value=[plan]):
+                    code, output = capture(maintain.handoff_command, 'implementation', 'Deliver this plan', [], identifier)
+                self.assertEqual(code, 0, output)
+                self.assertIn('plan read --id ' + identifier + ' --history', output)
+                self.assertIn('Continue only the approved plan', output)
+                self.assertIn('no polling', output)
+                self.assertNotIn('stop without beginning that task', output)
+
+    def test_plan_handoff_rejects_missing_unapproved_or_unrouted_plan(self) -> None:
+        identifier = 'wp-01234567-89ab-4cde-8f01-23456789abcd'
+        with tempfile.TemporaryDirectory() as raw:
+            state = Path(raw) / 'current-state.md'
+            state.write_text('No active plan', encoding='utf-8')
+            for candidates in ([], [{'metadata': {'id': identifier, 'approvedRevision': None}}], [{'metadata': {'id': identifier, 'approvedRevision': 2, 'status': 'changes-requested'}}], [{'metadata': {'id': identifier, 'approvedRevision': 2, 'status': 'approved'}}]):
+                with self.subTest(candidates=candidates), mock.patch.object(maintain, 'CURRENT_STATE_PATH', state), mock.patch.object(maintain.plans, 'load_store', return_value=candidates):
+                    code, output = capture(maintain.handoff_command, 'implementation', 'Deliver this plan', [], identifier)
+                self.assertEqual(code, 1, output)
+                self.assertNotIn('Continue maintaining', output)
+
+    def test_installed_plugin_requires_explicit_external_plan_repository(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            base = Path(raw).resolve()
+            repository = base / 'source'
+            repository.mkdir()
+            (repository / '.git').mkdir()
+            (repository / 'AGENTS.md').write_text('# Instructions\n', encoding='utf-8')
+            installation = base / 'installed-maintainer'
+            installation.mkdir()
+            with mock.patch.object(maintain, 'COMPANION_ROOT', installation), mock.patch.object(maintain, 'REPOSITORY_ROOT', repository), mock.patch.dict(os.environ):
+                os.environ.pop('WAYFINDER_REPOSITORY_ROOT', None)
+                with self.assertRaises(ValueError):
+                    maintain.plan_repository_root()
+                os.environ['WAYFINDER_REPOSITORY_ROOT'] = str(repository)
+                self.assertEqual(maintain.plan_repository_root(), repository)
+                os.environ['WAYFINDER_REPOSITORY_ROOT'] = str(installation)
+                with self.assertRaises(ValueError):
+                    maintain.plan_repository_root()
+
     def test_github_failure_annotations_and_summary(self) -> None:
         result = {
             "ok": False,
