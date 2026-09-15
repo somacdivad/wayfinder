@@ -8,6 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / 'plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/conformance/v1/run.py'
 SKILL = ROOT / 'plugins/wayfinder/skills/wayfinder'
@@ -27,6 +28,10 @@ def main() -> int:
     if args.output.exists() or args.output.is_symlink():
         raise SystemExit('profile output already exists')
     args.output.mkdir(parents=True)
+    suite = json.loads((SKILL / 'assets/contract-v1/conformance/v1/cases.json').read_text(encoding='utf-8'))
+    expected_ids = [case['id'] for case in suite['cases'] if case['id'] in CASES]
+    if len(expected_ids) != len(CASES) or set(expected_ids) != set(CASES):
+        raise SystemExit('profile fixture selection is incomplete')
     reports = []
     for name in ADAPTERS:
         adapter = SKILL / 'scripts/adapters' / name
@@ -39,7 +44,7 @@ def main() -> int:
             raise SystemExit(f'{adapter.name} profile failed: {completed.stderr or completed.stdout}')
         result = json.loads(completed.stdout)
         profile_data = json.loads(profile.read_text(encoding='utf-8'))
-        if (not result['ok'] or [item['id'] for item in profile_data['cases']] != list(CASES)
+        if (not result['ok'] or [item['id'] for item in profile_data['cases']] != expected_ids
                 or any(item['adapterInvocations'] is None for item in profile_data['cases'])):
             raise SystemExit(f'{adapter.name} profile is incomplete')
         reports.append({'adapter': name, 'profile': profile.name,

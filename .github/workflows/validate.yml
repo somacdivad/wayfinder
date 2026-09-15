@@ -35,6 +35,7 @@ jobs:
       - name: Profile costly conformance fixtures
         timeout-minutes: 10
         env:
+          PYTHONDONTWRITEBYTECODE: "1"
           WAYFINDER_NODE_RUNTIME: node
           WAYFINDER_POWERSHELL_RUNTIME: pwsh
         run: python scripts/profile_conformance_costs.py --output "$RUNNER_TEMP/conformance-cost-profile"
