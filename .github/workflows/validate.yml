@@ -37,6 +37,11 @@ jobs:
           WAYFINDER_NODE_RUNTIME: node
           WAYFINDER_POWERSHELL_RUNTIME: pwsh
         run: python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py doctor
+      - name: Run canonical maintainer regressions
+        env:
+          WAYFINDER_NODE_RUNTIME: node
+          WAYFINDER_POWERSHELL_RUNTIME: pwsh
+        run: python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py self-test
       - name: Run all registered adapters against the common suite
         env:
           WAYFINDER_NODE_RUNTIME: node

@@ -29,7 +29,9 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import maintainer_records as records
-from maintainer_checkpoint import create_checkpoint, verify_checkpoint
+import maintainer_plans as plans
+import maintainer_review as reliability
+from maintainer_checkpoint import create_checkpoint, verify_checkpoint, fingerprint
 from maintainer_output import COMPLETE_MAX_BYTES, PREVIEW_MAX_BYTES, bounded_chunk, emit_json, envelope, make_cursor, read_cursor
 from maintainer_status import parse_status, projection_drift, rendered_targets, write_targets
 
@@ -281,6 +283,21 @@ def _state_paragraph(heading: str) -> str:
     return section.split("\n\n", 1)[0]
 
 
+def plan_repository_root() -> Path:
+    """Implicit discovery is source-checkout-only; installed plugins need an explicit root."""
+    requested = os.environ.get("WAYFINDER_REPOSITORY_ROOT")
+    repository = Path(requested).expanduser().absolute() if requested else REPOSITORY_ROOT
+    records.safe_path(repository, "docs/plans")
+    if not (repository / ".git").exists() or not (repository / "AGENTS.md").is_file():
+        raise ValueError("plan commands require a source repository; set WAYFINDER_REPOSITORY_ROOT explicitly for installed plugins")
+    expected_companion = repository / "plugins/wayfinder-maintainer/skills/wayfinder-maintainer"
+    if not requested and expected_companion.resolve() != COMPANION_ROOT:
+        raise ValueError("installed maintainer plan commands require WAYFINDER_REPOSITORY_ROOT")
+    if repository.resolve().is_relative_to(COMPANION_ROOT.resolve()):
+        raise ValueError("plan repository cannot be inside the maintainer installation")
+    return repository
+
+
 def current_context() -> dict[str, Any]:
     contract_path = SKILL_ROOT / "assets/contract-v1/contract.json"
     release_path = SKILL_ROOT / "assets/contract-v1/release.json"
@@ -304,6 +321,9 @@ def current_context() -> dict[str, Any]:
         ("current-state", CURRENT_STATE_PATH, "full"),
         ("workflow", COMPANION_ROOT / "references/workflow.md", "full"),
         ("approval-response", COMPANION_ROOT / "references/approval-response.md", "full"),
+        ("plan-to-pr-development", COMPANION_ROOT / "resources/plan-to-pr-development/README.md", "full"),
+        ("plan-management", COMPANION_ROOT / "resources/plan-to-pr-development/plan-management.md", "full"),
+        ("reliability-cli", COMPANION_ROOT / "resources/plan-to-pr-development/reliability-cli.md", "full"),
         ("bounded-context-research", COMPANION_ROOT / "references/research/2026-09-14-bounded-context-and-tool-output-management.md", "full"),
         ("opportunities-addendum", COMPANION_ROOT / "references/research/2026-09-14-broader-wayfinder-opportunities-addendum.md", "full"),
     ]
@@ -323,6 +343,14 @@ def current_context() -> dict[str, Any]:
             "id": "design-record:" + identifier, "path": _relative(record_root / record["path"]),
             "bytes": len(record["raw"]), "lines": len(record["raw"].splitlines()),
             "sha256": record["sha256"], "nextCommand": f"maintain.py record read --id {identifier} --history",
+        })
+    for item in plans.load_store(REPOSITORY_ROOT):
+        metadata = item["metadata"]
+        routing.append({
+            "id": "development-plan:" + metadata["id"],
+            "path": "docs/plans/" + item["path"], "bytes": len(item["raw"]),
+            "lines": len(item["raw"].splitlines()), "sha256": item["sha256"],
+            "nextCommand": f"maintain.py plan read --id {metadata['id']} --history",
         })
     return {
         "format": "wayfinder-maintainer-context",
@@ -347,6 +375,8 @@ def current_context() -> dict[str, Any]:
             "conformanceRunner": str(CONFORMANCE_RUNNER),
             "designRecord": str(COMPANION_ROOT / "references/design-record.md"),
             "designRecordStore": str(COMPANION_ROOT / "references/design-record"),
+            "planStore": str(REPOSITORY_ROOT / "docs/plans"),
+            "developmentWorkflow": str(COMPANION_ROOT / "resources/plan-to-pr-development/README.md"),
             "workflow": str(COMPANION_ROOT / "references/workflow.md"),
             "certificationRoot": str(CERTIFICATION_ROOT),
         },
@@ -592,46 +622,48 @@ def self_test_command(output_format: str) -> int:
         else:
             print(f"FAIL self-test bytecode-present: {', '.join(before)}")
         return 1
+    started = dt.datetime.now(dt.timezone.utc).isoformat()
+    provenance = fingerprint(REPOSITORY_ROOT)
     with tempfile.TemporaryDirectory(prefix="wayfinder-maintainer-cache-") as cache_root:
         completed = subprocess.run(
-            [
-                sys.executable, "-m", "unittest", "discover",
-                "-s", str(COMPANION_ROOT / "scripts"), "-p", "test_*.py", "-v",
-            ],
-            cwd=REPOSITORY_ROOT,
-            env=command_environment(cache_root),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=False,
+            [sys.executable, str(COMPANION_ROOT / "scripts/maintainer_unittest.py"), str(COMPANION_ROOT / "scripts")],
+            cwd=REPOSITORY_ROOT, env=command_environment(cache_root),
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False,
         )
-    combined = completed.stdout + completed.stderr
-    match = re.search(r"Ran ([0-9]+) tests?", combined)
-    discovered = int(match.group(1)) if match else 0
-    skip_match = re.search(r"skipped=([0-9]+)", combined)
-    skipped = int(skip_match.group(1)) if skip_match else 0
-    skip_reasons = re.findall(r"\.\.\. skipped ['\"](.+?)['\"]", combined)
     after = repository_bytecode_artifacts()
-    ok = completed.returncode == 0 and discovered > 0 and not after
+    try:
+        structured = records.strict_json(completed.stdout.encode('utf-8'))
+        reliability.shape(structured, {'results', 'suiteSuccessful', 'events'})
+        reliability.result_valid(structured['results'])
+        reliability.flags(structured, ['suiteSuccessful'])
+        accounting = structured['results']
+        ok = completed.returncode == 0 and structured['suiteSuccessful'] and accounting['testsRun'] > 0 and not after
+    except (ValueError, KeyError, TypeError):
+        accounting = None
+        ok = False
     result = {
-        "ok": ok,
-        "code": "ok" if ok else "self-test.failed",
-        "tests": discovered,
-        "skipped": skipped,
-        "skipReasons": skip_reasons,
-        "exitCode": completed.returncode,
-        "bytecodeArtifacts": after,
+        'ok': ok, 'code': 'ok' if ok else 'self-test.failed',
+        'tests': accounting['testsRun'] if accounting else 0,
+        'passed': accounting['passed'] if accounting else 0,
+        'skipped': accounting['skipped'] if accounting else 0,
+        'skipReasons': accounting['skipReasons'] if accounting else [],
+        'results': accounting, 'suiteSuccessful': ok,
+        'exitCode': completed.returncode, 'bytecodeArtifacts': after,
+        'provenance': {'command': 'maintain.py self-test', 'selection': 'all maintainer-owned test_*.py modules',
+                       'testedCommit': provenance['head'], 'worktreeSha256': provenance['sha256'],
+                       'runtime': platform.python_implementation() + ' ' + platform.python_version(),
+                       'startedAt': started, 'finishedAt': dt.datetime.now(dt.timezone.utc).isoformat()},
     }
-    if output_format == "json":
-        emit_json(command="self-test", response_class="complete-evidence", scope={"kind": "maintainer-regressions", "id": "all"}, data=result,
-                  returned_items=discovered, total_items=discovered)
-    elif output_format == "verbose" or not ok:
-        print(combined, end="" if combined.endswith("\n") else "\n")
-        print(f"summary passed={str(ok).lower()} tests={discovered} skipped={skipped} bytecode={len(after)}")
+    if output_format == 'json':
+        emit_json(command='self-test', response_class='complete-evidence', scope={'kind': 'maintainer-regressions', 'id': 'all'}, data=result,
+                  returned_items=result['tests'], total_items=result['tests'])
     else:
-        print(f"OK self-test tests={discovered} skipped={skipped} bytecode=0")
-        for reason in skip_reasons:
-            print(f"UNAVAILABLE {reason}")
+        if output_format == 'verbose' or not ok:
+            print(completed.stderr, end='' if completed.stderr.endswith('\n') else '\n')
+        print(f"{'PASS' if ok else 'FAIL'} self-test: suiteSuccessful={str(ok).lower()}")
+        for reason in result['skipReasons']:
+            print('UNAVAILABLE skipped test: ' + reason)
+        print(f"summary testsRun={result['tests']} passed={result['passed']} skipped={result['skipped']} expectedFailures={accounting['expectedFailures'] if accounting else 0} unexpectedSuccesses={accounting['unexpectedSuccesses'] if accounting else 0} bytecode={len(after)} accountingComplete={str(accounting is not None).lower()}")
     return 0 if ok else 1
 
 
@@ -843,6 +875,11 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
         record_root = COMPANION_ROOT / "references/design-record"
         record_integrity = records.integrity_issues(record_root)
         add("design-record-integrity", not record_integrity, "; ".join(record_integrity))
+        plan_integrity = plans.integrity_issues(REPOSITORY_ROOT)
+        add("development-plan-integrity", not plan_integrity, "; ".join(plan_integrity))
+        plan_ids = {item["metadata"]["id"] for item in plans.load_store(REPOSITORY_ROOT)} if not plan_integrity else set()
+        routed_plans = set(re.findall(r"plan read --id (wp-[0-9a-f-]{36})", CURRENT_STATE_PATH.read_text(encoding="utf-8")))
+        add("current-plan-routing", not (routed_plans - plan_ids), "active plan must resolve in the source repository")
         design_records = records.load_store(record_root)
         routed_ids = re.findall(r"^- `(wr-[0-9]{4,})` for ", CURRENT_STATE_PATH.read_text(encoding="utf-8"), flags=re.MULTILINE)
         current_state_matches = not status_issues(parse_status(CURRENT_STATE_PATH)) and bool(routed_ids) and all(
@@ -2516,7 +2553,20 @@ def expect_command(expected_exit: int, expected_code: str, command: list[str]) -
     return 0 if passed else 1
 
 
-def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
+def handoff_command(kind: str, objective: str, exclusions: list[str], plan_id: str | None = None) -> int:
+    plan = None
+    if plan_id is not None:
+        try:
+            plan = next((item for item in plans.load_store(plan_repository_root()) if item['metadata']['id'] == plan_id), None)
+            if plan is None or plan['metadata']['approvedRevision'] is None:
+                raise ValueError('handoff requires an existing explicitly approved plan')
+            if plan['metadata']['status'] not in {'approved', 'implementing', 'awaiting-review'}:
+                raise ValueError('plan is not eligible for implementation or review handoff')
+            if plan_id not in CURRENT_STATE_PATH.read_text(encoding='utf-8'):
+                raise ValueError('plan is not routed by current-state authority')
+        except (OSError, ValueError) as exc:
+            print(f'handoff not generated: {exc}', file=sys.stderr)
+            return 1
     if doctor("quiet") != 0:
         print("maintainer doctor failed; handoff not generated", file=sys.stderr)
         return 1
@@ -2545,6 +2595,10 @@ def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
     print("4. Use `maintain.py self-test` for maintainer regressions and `maintain.py record list`, `record read --id ID --history`, and `record add --input FILE` for design history. Accepted outcomes and closures also require updating current-state routing.")
     print("\nTranche mode\n")
     print(f"- Kind: `{kind}`")
+    if plan is not None:
+        metadata = plan['metadata']
+        print(f"- Development plan: `{plan_id}`; current revision {metadata['revision']}, approved revision {metadata['approvedRevision']}, status `{metadata['status']}`")
+        print(f"- Read exact plan and approvals: `maintain.py plan read --id {plan_id} --history`; read current state for action authority. Scaffolding grants no authority.")
     if kind == "investigation":
         print("- Inspect and report only; do not create evidence, freeze records, publish, activate, or mutate governed bytes unless the objective separately grants that authority.")
     elif kind == "implementation":
@@ -2559,7 +2613,12 @@ def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
             print(f"- {item}")
     print("\nApproval response\n")
     print("- Follow `references/approval-response.md` before asking for approval and when processing the owner's response.")
-    print("- After explicit acceptance, record only the accepted outcome when required, provide a detailed copy-ready prompt for the next bounded task in a new session, and stop without beginning that task.")
+    if plan is None:
+        print("- After explicit acceptance, record only the accepted outcome when required, provide a detailed copy-ready prompt for the next bounded task in a new session, and stop without beginning that task.")
+    else:
+        print("- Continue only the approved plan's named implementation after reconciling scope and current authority; pause for material deviations and named checkpoints. Persist exact plan approvals and required accepted outcomes without inferring implementation acceptance.")
+        print("- Use local review packets and verification records for one consolidated version-bound question in chat. Keep review requests, feedback, and approval in chat; do not post PR review-request comments, factual tags, or review notifications. Finish authorized persistence before sending, then stop until the owner returns. Historical comment receipts do not authorize new comments.")
+        print("- At owner PR review handoff, stop and do nothing until the owner returns: no polling, active waits, scheduled monitoring, auto-merge, or additional implementation. Version-bound explicit approval permits eligible merging subject to checks and protections; review completion alone does not.")
     print("- After rejection or a material revision request, leave the checkpoint pending and interview with one material question per turn until the reason for rejection, required correction, needed evidence, and acceptance criteria are understood.")
     print("\nDo not infer authorization for later work. Present material changes for explicit approval and stop at the active tranche boundary.")
     return 0
@@ -2729,6 +2788,9 @@ def main(argv: list[str]) -> int:
             "  maintain.py record list --topic governance\n"
             "  maintain.py record read --id wr-0031 --history\n"
             "  maintain.py record add --input record.json --dry-run\n"
+            "  maintain.py plan list --subject development\n"
+            "  maintain.py plan read --id wp-01234567-89ab-4cde-8f01-23456789abcd --history\n"
+            "  maintain.py plan create --input plan.json --dry-run\n"
             "  maintain.py matrix-review --artifact-dir downloaded --format full"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -2769,6 +2831,49 @@ def main(argv: list[str]) -> int:
     record_add.add_argument("--dry-run", action="store_true", help="Preview exact content, ID, path, and digest without writes.")
     record_add.add_argument("--format", choices=("summary", "full", "json"), default="summary")
     _output_options(record_add)
+    plan_parser = subparsers.add_parser("plan", help="Manage repository development plans and immutable approved snapshots.")
+    plan_commands = plan_parser.add_subparsers(dest="plan_command", required=True)
+    plan_list = plan_commands.add_parser("list", help="Derive bounded plan metadata discovery from repository documents.")
+    plan_list.add_argument("--subject")
+    plan_list.add_argument("--status", choices=plans.STATUSES)
+    plan_read = plan_commands.add_parser("read", help="Read exact current plan, approved revision, or approval history.")
+    plan_read.add_argument("--id", required=True)
+    version_selector = plan_read.add_mutually_exclusive_group()
+    version_selector.add_argument("--revision", type=int, help="An immutable approved revision.")
+    version_selector.add_argument("--history", action="store_true")
+    for selected, default_format, default_class in ((plan_list, "summary", "discovery-preview"), (plan_read, "full", "complete-evidence")):
+        selected.add_argument("--format", choices=("summary", "full", "json"), default=default_format)
+        selected.add_argument("--response-class", choices=("discovery-preview", "complete-evidence"), default=default_class)
+        selected.add_argument("--max-bytes", type=int)
+        selected.add_argument("--cursor")
+    for name, help_text in (("create", "Create a new draft plan exclusively."), ("update", "Update current plan with expected digest; preserve approvals.")):
+        selected = plan_commands.add_parser(name, help=help_text)
+        selected.add_argument("--input", type=Path, required=True, help="Closed JSON: resources/plan-to-pr-development/plan-management.md")
+        selected.add_argument("--dry-run", action="store_true")
+        selected.add_argument("--format", choices=("summary", "full", "json"), default="summary")
+        _output_options(selected)
+        if name == "update":
+            selected.add_argument("--id", required=True)
+            selected.add_argument("--expected-sha256", required=True)
+    for group, actions in (('review', ('create', 'read', 'validate', 'supersede')), ('delivery', ('append', 'read')), ('verification', ('capture', 'render'))):
+        selected_group = subparsers.add_parser(group, help='Local immutable development ' + group + ' records; no network or inferred approval.')
+        actions_parser = selected_group.add_subparsers(dest=group + '_command', required=True)
+        for action in actions:
+            selected = actions_parser.add_parser(action)
+            selected.add_argument('--plan-id', required=True)
+            selected.add_argument('--format', choices=('summary', 'full', 'json'), default='summary')
+            selected.add_argument('--max-bytes', type=int)
+            selected.add_argument('--cursor')
+            if action in ('create', 'supersede', 'append', 'capture'):
+                selected.add_argument('--input', type=Path, required=True, help='Closed schemas: resources/plan-to-pr-development/reliability-cli.md')
+                selected.add_argument('--dry-run', action='store_true')
+                selected.add_argument('--expected-store-sha256', help='Required once artifact history exists; read and reconcile first.')
+            if group == 'delivery':
+                selected.add_argument('--request-id', required=True)
+            elif action not in ('create', 'capture'):
+                selected.add_argument('--id', required=True)
+            if group == 'review' and action == 'validate':
+                selected.add_argument('--observations', type=Path, help='Explicit current platform identities; supplied locally, never fetched.')
     record_section_parser = subparsers.add_parser("record-section", help="Compatibility alias: read the unique record with this legacy heading.")
     record_section_parser.add_argument("--heading", required=True)
     record_section_parser.add_argument("--format", choices=("summary", "full", "json"), default="full")
@@ -2818,10 +2923,11 @@ def main(argv: list[str]) -> int:
     handoff_parser.add_argument("--kind", required=True, choices=("investigation", "implementation", "hosted-review", "acceptance-record"))
     handoff_parser.add_argument("--objective", required=True)
     handoff_parser.add_argument("--exclude", action="append", default=[])
+    handoff_parser.add_argument("--plan-id", help="Existing approved development plan routed by current state; otherwise use the legacy bounded handoff.")
     args = parser.parse_args(argv)
     if hasattr(args, "max_bytes") and args.max_bytes is not None and args.max_bytes < 4:
         parser.error("--max-bytes must be at least 4 for UTF-8-safe output")
-    if getattr(args, "response_class", None) == "discovery-preview" and (getattr(args, "write", False) or (args.command == "checkpoint" and getattr(args, "output", None) is not None)):
+    if getattr(args, "response_class", None) == "discovery-preview" and (getattr(args, "write", False) or (args.command == "checkpoint" and getattr(args, "output", None) is not None) or (args.command == "plan" and args.plan_command in {"create", "update"})):
         parser.error("file-writing modes require --response-class complete-evidence")
 
     if args.command == "doctor":
@@ -2844,6 +2950,26 @@ def main(argv: list[str]) -> int:
     if args.command == "record-section":
         maximum = args.max_bytes or (PREVIEW_MAX_BYTES if args.response_class == "discovery-preview" else COMPLETE_MAX_BYTES)
         return record_section_command(args.heading, args.format, args.response_class, maximum, args.cursor)
+    if args.command == "plan":
+        maximum = args.max_bytes or (PREVIEW_MAX_BYTES if args.response_class == "discovery-preview" else COMPLETE_MAX_BYTES)
+        try:
+            repository = plan_repository_root()
+            if args.plan_command == "list":
+                return plans.list_command(repository, args.subject, args.status, args.format, args.response_class, maximum, args.cursor)
+            if args.plan_command == "read":
+                return plans.read_command(repository, args.id, args.revision, args.history, args.format, args.response_class, maximum, args.cursor)
+            if args.plan_command == "create":
+                return plans.create_command(repository, args.input, args.dry_run, args.format, maximum)
+            return plans.update_command(repository, args.id, args.input, args.expected_sha256, args.dry_run, args.format, maximum)
+        except (OSError, ValueError, TypeError) as exc:
+            return plans.error("plan " + args.plan_command, exc, args.format)
+    if args.command in {'review', 'delivery', 'verification'}:
+        if args.cursor and getattr(args, args.command + '_command') in {'create', 'supersede', 'append', 'capture'}:
+            parser.error('write operations do not accept continuation cursors')
+        try:
+            return reliability.command(plan_repository_root(), args)
+        except (ValueError, OSError) as exc:
+            return plans.error(args.command, exc, args.format)
     if args.command == "evidence":
         return evidence_command(args.output)
     if args.command == "freeze-proposal":
@@ -2867,7 +2993,7 @@ def main(argv: list[str]) -> int:
     if args.command == "expect":
         return expect_command(args.expected_exit, args.expected_code, args.target)
     if args.command == "handoff":
-        return handoff_command(args.kind, args.objective, args.exclude)
+        return handoff_command(args.kind, args.objective, args.exclude, args.plan_id)
     return 2
 
 

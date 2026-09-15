@@ -50,6 +50,10 @@ The certification workflow is manual-only. It records authentic hosted observati
 
 Maintainer history is organized into subject folders. Use `maintain.py record list`, `record read --id ID --history`, and `record add --input FILE [--dry-run]` through the same canonical command path above. See the [record-store guide](plugins/wayfinder-maintainer/skills/wayfinder-maintainer/references/design-record/README.md) for input fields and exact bounded reads. Current status and authorization remain in the maintainer's `current-state.md`.
 
+Changes to either plugin use [Plan-to-PR Development](plugins/wayfinder-maintainer/skills/wayfinder-maintainer/resources/plan-to-pr-development/README.md): research-informed interviews, [repository plans](docs/plans/README.md), coherent PRs, and owner review. Use `maintain.py plan list`, `plan read --id ID --history`, and `plan create/update --input FILE [--dry-run]` to manage plans and preserve exact approvals. Approved implementation runs continuously within scope; agents stop without polling once owner reviews are requested.
+
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
+
+Maintainer development supports local version-bound review packets, immutable delivery receipts and consistent verification summaries through `maintain.py review`, `delivery` and `verification`. See [local reliability CLI](plugins/wayfinder-maintainer/skills/wayfinder-maintainer/resources/plan-to-pr-development/reliability-cli.md). These records live beside repository plans and do not activate Wayfinder or establish certification.
