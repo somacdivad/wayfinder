@@ -1,9 +1,9 @@
 # Certification
 
-- **Status:** Candidate revision 10 correction accepted; full eight-entry hosted rerun authorized but not begun; bounded matrix incomplete
+- **Status:** Candidate revision 10 local evidence promotion accepted; source publication authorized separately; evidence publication and activation pending
 - **Last updated:** 2026-09-14
 
-The current target is the frozen, unactivated `v1-candidate-revision-10`, whose Windows correction is owner-accepted. Accepted revision-9 local and hosted results remain historical and cannot certify revision 10. The full eight-entry revision-10 hosted rerun is authorized as a separate new-session task but has not begun. The exact required matrix contains eight entries:
+The current target is the frozen, unactivated `v1-candidate-revision-10`. The owner accepted GitHub Actions run `34921918384`, attempt `1`, at source commit `82a2bb994e7ef8d2ffda7317e0687b0c7230aa54`; all eight exact entries passed 305/305 and the strict aggregate passed. The exact 27 verified files are preserved at `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/hosted/run-34921918384-attempt-1/`. The aggregate JSON is `be2d4b8542f9a50c1c446a57b05681bb43529cd4906064c2c354dc1d8b3f8d50`, the aggregate Markdown is `ffe1fe3dc6ae9ed1b21356943ea8f98451221a5e8248043d74cf21c5a0b3cf18`, and the matrix digest is `2cc501f45a238d3d6161a89890a33d28fe20aa750558d278d0a69d10bb34a2d0`. Accepted revision-8 and revision-9 evidence remains immutable historical evidence. The exact required matrix contains eight entries:
 
 | Adapter runtime | macOS | Linux | Windows |
 | --- | --- | --- | --- |
@@ -15,6 +15,6 @@ Every entry must verify the native runtime implementation and exact version, OS 
 
 The manual `certify.yml` workflow uses a fixed eight-row include list and `fail-fast: false`. Each successful entry creates immutable report filenames and a uniquely named Actions artifact. The aggregate job creates a passing matrix report only when every required entry passes and all bindings agree; otherwise it preserves an explicit inventory and reports the matrix incomplete.
 
-Actions artifacts are review evidence, not durable accepted evidence. `publish-evidence.yml` is separate, manual, and environment-gated. It re-verifies a selected run and prepares a draft evidence release. The repository owner must configure the `evidence-publication` environment and GitHub immutable releases before publishing that draft.
+The promoted files are accepted durable maintainer-owned bounded evidence for this exact source, run, and attempt. They do not create a release-registry certification entry or broaden the claim. Only source publication of the exact accepted 34-path implementation is authorized as a separate new-session task. `publish-evidence.yml` remains separate, manual, and environment-gated; dispatch and draft-release creation remain unauthorized. The repository owner must configure the `evidence-publication` environment and GitHub immutable releases before any later separately authorized publication.
 
 This matrix is not independent evaluation, forward testing, cross-adapter recovery, or full-family certification. It cannot add release certification entries and does not authorize runtime guidance or activation.

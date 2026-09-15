@@ -1,0 +1,14 @@
+{
+  "format": "wayfinder-matrix-execution-status",
+  "schemaVersion": 1,
+  "entryId": "powershell-windows",
+  "adapterId": "powershell-v1",
+  "operatingSystemFamily": "Windows",
+  "generatedAt": "2026-09-15T03:00:16Z",
+  "sourceCommit": "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54",
+  "workflowRunId": "34921918384",
+  "workflowRunAttempt": "1",
+  "exitCode": 0,
+  "stdout": "{\"code\":\"ok\",\"data\":{\"failedCaseIds\":[],\"failedCases\":[],\"failureDetailsTruncated\":0,\"json\":\"D:\\\\a\\\\wayfinder\\\\wayfinder\\\\certification-output\\\\powershell-windows\\\\matrix-revision-10-powershell-v1-windows-20260915T030016Z.json\",\"jsonSha256\":\"9bdcd2a7c38da06f41f6b6a929454b9a0d52ec1c0d165a4f1f4e5b7065dfe418\",\"markdown\":\"D:\\\\a\\\\wayfinder\\\\wayfinder\\\\certification-output\\\\powershell-windows\\\\matrix-revision-10-powershell-v1-windows-20260915T030016Z.md\",\"markdownSha256\":\"dc57228ee31837474e6f58d352f5ec858588e1a4d70dc11485829df32c875dfe\",\"resultSetSha256\":\"de6613f623c9413ce5d3dabb27bb5bc8aad281d6efc28a50a8093f0dc9bcf116\",\"status\":\"passing-environment-entry-not-full-family-certification\",\"summary\":{\"byCategory\":{\"apply\":51,\"command\":9,\"discovery\":10,\"generation\":10,\"harness\":1,\"initialize\":49,\"intake\":17,\"inventory\":21,\"json\":16,\"manifest\":21,\"package\":11,\"property\":6,\"record\":71,\"render\":12},\"completeRegisteredSuite\":true,\"failed\":0,\"interruptionBoundaryCases\":{\"apply-failure-boundary-matrix\":\"passed\",\"apply-rollback-boundary-matrix\":\"passed\",\"apply-rollback-interrupted\":\"passed\"},\"negativeAndMutationCases\":{\"caseIdsSha256\":\"d88d418db92af3983338830f1d7f4b9f04c999664da53a5c059e66316bcca1b4\",\"passed\":213,\"required\":213},\"passed\":305,\"total\":305},\"target\":\"powershell-v1:PowerShell-7.6.6:Windows\"},\"ok\":true}\n",
+  "stderr": ""
+}

@@ -1,0 +1,14 @@
+{
+  "format": "wayfinder-matrix-execution-status",
+  "schemaVersion": 1,
+  "entryId": "python-linux",
+  "adapterId": "python-reference-v1",
+  "operatingSystemFamily": "Linux",
+  "generatedAt": "2026-09-15T02:43:10Z",
+  "sourceCommit": "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54",
+  "workflowRunId": "34921918384",
+  "workflowRunAttempt": "1",
+  "exitCode": 0,
+  "stdout": "{\"code\":\"ok\",\"data\":{\"failedCaseIds\":[],\"failedCases\":[],\"failureDetailsTruncated\":0,\"json\":\"/home/runner/work/wayfinder/wayfinder/certification-output/python-linux/matrix-revision-10-python-reference-v1-linux-20260915T024310Z.json\",\"jsonSha256\":\"93f1d5d274d220310446d827aa15c2a6236086dc8299050f61531e96631fd15c\",\"markdown\":\"/home/runner/work/wayfinder/wayfinder/certification-output/python-linux/matrix-revision-10-python-reference-v1-linux-20260915T024310Z.md\",\"markdownSha256\":\"b52f200c68ef2f95589d3a7be401cd64362ba1627fc8a63f2d449126d6b69a02\",\"resultSetSha256\":\"d5e0bb700666142ff5d116f81b5d784525a64f203f131f3354b61abaaf217b59\",\"status\":\"passing-environment-entry-not-full-family-certification\",\"summary\":{\"byCategory\":{\"apply\":51,\"command\":9,\"discovery\":10,\"generation\":10,\"harness\":1,\"initialize\":49,\"intake\":17,\"inventory\":21,\"json\":16,\"manifest\":21,\"package\":11,\"property\":6,\"record\":71,\"render\":12},\"completeRegisteredSuite\":true,\"failed\":0,\"interruptionBoundaryCases\":{\"apply-failure-boundary-matrix\":\"passed\",\"apply-rollback-boundary-matrix\":\"passed\",\"apply-rollback-interrupted\":\"passed\"},\"negativeAndMutationCases\":{\"caseIdsSha256\":\"d88d418db92af3983338830f1d7f4b9f04c999664da53a5c059e66316bcca1b4\",\"passed\":213,\"required\":213},\"passed\":305,\"total\":305},\"target\":\"python-reference-v1:CPython-3.14.7:Linux\"},\"ok\":true}\n",
+  "stderr": ""
+}

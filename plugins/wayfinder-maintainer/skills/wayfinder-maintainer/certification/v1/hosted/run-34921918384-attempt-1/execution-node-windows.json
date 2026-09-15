@@ -1,0 +1,14 @@
+{
+  "format": "wayfinder-matrix-execution-status",
+  "schemaVersion": 1,
+  "entryId": "node-windows",
+  "adapterId": "node-v1",
+  "operatingSystemFamily": "Windows",
+  "generatedAt": "2026-09-15T02:40:08Z",
+  "sourceCommit": "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54",
+  "workflowRunId": "34921918384",
+  "workflowRunAttempt": "1",
+  "exitCode": 0,
+  "stdout": "{\"code\":\"ok\",\"data\":{\"failedCaseIds\":[],\"failedCases\":[],\"failureDetailsTruncated\":0,\"json\":\"D:\\\\a\\\\wayfinder\\\\wayfinder\\\\certification-output\\\\node-windows\\\\matrix-revision-10-node-v1-windows-20260915T024008Z.json\",\"jsonSha256\":\"0378ac26624fe8f0da50946af03f3332e4603ca6d9f172be984cd82060d50490\",\"markdown\":\"D:\\\\a\\\\wayfinder\\\\wayfinder\\\\certification-output\\\\node-windows\\\\matrix-revision-10-node-v1-windows-20260915T024008Z.md\",\"markdownSha256\":\"411feb98c44d9aaadbeab31dcb6450ac1d89389f059e3c0d65fa98bed123e1ba\",\"resultSetSha256\":\"5bcfc75e48252a3711b9ca9778434eddf08e6e2918de4a4b3d576372593d2a44\",\"status\":\"passing-environment-entry-not-full-family-certification\",\"summary\":{\"byCategory\":{\"apply\":51,\"command\":9,\"discovery\":10,\"generation\":10,\"harness\":1,\"initialize\":49,\"intake\":17,\"inventory\":21,\"json\":16,\"manifest\":21,\"package\":11,\"property\":6,\"record\":71,\"render\":12},\"completeRegisteredSuite\":true,\"failed\":0,\"interruptionBoundaryCases\":{\"apply-failure-boundary-matrix\":\"passed\",\"apply-rollback-boundary-matrix\":\"passed\",\"apply-rollback-interrupted\":\"passed\"},\"negativeAndMutationCases\":{\"caseIdsSha256\":\"d88d418db92af3983338830f1d7f4b9f04c999664da53a5c059e66316bcca1b4\",\"passed\":213,\"required\":213},\"passed\":305,\"total\":305},\"target\":\"node-v1:Node.js-24.21.0:Windows\"},\"ok\":true}\n",
+  "stderr": ""
+}

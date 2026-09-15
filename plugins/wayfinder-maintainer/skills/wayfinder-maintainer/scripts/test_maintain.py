@@ -9,6 +9,7 @@ import importlib.util
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -29,6 +30,12 @@ RUN_MATRIX_SPEC = importlib.util.spec_from_file_location("wayfinder_run_matrix_e
 assert RUN_MATRIX_SPEC and RUN_MATRIX_SPEC.loader
 run_matrix_entry = importlib.util.module_from_spec(RUN_MATRIX_SPEC)
 RUN_MATRIX_SPEC.loader.exec_module(run_matrix_entry)
+
+PREPARE_EVIDENCE_SCRIPT = maintain.REPOSITORY_ROOT / "scripts/prepare_evidence_release.py"
+PREPARE_EVIDENCE_SPEC = importlib.util.spec_from_file_location("wayfinder_prepare_evidence", PREPARE_EVIDENCE_SCRIPT)
+assert PREPARE_EVIDENCE_SPEC and PREPARE_EVIDENCE_SPEC.loader
+prepare_evidence = importlib.util.module_from_spec(PREPARE_EVIDENCE_SPEC)
+PREPARE_EVIDENCE_SPEC.loader.exec_module(prepare_evidence)
 
 
 def capture(function, *args):
@@ -119,6 +126,7 @@ class ContextTests(unittest.TestCase):
         value = json.loads(raw)
         self.assertEqual(value["candidate"]["releaseId"], "v1-candidate-revision-10")
         self.assertEqual({item["id"] for item in value["adapterRegistry"]}, set(maintain.ACCEPTED_ADAPTER_DIGESTS))
+        self.assertEqual(len(value["bindings"]["promotedRevision10HostedEvidence"]), 27)
 
     def test_current_state_is_exact_and_historical_evidence_is_preserved(self) -> None:
         self.assertEqual(maintain.CURRENT_STATE_PATH.read_text(encoding="utf-8"), maintain.current_state_markdown())
@@ -243,6 +251,15 @@ class OperationalEfficiencyTests(unittest.TestCase):
     def test_certification_workflow_has_identity_summary_and_artifact_digests(self) -> None:
         workflow = (maintain.REPOSITORY_ROOT / ".github/workflows/certify.yml").read_text(encoding="utf-8")
         for token in ("run-name:", "GITHUB_STEP_SUMMARY", "artifact-digest", "cancel-in-progress: false"):
+            self.assertIn(token, workflow)
+
+    def test_evidence_publication_workflow_requires_exact_revision_10_identity(self) -> None:
+        workflow = (maintain.REPOSITORY_ROOT / ".github/workflows/publish-evidence.yml").read_text(encoding="utf-8")
+        for token in (
+            "34921918384", "run_attempt", "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54",
+            "2cc501f45a238d3d6161a89890a33d28fe20aa750558d278d0a69d10bb34a2d0",
+            "evidence-v1-candidate-revision-10", "Wayfinder candidate revision 10 bounded matrix evidence",
+        ):
             self.assertIn(token, workflow)
 
 
@@ -393,6 +410,57 @@ class MatrixReviewTests(unittest.TestCase):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_revision_10_publication_preparation_verifies_exact_promoted_set(self) -> None:
+        evidence = maintain.PROMOTED_REVISION_10_EVIDENCE_ROOT
+        with tempfile.TemporaryDirectory() as raw:
+            output = Path(raw) / "publication"
+            argv = [
+                str(PREPARE_EVIDENCE_SCRIPT), "--input", str(evidence),
+                "--expected-commit", prepare_evidence.SOURCE_COMMIT,
+                "--expected-run-id", prepare_evidence.RUN_ID,
+                "--expected-attempt", prepare_evidence.RUN_ATTEMPT,
+                "--expected-matrix-sha256", prepare_evidence.MATRIX_SHA256,
+                "--output", str(output),
+            ]
+            with mock.patch.object(sys, "argv", argv):
+                code, emitted = capture(prepare_evidence.main)
+            manifest = json.loads((output / "publication-manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(code, 0, emitted)
+        self.assertEqual(manifest["candidate"], "v1-candidate-revision-10")
+        self.assertEqual(manifest["workflowRunId"], "34921918384")
+        self.assertEqual(manifest["workflowRunAttempt"], "1")
+        self.assertEqual(len(manifest["files"]), 27)
+
+    def test_revision_10_publication_preparation_fails_closed(self) -> None:
+        source = maintain.PROMOTED_REVISION_10_EVIDENCE_ROOT
+        for mode in ("missing", "extra", "ambiguous", "symlink", "digest"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw) / "evidence"
+                shutil.copytree(source, root)
+                target = root / "artifact-inventory.json"
+                if mode == "missing":
+                    target.unlink()
+                elif mode == "extra":
+                    (root / "unexpected.txt").write_text("unexpected\n", encoding="utf-8")
+                elif mode == "ambiguous":
+                    duplicate = root / "duplicate"
+                    duplicate.mkdir()
+                    shutil.copyfile(target, duplicate / target.name)
+                elif mode == "symlink":
+                    target.unlink()
+                    target.symlink_to(root / "execution-node-linux.json")
+                else:
+                    target.write_bytes(target.read_bytes() + b"\n")
+                with self.assertRaises(ValueError):
+                    prepare_evidence.verified_files(root)
+
+    def test_revision_10_publication_preparation_rejects_unapproved_identity(self) -> None:
+        files = prepare_evidence.verified_files(maintain.PROMOTED_REVISION_10_EVIDENCE_ROOT)
+        with self.assertRaisesRegex(ValueError, "not the approved revision-10"):
+            prepare_evidence.verify_bindings(
+                files, prepare_evidence.SOURCE_COMMIT, "0", prepare_evidence.RUN_ATTEMPT, prepare_evidence.MATRIX_SHA256
+            )
+
     def test_evidence_refuses_overwrite(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)

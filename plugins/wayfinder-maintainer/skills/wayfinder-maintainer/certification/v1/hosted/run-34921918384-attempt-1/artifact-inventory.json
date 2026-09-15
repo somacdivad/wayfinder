@@ -1,0 +1,61 @@
+{
+  "format": "wayfinder-matrix-artifact-inventory",
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-15T03:00:32Z",
+  "passingEvidenceReports": [
+    "downloaded/matrix-revision-10-node-v1-linux-20260915T023856Z.json",
+    "downloaded/matrix-revision-10-node-v1-macos-20260915T024109Z.json",
+    "downloaded/matrix-revision-10-node-v1-windows-20260915T024008Z.json",
+    "downloaded/matrix-revision-10-powershell-v1-linux-20260915T030009Z.json",
+    "downloaded/matrix-revision-10-powershell-v1-windows-20260915T030016Z.json",
+    "downloaded/matrix-revision-10-python-reference-v1-linux-20260915T024310Z.json",
+    "downloaded/matrix-revision-10-python-reference-v1-macos-20260915T024554Z.json",
+    "downloaded/matrix-revision-10-python-reference-v1-windows-20260915T024659Z.json"
+  ],
+  "executionStatuses": [
+    {
+      "path": "downloaded/execution-node-linux.json",
+      "entryId": "node-linux",
+      "exitCode": 0
+    },
+    {
+      "path": "downloaded/execution-node-macos.json",
+      "entryId": "node-macos",
+      "exitCode": 0
+    },
+    {
+      "path": "downloaded/execution-node-windows.json",
+      "entryId": "node-windows",
+      "exitCode": 0
+    },
+    {
+      "path": "downloaded/execution-powershell-linux.json",
+      "entryId": "powershell-linux",
+      "exitCode": 0
+    },
+    {
+      "path": "downloaded/execution-powershell-windows.json",
+      "entryId": "powershell-windows",
+      "exitCode": 0
+    },
+    {
+      "path": "downloaded/execution-python-linux.json",
+      "entryId": "python-linux",
+      "exitCode": 0
+    },
+    {
+      "path": "downloaded/execution-python-macos.json",
+      "entryId": "python-macos",
+      "exitCode": 0
+    },
+    {
+      "path": "downloaded/execution-python-windows.json",
+      "entryId": "python-windows",
+      "exitCode": 0
+    }
+  ],
+  "aggregateExitCode": 0,
+  "aggregateStdout": "{\"code\":\"ok\",\"data\":{\"json\":\"/home/runner/work/wayfinder/wayfinder/aggregate-output/matrix-revision-10-aggregate.json\",\"jsonSha256\":\"be2d4b8542f9a50c1c446a57b05681bb43529cd4906064c2c354dc1d8b3f8d50\",\"markdown\":\"/home/runner/work/wayfinder/wayfinder/aggregate-output/matrix-revision-10-aggregate.md\",\"markdownSha256\":\"ffe1fe3dc6ae9ed1b21356943ea8f98451221a5e8248043d74cf21c5a0b3cf18\",\"matrixSha256\":\"2cc501f45a238d3d6161a89890a33d28fe20aa750558d278d0a69d10bb34a2d0\"},\"ok\":true}\n",
+  "aggregateStderr": "",
+  "matrixComplete": true
+}

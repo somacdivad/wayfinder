@@ -79,6 +79,36 @@ ACCEPTED_MATRIX_EVIDENCE_DIGESTS = {
     "matrix-revision-8-python-reference-v1-macos-20260914T125208Z.json": "6b43c2f0b41e83d76218e363651d6353ab62561426e4c7abf997cb561aa3fd78",
     "matrix-revision-8-python-reference-v1-macos-20260914T125208Z.md": "8a81084ab64a18bac8d59694bc81233035cc0f02434a36d8106dfc0f2cc1c11c",
 }
+PROMOTED_REVISION_10_EVIDENCE_ROOT = CERTIFICATION_ROOT / "hosted/run-34921918384-attempt-1"
+PROMOTED_REVISION_10_EVIDENCE_DIGESTS = {
+    "hosted/run-34921918384-attempt-1/artifact-inventory.json": "a476bc3fccc0f4ead98f2ada1b9e3589d09ec59a4a2d34a118e0478f08ed009e",
+    "hosted/run-34921918384-attempt-1/execution-node-linux.json": "83f0c6adb8b80aa69122560635225b96e3ceeca2c99e97d477794873632a6485",
+    "hosted/run-34921918384-attempt-1/execution-node-macos.json": "3fcb9201a9111f3d3518396effd459606cba5e5900b83898b16c6c2f0ce8bde7",
+    "hosted/run-34921918384-attempt-1/execution-node-windows.json": "d2594c8965483995aad75c795f5f3a9acc64f2e58d00ba328762baf0c5ade9d0",
+    "hosted/run-34921918384-attempt-1/execution-powershell-linux.json": "d151ca2d2836b80a07918875b171814953b5a59d2f0103a28bb80a363490f85c",
+    "hosted/run-34921918384-attempt-1/execution-powershell-windows.json": "860f4a326596ec2e7f43a96d5b654fc164e38346e97dbf107486cc4a2e6904a7",
+    "hosted/run-34921918384-attempt-1/execution-python-linux.json": "b2ec0971aca62337e2f1bdff91bdeb2f4fe1f5b671afb7ce59ffeb9bc0d73ffc",
+    "hosted/run-34921918384-attempt-1/execution-python-macos.json": "659fd97473512cdb4927349783a8bc626ea1fe5f22f3d38eb540923b90f3c7f2",
+    "hosted/run-34921918384-attempt-1/execution-python-windows.json": "a5ec00dc5055a95c4048763dce94d08e76f001932e5e98c6647d889c1b15fd8d",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-aggregate.json": "be2d4b8542f9a50c1c446a57b05681bb43529cd4906064c2c354dc1d8b3f8d50",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-aggregate.md": "ffe1fe3dc6ae9ed1b21356943ea8f98451221a5e8248043d74cf21c5a0b3cf18",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-node-v1-linux-20260915T023856Z.json": "96d41381d0ad5b46cb877523ab6743e85288e571133153b5df86898952147cf4",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-node-v1-linux-20260915T023856Z.md": "9cf0c46fd435d1feee6d9bdd7116484bad472cf9676dd1b3d5a07f871fd563a6",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-node-v1-macos-20260915T024109Z.json": "60528f64e878d9a11054b9457a3bf0e578139abec27c41633a7e69e7d57e589e",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-node-v1-macos-20260915T024109Z.md": "1888a82b8d9bbc6edfc9adafdf1a3b38ec2c34dbc9655fa65ab7b8461ee34f5f",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-node-v1-windows-20260915T024008Z.json": "0378ac26624fe8f0da50946af03f3332e4603ca6d9f172be984cd82060d50490",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-node-v1-windows-20260915T024008Z.md": "411feb98c44d9aaadbeab31dcb6450ac1d89389f059e3c0d65fa98bed123e1ba",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-powershell-v1-linux-20260915T030009Z.json": "448e55a4eb78d1c36b39fe512ff8a06df52714a8f84a712d0e177b1e653913c7",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-powershell-v1-linux-20260915T030009Z.md": "3aab4c3bfcc09aabb9157540d757dee88e564a8e92c1f3c17adba8ac81c5dc0d",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-powershell-v1-windows-20260915T030016Z.json": "9bdcd2a7c38da06f41f6b6a929454b9a0d52ec1c0d165a4f1f4e5b7065dfe418",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-powershell-v1-windows-20260915T030016Z.md": "dc57228ee31837474e6f58d352f5ec858588e1a4d70dc11485829df32c875dfe",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-python-reference-v1-linux-20260915T024310Z.json": "93f1d5d274d220310446d827aa15c2a6236086dc8299050f61531e96631fd15c",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-python-reference-v1-linux-20260915T024310Z.md": "b52f200c68ef2f95589d3a7be401cd64362ba1627fc8a63f2d449126d6b69a02",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-python-reference-v1-macos-20260915T024554Z.json": "fc6a9c11fad47699474cf83cc6aa4ceb05ce5d3632712ae7108c9a5cf2744584",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-python-reference-v1-macos-20260915T024554Z.md": "9bc38eb6516f493a48023606d3b003d83562ae3837f8883101b730de39ffd880",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-python-reference-v1-windows-20260915T024659Z.json": "1fe12a77ebf5c6c1e2ae7f1161f80685473924503fcb210af0d6cb7d0f806e1d",
+    "hosted/run-34921918384-attempt-1/matrix-revision-10-python-reference-v1-windows-20260915T024659Z.md": "72c73942a28332450522527714feef71b1e36a88d733b604921ea988cc3affa0",
+}
 CURRENT_LOCAL_EVIDENCE_DIGESTS = {
     "candidate-revision-9-local.json": "b7c9b046d2970c308530d2ba05893213fbf81445e96c4b355a9c3863c4fe734a",
     "candidate-revision-9-local.md": "99a5ef242b1e96e966d1fe9cff3549565008520451921bc1e9d7abfc3237d264",
@@ -95,19 +125,18 @@ RUNTIME_REQUIREMENTS = {
     "powershell-v1": ("PowerShell", "7.6.6", "WAYFINDER_POWERSHELL_RUNTIME"),
 }
 CURRENT_APPROVAL_BOUNDARY = (
-    "The owner explicitly accepted the exact candidate-revision-10 Windows correction and authorized the full eight-entry hosted "
-    "rerun as the next bounded new-session task. Acceptance records only the reviewed correction and makes no Windows, matrix, "
-    "adapter-family, or full-family certification claim. It does not itself begin publication or hosted execution, create or "
-    "promote evidence, add a release-certification entry, add runtime guidance, activate Wayfinder, modify live project data, begin "
-    "forward testing or cross-adapter recovery, or authorize a later tranche. The exact source-publication scope, including any "
-    "staging, commit, or push, must be resolved explicitly before that action. The accepted layered maintainer approval-response "
-    "governance remains unchanged."
+    "The owner explicitly accepted the exact 34-path candidate-revision-10 local evidence-promotion implementation and authorized "
+    "only a separate new-session source-publication tranche for those enumerated paths on candidate-revision-9-certification. "
+    "Acceptance records the exact 27-file durable evidence set, maintainer digest bindings, publication-preparation corrections, "
+    "documentation, and local validation. It does not itself stage, commit, push, dispatch a workflow, publish evidence, create a "
+    "draft or final release, change the release registry or runtime guidance, activate Wayfinder, perform forward testing or cross-"
+    "adapter recovery, touch live-project data, or authorize any later tranche."
 )
 CURRENT_PENDING_ACTION = (
-    "Begin the separately authorized full eight-entry hosted rerun only from the detailed new-session prompt supplied with the "
-    "acceptance response. Before publishing the exact source required by that rerun, resolve the complete staging, commit, and push "
-    "scope and target explicitly. Then use one exact published source commit for all eight entries and report the strict aggregate "
-    "without evidence creation or promotion, a certification claim, activation, or any later tranche."
+    "Begin the separately authorized source-publication tranche only from the detailed new-session prompt supplied with the local "
+    "evidence-promotion acceptance response. Stage exactly the 34 enumerated paths, create one commit, and push only "
+    "candidate-revision-9-certification without force. Do not dispatch workflows, publish evidence, create a release, alter the "
+    "release registry or runtime guidance, activate Wayfinder, touch live-project data, or begin any later task automatically."
 )
 FREEZE_ACCEPTANCE_AUTHORIZATION = (
     "Accept the exact revision-9 frozen bytes and local candidate and parity evidence. "
@@ -190,6 +219,7 @@ def current_context() -> dict[str, Any]:
             "acceptedParityEvidence": ACCEPTED_PARITY_EVIDENCE_DIGESTS,
             "acceptedMatrixEvidence": ACCEPTED_MATRIX_EVIDENCE_DIGESTS,
             "acceptedRevision9Evidence": CURRENT_LOCAL_EVIDENCE_DIGESTS,
+            "promotedRevision10HostedEvidence": PROMOTED_REVISION_10_EVIDENCE_DIGESTS,
             "historicalEvidenceIndex": _relative(HISTORICAL_HASHES),
         },
         "conformance": {"caseCount": len(cases), "byCategory": dict(sorted(counts.items()))},
@@ -224,6 +254,7 @@ def current_state_markdown() -> str:
     local_text = ", ".join(
         f"`{name}` `{digest}`" for name, digest in sorted(bindings["acceptedRevision9Evidence"].items())
     )
+    promoted = bindings["promotedRevision10HostedEvidence"]
     lines = [
         "# Wayfinder current maintainer state",
         "",
@@ -240,6 +271,7 @@ def current_state_markdown() -> str:
         f"- Historical revision-8 accepted parity evidence: {parity_text}.",
         f"- Historical revision-8 accepted macOS matrix evidence: {matrix_text}.",
         f"- Accepted revision-9 local evidence, proposal, and freeze acceptance: {local_text}.",
+        f"- Durable revision-10 hosted evidence: `{_relative(PROMOTED_REVISION_10_EVIDENCE_ROOT)}`; {len(promoted)} exact files pinned by `maintain.py describe` and doctor; aggregate JSON `{promoted['hosted/run-34921918384-attempt-1/matrix-revision-10-aggregate.json']}`; aggregate Markdown `{promoted['hosted/run-34921918384-attempt-1/matrix-revision-10-aggregate.md']}`; matrix `2cc501f45a238d3d6161a89890a33d28fe20aa750558d278d0a69d10bb34a2d0`.",
         f"- Accepted historical evidence is hash-pinned by [`historical-sha256.json`](../certification/v1/historical-sha256.json).",
         "",
         "## Approval boundary",
@@ -266,6 +298,8 @@ def current_state_markdown() -> str:
         "- `## Candidate revision 9 corrected-source hosted execution and residual Windows investigation — accepted` for the latest hosted result, accepted root causes, and the candidate-revision-10 correction authority.",
         "- `## Maintainer approval-response governance — accepted` for the accepted governance implementation and its preserved boundaries.",
         "- `## Candidate revision 10 Windows correction — accepted` for the accepted correction and authorized new-session hosted-rerun boundary.",
+        "- `## Candidate revision 10 hosted certification execution — accepted` for the accepted passing hosted record and its review-only artifact boundary.",
+        "- `## Candidate revision 10 local evidence promotion — accepted` for the accepted durable evidence implementation and authorized source-publication boundary.",
         "",
         "Read the full record before reopening a decision, changing evidence governance, or recording an accepted outcome.",
         "",
@@ -288,6 +322,9 @@ def describe_command(output_format: str) -> int:
     for adapter in context["adapterRegistry"]:
         runtime = adapter["runtime"]
         print(f"- `{adapter['id']}` — `{adapter['sha256']}` — {runtime['implementation']} `{runtime['requiredVersion']}`; override `{runtime['overrideVariable']}`.")
+    print("\n## Promoted revision-10 hosted evidence\n")
+    for path, digest in sorted(context["bindings"]["promotedRevision10HostedEvidence"].items()):
+        print(f"- `{path}` — `{digest}`.")
     print("\n## Approval boundary\n")
     print(context["approvalBoundary"])
     print("\n## Pending action\n")
@@ -732,6 +769,8 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
             "## Candidate revision 9 corrected-source hosted execution and residual Windows investigation — accepted",
             "## Maintainer approval-response governance — accepted",
             "## Candidate revision 10 Windows correction — accepted",
+            "## Candidate revision 10 hosted certification execution — accepted",
+            "## Candidate revision 10 local evidence promotion — accepted",
         )
         current_state_matches = (
             CURRENT_STATE_PATH.is_file()
@@ -936,6 +975,31 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
         add("accepted-certification-evidence", not mismatches, ", ".join(mismatches))
     except Exception as exc:
         add("accepted-certification-evidence", False, str(exc))
+
+    try:
+        expected = set(PROMOTED_REVISION_10_EVIDENCE_DIGESTS)
+        actual: set[str] = set()
+        issues: list[str] = []
+        if not PROMOTED_REVISION_10_EVIDENCE_ROOT.is_dir() or PROMOTED_REVISION_10_EVIDENCE_ROOT.is_symlink():
+            issues.append("evidence root missing, non-directory, or symlinked")
+        else:
+            for path in PROMOTED_REVISION_10_EVIDENCE_ROOT.rglob("*"):
+                relative = path.relative_to(CERTIFICATION_ROOT).as_posix()
+                if path.is_symlink() or not path.is_file():
+                    issues.append(f"unexpected or unsafe path: {relative}")
+                    continue
+                actual.add(relative)
+            for relative, digest in PROMOTED_REVISION_10_EVIDENCE_DIGESTS.items():
+                path = CERTIFICATION_ROOT / relative
+                if relative in actual and sha256(path) != digest:
+                    issues.append(f"digest mismatch: {relative}")
+            for relative in sorted(expected - actual):
+                issues.append(f"missing: {relative}")
+            for relative in sorted(actual - expected):
+                issues.append(f"extra: {relative}")
+        add("promoted-revision-10-hosted-evidence", not issues, "; ".join(issues))
+    except Exception as exc:
+        add("promoted-revision-10-hosted-evidence", False, str(exc))
 
     caches = sorted(str(path.relative_to(REPOSITORY_ROOT)) for path in SKILL_ROOT.parent.rglob("__pycache__"))
     pycs = sorted(str(path.relative_to(REPOSITORY_ROOT)) for path in SKILL_ROOT.parent.rglob("*.pyc"))

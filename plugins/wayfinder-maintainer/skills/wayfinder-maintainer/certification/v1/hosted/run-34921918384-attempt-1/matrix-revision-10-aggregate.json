@@ -1,0 +1,89 @@
+{
+  "format": "wayfinder-certification-matrix-evidence",
+  "schemaVersion": 1,
+  "scope": "bounded-certification-matrix-candidate-revision-10",
+  "status": "passing-bounded-matrix-not-full-family-certification",
+  "generatedAt": "2026-09-15T03:00:32Z",
+  "package": {
+    "releaseId": "v1-candidate-revision-10",
+    "releaseSha256": "581e85c34eb5539d0af0e69128877fe57601600ed59366db13076a366524a083",
+    "contractVersion": 1,
+    "contractSha256": "0d8507c4a8b48fa976c1402b057755da28f896a3feeacf914c35b18a035dc341",
+    "fixtureIndexSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6",
+    "expectedOutputsSha256": "9d149d3b3603547b509803b3bfb119b79e40db41f97e848f76554f5dccbf1b94"
+  },
+  "adapters": {
+    "python-reference-v1": "e0b89ba35f223567efe2545d323d816dbaeeedfa8de8fb784fcc7b1c347cb596",
+    "node-v1": "f6d695e60e5964448947ed9f835526efa0f84e3764fb8acdd7f765e3bbe4fa3e",
+    "powershell-v1": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9"
+  },
+  "entries": [
+    {
+      "target": "python-reference-v1:CPython-3.14.7:macOS",
+      "path": "downloaded/matrix-revision-10-python-reference-v1-macos-20260915T024554Z.json",
+      "sha256": "fc6a9c11fad47699474cf83cc6aa4ceb05ce5d3632712ae7108c9a5cf2744584",
+      "resultSetSha256": "d5e0bb700666142ff5d116f81b5d784525a64f203f131f3354b61abaaf217b59",
+      "filesystemCaseBehavior": "case-insensitive"
+    },
+    {
+      "target": "python-reference-v1:CPython-3.14.7:Linux",
+      "path": "downloaded/matrix-revision-10-python-reference-v1-linux-20260915T024310Z.json",
+      "sha256": "93f1d5d274d220310446d827aa15c2a6236086dc8299050f61531e96631fd15c",
+      "resultSetSha256": "d5e0bb700666142ff5d116f81b5d784525a64f203f131f3354b61abaaf217b59",
+      "filesystemCaseBehavior": "case-sensitive"
+    },
+    {
+      "target": "python-reference-v1:CPython-3.14.7:Windows",
+      "path": "downloaded/matrix-revision-10-python-reference-v1-windows-20260915T024659Z.json",
+      "sha256": "1fe12a77ebf5c6c1e2ae7f1161f80685473924503fcb210af0d6cb7d0f806e1d",
+      "resultSetSha256": "d5e0bb700666142ff5d116f81b5d784525a64f203f131f3354b61abaaf217b59",
+      "filesystemCaseBehavior": "case-insensitive"
+    },
+    {
+      "target": "node-v1:Node.js-24.21.0:macOS",
+      "path": "downloaded/matrix-revision-10-node-v1-macos-20260915T024109Z.json",
+      "sha256": "60528f64e878d9a11054b9457a3bf0e578139abec27c41633a7e69e7d57e589e",
+      "resultSetSha256": "5bcfc75e48252a3711b9ca9778434eddf08e6e2918de4a4b3d576372593d2a44",
+      "filesystemCaseBehavior": "case-insensitive"
+    },
+    {
+      "target": "node-v1:Node.js-24.21.0:Linux",
+      "path": "downloaded/matrix-revision-10-node-v1-linux-20260915T023856Z.json",
+      "sha256": "96d41381d0ad5b46cb877523ab6743e85288e571133153b5df86898952147cf4",
+      "resultSetSha256": "5bcfc75e48252a3711b9ca9778434eddf08e6e2918de4a4b3d576372593d2a44",
+      "filesystemCaseBehavior": "case-sensitive"
+    },
+    {
+      "target": "node-v1:Node.js-24.21.0:Windows",
+      "path": "downloaded/matrix-revision-10-node-v1-windows-20260915T024008Z.json",
+      "sha256": "0378ac26624fe8f0da50946af03f3332e4603ca6d9f172be984cd82060d50490",
+      "resultSetSha256": "5bcfc75e48252a3711b9ca9778434eddf08e6e2918de4a4b3d576372593d2a44",
+      "filesystemCaseBehavior": "case-insensitive"
+    },
+    {
+      "target": "powershell-v1:PowerShell-7.6.6:Windows",
+      "path": "downloaded/matrix-revision-10-powershell-v1-windows-20260915T030016Z.json",
+      "sha256": "9bdcd2a7c38da06f41f6b6a929454b9a0d52ec1c0d165a4f1f4e5b7065dfe418",
+      "resultSetSha256": "de6613f623c9413ce5d3dabb27bb5bc8aad281d6efc28a50a8093f0dc9bcf116",
+      "filesystemCaseBehavior": "case-insensitive"
+    },
+    {
+      "target": "powershell-v1:PowerShell-7.6.6:Linux",
+      "path": "downloaded/matrix-revision-10-powershell-v1-linux-20260915T030009Z.json",
+      "sha256": "448e55a4eb78d1c36b39fe512ff8a06df52714a8f84a712d0e177b1e653913c7",
+      "resultSetSha256": "de6613f623c9413ce5d3dabb27bb5bc8aad281d6efc28a50a8093f0dc9bcf116",
+      "filesystemCaseBehavior": "case-sensitive"
+    }
+  ],
+  "filesystemCaseBehaviors": [
+    "case-insensitive",
+    "case-sensitive"
+  ],
+  "matrixSha256": "2cc501f45a238d3d6161a89890a33d28fe20aa750558d278d0a69d10bb34a2d0",
+  "limitations": [
+    "This aggregate covers only the bounded eight-entry environment matrix.",
+    "It is not independent evaluation or full-family certification.",
+    "It does not include forward tests, cross-adapter recovery, runtime guidance, activation, live-project work, or Git operations.",
+    "It does not create release certification entries or authorize activation."
+  ]
+}

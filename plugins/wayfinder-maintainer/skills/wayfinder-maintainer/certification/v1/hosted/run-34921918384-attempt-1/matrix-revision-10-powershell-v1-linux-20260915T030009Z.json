@@ -1,0 +1,2756 @@
+{
+  "format": "wayfinder-environment-certification-evidence",
+  "schemaVersion": 1,
+  "scope": "bounded-certification-matrix-candidate-revision-10",
+  "status": "passing-environment-entry-not-full-family-certification",
+  "generatedAt": "2026-09-15T03:00:09Z",
+  "target": {
+    "adapterId": "powershell-v1",
+    "runtimeImplementation": "PowerShell",
+    "runtimeVersion": "7.6.6",
+    "operatingSystemFamily": "Linux"
+  },
+  "package": {
+    "releaseId": "v1-candidate-revision-10",
+    "releaseSha256": "581e85c34eb5539d0af0e69128877fe57601600ed59366db13076a366524a083",
+    "contractVersion": 1,
+    "contractSha256": "0d8507c4a8b48fa976c1402b057755da28f896a3feeacf914c35b18a035dc341",
+    "fixtureIndexSha256": "a904318317a193dce9d3430770c3cbd8127cc8dc8cb0a7ced9ce6e6d087c70b6",
+    "expectedOutputsSha256": "9d149d3b3603547b509803b3bfb119b79e40db41f97e848f76554f5dccbf1b94",
+    "adapterId": "powershell-v1",
+    "adapterPath": "scripts/adapters/wayfinder-powershell.ps1",
+    "adapterSha256": "b7f8687b5b4ede2bd124999c23aaa12681a07bddc0597255873fa9c4493fa8c9"
+  },
+  "environment": {
+    "runtime": {
+      "implementation": "PowerShell",
+      "version": "7.6.6",
+      "reportedExecutable": "/home/runner/work/_temp/powershell-7.6.6/pwsh",
+      "runtimeArchitecture": "x64",
+      "runtimePlatform": "Unix",
+      "runtimeLocale": "",
+      "runtimeUiLocale": "",
+      "runtimeTimezone": "Etc/UTC",
+      "runtimeUtcOffsetSeconds": 0,
+      "runtimeOsVersion": "Ubuntu 24.04.5 LTS",
+      "executableIdentity": {
+        "requested": "pwsh",
+        "resolvedPath": "/home/runner/work/_temp/powershell-7.6.6/pwsh",
+        "reportedPath": "/home/runner/work/_temp/powershell-7.6.6/pwsh",
+        "reportedPathMatchesResolved": true,
+        "sha256": "3c6e4d629571429cf6cc86db94278e2ce17349edbbfe0a0de007bb6bccdbc208",
+        "byteLength": 78256
+      }
+    },
+    "operatingSystem": {
+      "family": "Linux",
+      "system": "Linux",
+      "details": {
+        "release": "6.17.0-1022-azure",
+        "version": "#22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026"
+      },
+      "hostArchitecture": "x86_64"
+    },
+    "locale": {
+      "environment": {
+        "LC_ALL": "unset",
+        "LC_CTYPE": "unset",
+        "LANG": "C.UTF-8"
+      },
+      "effective": "LC_CTYPE=C.UTF-8;LC_NUMERIC=C;LC_TIME=C;LC_COLLATE=C;LC_MONETARY=C;LC_MESSAGES=C;LC_PAPER=C;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=C;LC_IDENTIFICATION=C",
+      "preferredEncoding": "UTF-8",
+      "runtime": "unavailable"
+    },
+    "timezone": {
+      "environmentTZ": "unset-host-default",
+      "effectiveName": "UTC",
+      "effectiveUtcOffsetSeconds": 0,
+      "runtimeName": "Etc/UTC",
+      "runtimeUtcOffsetSeconds": 0
+    },
+    "filesystem": {
+      "temporaryDirectoryParent": "/tmp",
+      "deviceId": "2049",
+      "statvfs": {
+        "blockSize": 4096,
+        "fragmentSize": 4096,
+        "nameMaximum": 255
+      },
+      "encoding": "utf-8",
+      "encodingErrors": "surrogateescape",
+      "unicodeFilenameRoundTrip": true,
+      "unicodeFilenameUtf8Hex": "77617966696e6465722dc3a92d70726f6265",
+      "caseBehavior": "case-sensitive",
+      "caseProbe": {
+        "firstExclusiveCreate": "created",
+        "caseVariantExclusiveCreate": "created",
+        "enumeratedNames": [
+          "WayfinderCaseProbe",
+          "wayfindercaseprobe"
+        ]
+      },
+      "unavailableObservations": [
+        "the Python standard library does not expose a portable filesystem type or stable volume serial"
+      ]
+    }
+  },
+  "executionProvenance": {
+    "sourceRepository": "somacdivad/wayfinder",
+    "sourceCommit": "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54",
+    "workflowName": "Candidate revision 9 bounded matrix",
+    "workflowRunId": "34921918384",
+    "workflowRunAttempt": "1",
+    "runnerName": "GitHub Actions 1000000039",
+    "runnerEnvironment": "github-hosted",
+    "runnerImage": "ubuntu24",
+    "runnerImageVersion": "20260907.300.1",
+    "unavailableObservations": []
+  },
+  "summary": {
+    "total": 305,
+    "passed": 305,
+    "failed": 0,
+    "completeRegisteredSuite": true,
+    "byCategory": {
+      "apply": 51,
+      "command": 9,
+      "discovery": 10,
+      "generation": 10,
+      "harness": 1,
+      "initialize": 49,
+      "intake": 17,
+      "inventory": 21,
+      "json": 16,
+      "manifest": 21,
+      "package": 11,
+      "property": 6,
+      "record": 71,
+      "render": 12
+    },
+    "negativeAndMutationCases": {
+      "required": 213,
+      "passed": 213,
+      "caseIdsSha256": "d88d418db92af3983338830f1d7f4b9f04c999664da53a5c059e66316bcca1b4"
+    },
+    "interruptionBoundaryCases": {
+      "apply-failure-boundary-matrix": "passed",
+      "apply-rollback-boundary-matrix": "passed",
+      "apply-rollback-interrupted": "passed"
+    }
+  },
+  "resultSetSha256": "de6613f623c9413ce5d3dabb27bb5bc8aad281d6efc28a50a8093f0dc9bcf116",
+  "results": [
+    {
+      "id": "harness-test-controls",
+      "category": "harness",
+      "rules": [
+        "WF-CMD-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-valid",
+      "category": "package",
+      "rules": [
+        "WF-PKG-001",
+        "WF-PKG-002",
+        "WF-PKG-003",
+        "WF-PROBE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-resource-changed",
+      "category": "package",
+      "rules": [
+        "WF-PKG-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-resource-missing",
+      "category": "package",
+      "rules": [
+        "WF-PKG-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-resource-unlisted",
+      "category": "package",
+      "rules": [
+        "WF-PKG-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-contract-version",
+      "category": "package",
+      "rules": [
+        "WF-PKG-001",
+        "WF-JSON-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-adapter-changed",
+      "category": "package",
+      "rules": [
+        "WF-PKG-001",
+        "WF-PROBE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-release-malformed",
+      "category": "package",
+      "rules": [
+        "WF-PKG-001",
+        "WF-JSON-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-resource-duplicate",
+      "category": "package",
+      "rules": [
+        "WF-PKG-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-release-schema-mismatch",
+      "category": "package",
+      "rules": [
+        "WF-PKG-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-status-schema-mismatch",
+      "category": "package",
+      "rules": [
+        "WF-PKG-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "package-adapter-registry-mismatch",
+      "category": "package",
+      "rules": [
+        "WF-PKG-001",
+        "WF-PKG-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-valid-minimal",
+      "category": "json",
+      "rules": [
+        "WF-JSON-001",
+        "WF-MAN-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-valid-realistic",
+      "category": "json",
+      "rules": [
+        "WF-JSON-001",
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-bom",
+      "category": "json",
+      "rules": [
+        "WF-TEXT-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-malformed-utf8",
+      "category": "json",
+      "rules": [
+        "WF-TEXT-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-malformed-unicode",
+      "category": "json",
+      "rules": [
+        "WF-TEXT-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-duplicate-key",
+      "category": "json",
+      "rules": [
+        "WF-JSON-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-unknown-key",
+      "category": "json",
+      "rules": [
+        "WF-JSON-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-missing-field",
+      "category": "json",
+      "rules": [
+        "WF-JSON-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-wrong-type",
+      "category": "json",
+      "rules": [
+        "WF-JSON-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-unsupported-version",
+      "category": "json",
+      "rules": [
+        "WF-JSON-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-float",
+      "category": "json",
+      "rules": [
+        "WF-JSON-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-exponent",
+      "category": "json",
+      "rules": [
+        "WF-JSON-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-out-of-range-integer",
+      "category": "json",
+      "rules": [
+        "WF-JSON-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-negative-zero",
+      "category": "json",
+      "rules": [
+        "WF-JSON-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-non-nfc",
+      "category": "json",
+      "rules": [
+        "WF-TEXT-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "json-crlf",
+      "category": "json",
+      "rules": [
+        "WF-TEXT-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-explicit",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-upward",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-002",
+        "WF-DISC-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-nearest-wins",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-invalid-nearest",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-repository-root",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-vcs-boundary",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-no-manifest",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-file-start",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-control-symlink",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "discover-manifest-symlink",
+      "category": "discovery",
+      "rules": [
+        "WF-DISC-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-absolute-path",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-backslash",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-empty-segment",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-dot-segment",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-traversal",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001",
+        "WF-PATH-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-case-alias",
+      "category": "manifest",
+      "rules": [
+        "WF-PATH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-duplicate-module-id",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-duplicate-module-root",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-nested-module-root",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-empty-subjects",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-document-collection",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-duplicate-subject-id",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-overlapping-subjects",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-document-in-collection",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-module-entrypoint-outside",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-004",
+        "WF-MAN-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-subject-entrypoint-outside",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-005",
+        "WF-MAN-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-unknown-generator",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-unsafe-snapshot",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-002",
+        "WF-PATH-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-managed-symlink",
+      "category": "manifest",
+      "rules": [
+        "WF-DISC-006",
+        "WF-PATH-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-missing-entrypoint",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "manifest-artifact-entrypoint-conflict",
+      "category": "manifest",
+      "rules": [
+        "WF-MAN-006",
+        "WF-MAN-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "property-path-boundaries",
+      "category": "property",
+      "rules": [
+        "WF-PATH-001",
+        "WF-PATH-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "property-repeat-output",
+      "category": "property",
+      "rules": [
+        "WF-CMD-002",
+        "WF-JSON-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-envelope",
+      "category": "command",
+      "rules": [
+        "WF-CMD-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-deterministic",
+      "category": "command",
+      "rules": [
+        "WF-CMD-002",
+        "WF-JSON-005",
+        "WF-PROBE-002",
+        "WF-PROBE-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-no-writes",
+      "category": "command",
+      "rules": [
+        "WF-CMD-004",
+        "WF-DISC-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-unknown",
+      "category": "command",
+      "rules": [
+        "WF-CMD-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-unexpected",
+      "category": "command",
+      "rules": [
+        "WF-CMD-002",
+        "WF-CMD-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-files-roots",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-001",
+        "WF-INV-002",
+        "WF-INV-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-recursive-order",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-003",
+        "WF-INV-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-overlapping-selection",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-003",
+        "WF-INV-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-duplicate-selection",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-traversal",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-missing-selection",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-symlink-selected",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-003",
+        "WF-INV-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-symlink-nested",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-003",
+        "WF-INV-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-symlink-component",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-002",
+        "WF-INV-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-special-file",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-003",
+        "WF-INV-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-exclusions",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-explicit-soft-include",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-explicit-secret-excluded",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-malformed-utf8",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-005",
+        "WF-INV-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-markdown-headings",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-exact-duplicates",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-005",
+        "WF-INV-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-limit-entries",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-008"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-limit-file-bytes",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-008"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-limit-total-bytes",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-008"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-limit-depth",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-008"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "inventory-golden-result",
+      "category": "inventory",
+      "rules": [
+        "WF-INV-005",
+        "WF-INV-006",
+        "WF-INV-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-all-dispositions",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-001",
+        "WF-INTAKE-002",
+        "WF-INTAKE-003",
+        "WF-INTAKE-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-duplicate-field",
+      "category": "intake",
+      "rules": [
+        "WF-JSON-001",
+        "WF-INTAKE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-unknown-field",
+      "category": "intake",
+      "rules": [
+        "WF-JSON-002",
+        "WF-INTAKE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-missing-field",
+      "category": "intake",
+      "rules": [
+        "WF-JSON-002",
+        "WF-INTAKE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-wrong-type",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-unsupported-version",
+      "category": "intake",
+      "rules": [
+        "WF-JSON-003",
+        "WF-INTAKE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-invalid-disposition",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-invalid-incorporate",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-invalid-reference",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-invalid-preserve",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-invalid-unresolved",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-invalid-target-id",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-invalid-evidence-key",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-invalid-question-id",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-inventory-digest",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-001",
+        "WF-INTAKE-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-source-stale-size",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "intake-source-stale-digest",
+      "category": "intake",
+      "rules": [
+        "WF-INTAKE-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "property-inventory-repeat-output",
+      "category": "property",
+      "rules": [
+        "WF-CMD-002",
+        "WF-INV-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "property-inventory-seeded-order",
+      "category": "property",
+      "rules": [
+        "WF-INV-003",
+        "WF-INV-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-inventory-no-writes",
+      "category": "command",
+      "rules": [
+        "WF-CMD-004",
+        "WF-INV-008"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-valid",
+      "category": "record",
+      "rules": [
+        "WF-DOC-001",
+        "WF-REC-001",
+        "WF-GEN-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-document-id-zero",
+      "category": "record",
+      "rules": [
+        "WF-ID-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-document-id-short",
+      "category": "record",
+      "rules": [
+        "WF-ID-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-document-id-uppercase",
+      "category": "record",
+      "rules": [
+        "WF-ID-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-document-id-mnemonic-boundary",
+      "category": "record",
+      "rules": [
+        "WF-ID-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-duplicate-document-id",
+      "category": "record",
+      "rules": [
+        "WF-ID-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-duplicate-document-ordinal",
+      "category": "record",
+      "rules": [
+        "WF-ID-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-question-id-zero",
+      "category": "record",
+      "rules": [
+        "WF-ID-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-duplicate-question-id",
+      "category": "record",
+      "rules": [
+        "WF-ID-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "metadata-delimiter",
+      "category": "record",
+      "rules": [
+        "WF-DOC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "metadata-location",
+      "category": "record",
+      "rules": [
+        "WF-DOC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "metadata-order",
+      "category": "record",
+      "rules": [
+        "WF-DOC-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "metadata-missing",
+      "category": "record",
+      "rules": [
+        "WF-DOC-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "metadata-duplicate",
+      "category": "record",
+      "rules": [
+        "WF-DOC-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "metadata-unknown",
+      "category": "record",
+      "rules": [
+        "WF-DOC-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "metadata-malformed",
+      "category": "record",
+      "rules": [
+        "WF-DOC-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "document-h1",
+      "category": "record",
+      "rules": [
+        "WF-DOC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "document-invalid-kind",
+      "category": "record",
+      "rules": [
+        "WF-DOC-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "document-invalid-status",
+      "category": "record",
+      "rules": [
+        "WF-DOC-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "decision-invalid-status",
+      "category": "record",
+      "rules": [
+        "WF-DOC-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "decision-date-required",
+      "category": "record",
+      "rules": [
+        "WF-DOC-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "decision-date-forbidden",
+      "category": "record",
+      "rules": [
+        "WF-DOC-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "decision-sections",
+      "category": "record",
+      "rules": [
+        "WF-DOC-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "evidence-sections",
+      "category": "record",
+      "rules": [
+        "WF-DOC-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "relationship-malformed",
+      "category": "record",
+      "rules": [
+        "WF-REL-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "relationship-label-mismatch",
+      "category": "record",
+      "rules": [
+        "WF-REL-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "relationship-target-missing",
+      "category": "record",
+      "rules": [
+        "WF-REL-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "relationship-target-kind-status",
+      "category": "record",
+      "rules": [
+        "WF-REL-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "relationship-target-status",
+      "category": "record",
+      "rules": [
+        "WF-REL-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "relationship-duplicate",
+      "category": "record",
+      "rules": [
+        "WF-REL-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "relationship-order",
+      "category": "record",
+      "rules": [
+        "WF-REL-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "supersession-reciprocal",
+      "category": "record",
+      "rules": [
+        "WF-SUP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "supersession-missing-target",
+      "category": "record",
+      "rules": [
+        "WF-SUP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "supersession-self-edge",
+      "category": "record",
+      "rules": [
+        "WF-SUP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "supersession-cycle",
+      "category": "record",
+      "rules": [
+        "WF-SUP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "supersession-kind",
+      "category": "record",
+      "rules": [
+        "WF-SUP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "supersession-order",
+      "category": "record",
+      "rules": [
+        "WF-SUP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-anchor",
+      "category": "record",
+      "rules": [
+        "WF-Q-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-scope",
+      "category": "record",
+      "rules": [
+        "WF-Q-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-invalid-state",
+      "category": "record",
+      "rules": [
+        "WF-Q-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-conditional",
+      "category": "record",
+      "rules": [
+        "WF-Q-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-history",
+      "category": "record",
+      "rules": [
+        "WF-Q-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-transition",
+      "category": "record",
+      "rules": [
+        "WF-Q-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-reopen-reason",
+      "category": "record",
+      "rules": [
+        "WF-Q-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-retired-terminal",
+      "category": "record",
+      "rules": [
+        "WF-Q-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-resolved-target",
+      "category": "record",
+      "rules": [
+        "WF-Q-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-addressed-target",
+      "category": "record",
+      "rules": [
+        "WF-Q-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "question-all-states",
+      "category": "record",
+      "rules": [
+        "WF-Q-001",
+        "WF-Q-002",
+        "WF-Q-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-anchor",
+      "category": "record",
+      "rules": [
+        "WF-SRC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-required-field",
+      "category": "record",
+      "rules": [
+        "WF-SRC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-applicability",
+      "category": "record",
+      "rules": [
+        "WF-SRC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-published-date",
+      "category": "record",
+      "rules": [
+        "WF-SRC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-local-contained",
+      "category": "record",
+      "rules": [
+        "WF-SRC-001",
+        "WF-CMD-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-local-traversal",
+      "category": "record",
+      "rules": [
+        "WF-SRC-001",
+        "WF-CMD-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-local-missing",
+      "category": "record",
+      "rules": [
+        "WF-SRC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-local-symlink",
+      "category": "record",
+      "rules": [
+        "WF-SRC-001",
+        "WF-CMD-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-duplicate-key",
+      "category": "record",
+      "rules": [
+        "WF-SRC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-citation-missing",
+      "category": "record",
+      "rules": [
+        "WF-SRC-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "source-material-claim",
+      "category": "record",
+      "rules": [
+        "WF-SRC-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-module-containment",
+      "category": "record",
+      "rules": [
+        "WF-REC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-entrypoint-kind",
+      "category": "record",
+      "rules": [
+        "WF-REC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-catalog-subject-membership",
+      "category": "record",
+      "rules": [
+        "WF-REC-001",
+        "WF-GEN-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generated-stale-region",
+      "category": "record",
+      "rules": [
+        "WF-GEN-001",
+        "WF-GEN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generated-nested",
+      "category": "record",
+      "rules": [
+        "WF-GEN-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generated-duplicate",
+      "category": "record",
+      "rules": [
+        "WF-GEN-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generated-owner-kind",
+      "category": "record",
+      "rules": [
+        "WF-GEN-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generated-unknown-marker",
+      "category": "record",
+      "rules": [
+        "WF-GEN-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generated-catalog-stale",
+      "category": "record",
+      "rules": [
+        "WF-GEN-002",
+        "WF-GEN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-all-kinds",
+      "category": "render",
+      "rules": [
+        "WF-TPL-001",
+        "WF-TPL-002",
+        "WF-DOC-003",
+        "WF-DOC-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-no-prose-rewrite",
+      "category": "render",
+      "rules": [
+        "WF-TPL-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-output-exists",
+      "category": "render",
+      "rules": [
+        "WF-TPL-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-duplicate-output",
+      "category": "render",
+      "rules": [
+        "WF-TPL-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-unknown-field",
+      "category": "render",
+      "rules": [
+        "WF-TPL-001",
+        "WF-CMD-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-recursive-slot",
+      "category": "render",
+      "rules": [
+        "WF-TPL-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-template-missing-slot",
+      "category": "render",
+      "rules": [
+        "WF-TPL-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-template-unknown-slot",
+      "category": "render",
+      "rules": [
+        "WF-TPL-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-template-duplicate-slot",
+      "category": "render",
+      "rules": [
+        "WF-TPL-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-source-type",
+      "category": "render",
+      "rules": [
+        "WF-TPL-001",
+        "WF-CMD-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-output-symlink-component",
+      "category": "render",
+      "rules": [
+        "WF-TPL-002",
+        "WF-CMD-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "render-golden",
+      "category": "render",
+      "rules": [
+        "WF-TPL-001",
+        "WF-TPL-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "allocation-order",
+      "category": "generation",
+      "rules": [
+        "WF-ID-003",
+        "WF-CMD-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "allocation-explicit-mnemonic",
+      "category": "generation",
+      "rules": [
+        "WF-ID-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "allocation-mnemonic-required",
+      "category": "generation",
+      "rules": [
+        "WF-ID-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "allocation-scan-max-with-gap",
+      "category": "generation",
+      "rules": [
+        "WF-ID-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generation-catalog-repeat",
+      "category": "generation",
+      "rules": [
+        "WF-GEN-002",
+        "WF-GEN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generation-catalog-golden",
+      "category": "generation",
+      "rules": [
+        "WF-GEN-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generation-region-preservation",
+      "category": "generation",
+      "rules": [
+        "WF-GEN-001",
+        "WF-GEN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generation-region-idempotent",
+      "category": "generation",
+      "rules": [
+        "WF-GEN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generation-undeclared-region-path",
+      "category": "generation",
+      "rules": [
+        "WF-GEN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "generation-unknown-action",
+      "category": "generation",
+      "rules": [
+        "WF-CMD-006"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-validate-no-writes",
+      "category": "command",
+      "rules": [
+        "WF-CMD-005",
+        "WF-CMD-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-generate-declared-writes",
+      "category": "command",
+      "rules": [
+        "WF-CMD-006",
+        "WF-CMD-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "command-generate-unexpected",
+      "category": "command",
+      "rules": [
+        "WF-CMD-007"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-crlf",
+      "category": "record",
+      "rules": [
+        "WF-DOC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-non-nfc",
+      "category": "record",
+      "rules": [
+        "WF-DOC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "record-trailing-whitespace",
+      "category": "record",
+      "rules": [
+        "WF-DOC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "property-record-seeded-id",
+      "category": "property",
+      "rules": [
+        "WF-ID-001",
+        "WF-ID-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "property-catalog-repeat-bytes",
+      "category": "property",
+      "rules": [
+        "WF-GEN-002",
+        "WF-GEN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-minimal",
+      "category": "initialize",
+      "rules": [
+        "WF-INIT-001",
+        "WF-PROP-001",
+        "WF-PLAN-001",
+        "WF-PLAN-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-repeat-bytes",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-004",
+        "WF-PLAN-005",
+        "WF-CMD-008"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-digest-mutation",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-seeded-candidate-boundaries",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-002",
+        "WF-ID-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-source-assisted",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-004",
+        "WF-INTAKE-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-taxonomy-subjects",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-001",
+        "WF-PROP-002",
+        "WF-MAN-005"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-local-module",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-001",
+        "WF-PROP-002",
+        "WF-MAN-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-local-module-boundary",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-002",
+        "WF-PROP-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-inventory-digest",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-inventory-stale",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-004",
+        "WF-INTAKE-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-intake-digest",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-material-source-disposition",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-duplicate-field",
+      "category": "initialize",
+      "rules": [
+        "WF-JSON-001",
+        "WF-PROP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-unknown-field",
+      "category": "initialize",
+      "rules": [
+        "WF-JSON-002",
+        "WF-PROP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-missing-field",
+      "category": "initialize",
+      "rules": [
+        "WF-JSON-002",
+        "WF-PROP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-wrong-type",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-unsupported-version",
+      "category": "initialize",
+      "rules": [
+        "WF-JSON-003",
+        "WF-PROP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-non-nfc",
+      "category": "initialize",
+      "rules": [
+        "WF-TEXT-003",
+        "WF-PROP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-malformed-unicode",
+      "category": "initialize",
+      "rules": [
+        "WF-TEXT-001",
+        "WF-PROP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-mode",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-profile-unconfirmed",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-001",
+        "WF-SEM-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-document-id-collision",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-002",
+        "WF-ID-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-document-id-gap",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-002",
+        "WF-ID-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-question-id-gap",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-002",
+        "WF-ID-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-concern-home",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-concern-duplicate",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-omission-incomplete",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-competing-authority",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-inference-unconfirmed",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-003",
+        "WF-SEM-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-unresolved-without-question",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-fresh-source-binding",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-source-assisted-binding",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-004"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-placeholder",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-knowledge-map",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-module-containment",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-002",
+        "WF-REC-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-generated-containment",
+      "category": "initialize",
+      "rules": [
+        "WF-PROP-002",
+        "WF-PATH-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "proposal-target-collision",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-001",
+        "WF-PLAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-target-exists",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-003",
+        "WF-CMD-008"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-late-target-exists",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-003",
+        "WF-CMD-008"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-module-root-exists",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-manifest-exists",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-baseline-unresolved",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-snapshot-baseline",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-003",
+        "WF-MAN-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-bundle-exists",
+      "category": "initialize",
+      "rules": [
+        "WF-INIT-001",
+        "WF-PLAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-bundle-location",
+      "category": "initialize",
+      "rules": [
+        "WF-INIT-001",
+        "WF-PLAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-bundle-symlink",
+      "category": "initialize",
+      "rules": [
+        "WF-INIT-001",
+        "WF-PLAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-target-symlink",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-003",
+        "WF-CMD-008"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-recovery-required",
+      "category": "initialize",
+      "rules": [
+        "WF-PLAN-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "initialize-unexpected",
+      "category": "initialize",
+      "rules": [
+        "WF-CMD-008"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-greenfield",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-001",
+        "WF-APPLY-002",
+        "WF-PUBLISH-001",
+        "WF-COMPLETE-001",
+        "WF-RECEIPT-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-source-assisted",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002",
+        "WF-APPLY-003",
+        "WF-COMPLETE-001",
+        "WF-RECEIPT-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-exact-target-bytes",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002",
+        "WF-STAGE-001",
+        "WF-PUBLISH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-manifest-last",
+      "category": "apply",
+      "rules": [
+        "WF-JOURNAL-001",
+        "WF-PUBLISH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-completion-gates",
+      "category": "apply",
+      "rules": [
+        "WF-COMPLETE-001",
+        "WF-RECEIPT-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-interview-handoff",
+      "category": "apply",
+      "rules": [
+        "WF-RECEIPT-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-staging-cleanup",
+      "category": "apply",
+      "rules": [
+        "WF-STAGE-001",
+        "WF-COMPLETE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-wrong-confirmation",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-wrong-plan-digest",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-contract-digest",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002",
+        "WF-APPLY-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-workspace-binding",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002",
+        "WF-APPLY-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-plan-unknown-field",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-plan-duplicate-field",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-plan-truncated",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-payload-altered",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002",
+        "WF-STAGE-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-payload-missing",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-bundle-extra",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-baseline-stale",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-source-stale",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-target-appeared",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-003",
+        "WF-PUBLISH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-manifest-appeared",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-003",
+        "WF-PUBLISH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-lock-contention",
+      "category": "apply",
+      "rules": [
+        "WF-LOCK-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-lock-foreign-owner",
+      "category": "apply",
+      "rules": [
+        "WF-LOCK-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-lock-malformed",
+      "category": "apply",
+      "rules": [
+        "WF-LOCK-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-unexpected",
+      "category": "apply",
+      "rules": [
+        "WF-CMD-009"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-journal-altered",
+      "category": "apply",
+      "rules": [
+        "WF-JOURNAL-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-journal-reordered",
+      "category": "apply",
+      "rules": [
+        "WF-JOURNAL-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-journal-rehashed-reorder",
+      "category": "apply",
+      "rules": [
+        "WF-JOURNAL-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-journal-truncated",
+      "category": "apply",
+      "rules": [
+        "WF-JOURNAL-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-journal-duplicated",
+      "category": "apply",
+      "rules": [
+        "WF-JOURNAL-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-journal-forked",
+      "category": "apply",
+      "rules": [
+        "WF-JOURNAL-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-recovery-bundle-altered",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-002",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-created-modified",
+      "category": "apply",
+      "rules": [
+        "WF-RECOVER-001",
+        "WF-RECOVER-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-created-missing",
+      "category": "apply",
+      "rules": [
+        "WF-RECOVER-001",
+        "WF-RECOVER-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-target-race-after-preflight",
+      "category": "apply",
+      "rules": [
+        "WF-APPLY-003",
+        "WF-PUBLISH-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-premature-manifest",
+      "category": "apply",
+      "rules": [
+        "WF-PUBLISH-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-manifest-altered",
+      "category": "apply",
+      "rules": [
+        "WF-PUBLISH-001",
+        "WF-RECOVER-001",
+        "WF-RECOVER-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-manifest-missing",
+      "category": "apply",
+      "rules": [
+        "WF-PUBLISH-001",
+        "WF-RECOVER-001",
+        "WF-RECOVER-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-post-validation-failure",
+      "category": "apply",
+      "rules": [
+        "WF-COMPLETE-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-receipt-altered",
+      "category": "apply",
+      "rules": [
+        "WF-RECEIPT-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-receipt-missing",
+      "category": "apply",
+      "rules": [
+        "WF-RECEIPT-001",
+        "WF-RECOVER-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-inspect-idempotent",
+      "category": "apply",
+      "rules": [
+        "WF-RECOVER-001",
+        "WF-CMD-009"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-failure-boundary-matrix",
+      "category": "apply",
+      "rules": [
+        "WF-RECOVER-003",
+        "WF-JOURNAL-001",
+        "WF-PUBLISH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-seeded-target-races",
+      "category": "apply",
+      "rules": [
+        "WF-PUBLISH-001",
+        "WF-RECOVER-001",
+        "WF-CMD-009"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-deterministic-bytes",
+      "category": "apply",
+      "rules": [
+        "WF-JOURNAL-001",
+        "WF-RECEIPT-001",
+        "WF-CMD-009"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-golden-outputs",
+      "category": "apply",
+      "rules": [
+        "WF-JOURNAL-001",
+        "WF-RECEIPT-001",
+        "WF-CMD-009"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-rollback-before-manifest",
+      "category": "apply",
+      "rules": [
+        "WF-RECOVER-002",
+        "WF-PUBLISH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-rollback-after-manifest",
+      "category": "apply",
+      "rules": [
+        "WF-RECOVER-002",
+        "WF-PUBLISH-001"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-rollback-preserves-modified",
+      "category": "apply",
+      "rules": [
+        "WF-RECOVER-002"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-rollback-interrupted",
+      "category": "apply",
+      "rules": [
+        "WF-RECOVER-002",
+        "WF-RECOVER-003"
+      ],
+      "status": "passed"
+    },
+    {
+      "id": "apply-rollback-boundary-matrix",
+      "category": "apply",
+      "rules": [
+        "WF-RECOVER-002",
+        "WF-RECOVER-003",
+        "WF-JOURNAL-001"
+      ],
+      "status": "passed"
+    }
+  ],
+  "invocations": {
+    "count": 900,
+    "sha256": "d244ee99e024295705f8020398f334bbe042e6bda48a82658da8a5d0840141d7"
+  },
+  "expiryConditions": [
+    "candidate, contract, release, adapter, fixture-index, expected-output, or result-set binding changes",
+    "runtime implementation or exact version changes",
+    "operating-system family or version changes",
+    "architecture, locale, timezone, filesystem encoding, or filesystem case behavior changes"
+  ],
+  "limitations": [
+    "This is maintainer-run evidence for one exact matrix entry, not independent validation.",
+    "This environment report is not the aggregate matrix and is not full-family certification.",
+    "It does not authorize runtime guidance, activation, forward tests, cross-adapter recovery, live-project work, or Git operations.",
+    "the Python standard library does not expose a portable filesystem type or stable volume serial"
+  ]
+}

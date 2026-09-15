@@ -1,0 +1,14 @@
+{
+  "format": "wayfinder-matrix-execution-status",
+  "schemaVersion": 1,
+  "entryId": "python-windows",
+  "adapterId": "python-reference-v1",
+  "operatingSystemFamily": "Windows",
+  "generatedAt": "2026-09-15T02:46:59Z",
+  "sourceCommit": "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54",
+  "workflowRunId": "34921918384",
+  "workflowRunAttempt": "1",
+  "exitCode": 0,
+  "stdout": "{\"code\":\"ok\",\"data\":{\"failedCaseIds\":[],\"failedCases\":[],\"failureDetailsTruncated\":0,\"json\":\"D:\\\\a\\\\wayfinder\\\\wayfinder\\\\certification-output\\\\python-windows\\\\matrix-revision-10-python-reference-v1-windows-20260915T024659Z.json\",\"jsonSha256\":\"1fe12a77ebf5c6c1e2ae7f1161f80685473924503fcb210af0d6cb7d0f806e1d\",\"markdown\":\"D:\\\\a\\\\wayfinder\\\\wayfinder\\\\certification-output\\\\python-windows\\\\matrix-revision-10-python-reference-v1-windows-20260915T024659Z.md\",\"markdownSha256\":\"72c73942a28332450522527714feef71b1e36a88d733b604921ea988cc3affa0\",\"resultSetSha256\":\"d5e0bb700666142ff5d116f81b5d784525a64f203f131f3354b61abaaf217b59\",\"status\":\"passing-environment-entry-not-full-family-certification\",\"summary\":{\"byCategory\":{\"apply\":51,\"command\":9,\"discovery\":10,\"generation\":10,\"harness\":1,\"initialize\":49,\"intake\":17,\"inventory\":21,\"json\":16,\"manifest\":21,\"package\":11,\"property\":6,\"record\":71,\"render\":12},\"completeRegisteredSuite\":true,\"failed\":0,\"interruptionBoundaryCases\":{\"apply-failure-boundary-matrix\":\"passed\",\"apply-rollback-boundary-matrix\":\"passed\",\"apply-rollback-interrupted\":\"passed\"},\"negativeAndMutationCases\":{\"caseIdsSha256\":\"d88d418db92af3983338830f1d7f4b9f04c999664da53a5c059e66316bcca1b4\",\"passed\":213,\"required\":213},\"passed\":305,\"total\":305},\"target\":\"python-reference-v1:CPython-3.14.7:Windows\"},\"ok\":true}\n",
+  "stderr": ""
+}

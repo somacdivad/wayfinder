@@ -11,6 +11,10 @@ on:
         description: Exact approved source commit SHA
         required: true
         type: string
+      run_attempt:
+        description: Exact approved certification workflow run attempt
+        required: true
+        type: string
       matrix_sha256:
         description: Exact approved aggregate matrix SHA-256
         required: true
@@ -26,6 +30,18 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
+      - name: Require exact approved revision-10 identity
+        env:
+          APPROVED_RUN_ID: ${{ inputs.run_id }}
+          APPROVED_RUN_ATTEMPT: ${{ inputs.run_attempt }}
+          APPROVED_SOURCE_COMMIT: ${{ inputs.source_commit }}
+          APPROVED_MATRIX_SHA256: ${{ inputs.matrix_sha256 }}
+        shell: bash
+        run: |
+          test "$APPROVED_RUN_ID" = "34921918384"
+          test "$APPROVED_RUN_ATTEMPT" = "1"
+          test "$APPROVED_SOURCE_COMMIT" = "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54"
+          test "$APPROVED_MATRIX_SHA256" = "2cc501f45a238d3d6161a89890a33d28fe20aa750558d278d0a69d10bb34a2d0"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.source_commit }}
@@ -48,19 +64,21 @@ jobs:
           python scripts/prepare_evidence_release.py
           --input approved-evidence
           --expected-commit "${{ inputs.source_commit }}"
+          --expected-run-id "${{ inputs.run_id }}"
+          --expected-attempt "${{ inputs.run_attempt }}"
           --expected-matrix-sha256 "${{ inputs.matrix_sha256 }}"
           --output publication
       - name: Create draft evidence release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EVIDENCE_TAG: evidence-v1-candidate-revision-9-${{ inputs.matrix_sha256 }}
+          EVIDENCE_TAG: evidence-v1-candidate-revision-10-${{ inputs.matrix_sha256 }}
         shell: bash
         run: |
           gh release create "$EVIDENCE_TAG" \
             --draft \
             --target "${{ inputs.source_commit }}" \
-            --title "Wayfinder revision 8 bounded matrix evidence" \
-            --notes "Bounded eight-entry matrix evidence. Not full-family certification and does not authorize activation."
+            --title "Wayfinder candidate revision 10 bounded matrix evidence" \
+            --notes "Exact run 34921918384 attempt 1 bounded eight-entry candidate-revision-10 matrix evidence. Maintainer-run, not independent or full-family certification; no release-certification entry, runtime-guidance change, or activation authority."
           find approved-evidence publication -type f -print0 | while IFS= read -r -d '' file; do
             gh release upload "$EVIDENCE_TAG" "$file"
           done
