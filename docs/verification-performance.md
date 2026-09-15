@@ -178,3 +178,28 @@ block differs from `-File`, and private-file output does not measure stdout late
 The hosted check still runs all 305 cases per adapter, with Python/Node serial and
 two PowerShell workers, even if diagnostics fail. One attempt is authorized, then
 findings are persisted locally and work pauses. The ten-minute target is unmet.
+
+### Initial component attempt cancelled and corrected
+
+Run [35014663010 attempt 1](https://github.com/somacdivad/wayfinder/actions/runs/35014663010/attempts/1)
+on head `c3fb70cb161f37b4f4384d83bf56b5ee0e7991ad` failed before any valid
+component observations. Nine empty-process observations passed (median 0.161560s).
+The diagnostic guard accessed `Traps.Count` under strict mode, but the SDK defines
+[Traps as null when absent](https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.language.namedblockast.traps).
+The AST regression omitted strict mode and missed this harness bug. This supplies
+no new adapter component attribution. The correction null-checks `Traps` and runs
+the actual AST regression under strict mode. Local self-test remains 133 passes
+and two PowerShell-unavailable skips; repository and whitespace validation pass.
+
+At the owner's explicit instruction, normal cancellation was requested, then
+force-cancellation because the ordinary `always()` step continued running.
+Terminal metadata confirms completed/cancelled at 19:48:24 UTC, after 11m35s.
+That is an interrupted duration, not a full performance result. Hosted doctor
+passed 36/36, self-test 135/135, Python and Node 305/305 with 900 invocations each
+(368.274s and 50.959s). PowerShell/full validation were interrupted and unavailable.
+Terminal log SHA-256: `c41009c757db2915c9affe239250eee1c5f5aef06ffd97e32af4db6580f703d5`.
+
+The owner authorized pushing this two-line correction to start one replacement
+full ordinary validation. The diagnostic design and all coverage constraints stay
+unchanged; after that replacement, findings are persisted locally and work pauses.
+No further attempt, optimization or merging is implied.

@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 # PREFIX-GUARD:BEGIN
 function Get-DiagnosticPrefixLength {
 param($Ast,[string]$Source)
-if ($null -ne $Ast.DynamicParamBlock -or $null -ne $Ast.CleanBlock -or $null -ne $Ast.ParamBlock -or $null -ne $Ast.BeginBlock -or $null -ne $Ast.ProcessBlock -or $Ast.UsingStatements.Count -ne 0 -or $null -eq $Ast.EndBlock -or $Ast.EndBlock.Traps.Count -ne 0) { throw 'Unexpected adapter source shape or parse errors.' }
+if ($null -ne $Ast.DynamicParamBlock -or $null -ne $Ast.CleanBlock -or $null -ne $Ast.ParamBlock -or $null -ne $Ast.BeginBlock -or $null -ne $Ast.ProcessBlock -or $Ast.UsingStatements.Count -ne 0 -or $null -eq $Ast.EndBlock -or ($null -ne $Ast.EndBlock.Traps -and $Ast.EndBlock.Traps.Count -ne 0)) { throw 'Unexpected adapter source shape or parse errors.' }
 $statements = $Ast.EndBlock.Statements
 if ($statements.Count -lt 2 -or $statements[-2].Extent.Text -cne 'Invoke-WfMain $args' -or $statements[-1].Extent.Text -cne 'exit $script:ExitCode') { throw 'Unexpected adapter dispatch boundary.' }
 $prefixLength = $statements[-2].Extent.StartOffset
