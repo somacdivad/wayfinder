@@ -122,7 +122,7 @@ class ContextTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("305", markdown)
         self.assertIn("activation `disabled`", markdown)
-        code, raw = capture(maintain.describe_command, "json")
+        code, raw = capture(maintain.describe_command, "json", "complete-evidence", 65536)
         self.assertEqual(code, 0)
         value = json.loads(raw)["data"]
         self.assertEqual(value["candidate"]["releaseId"], "v1-candidate-revision-10")
