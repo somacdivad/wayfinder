@@ -32,11 +32,11 @@ jobs:
           package-manager-cache: false
       - name: Install checksum-verified PowerShell 7.6.6
         run: bash .github/scripts/install-powershell.sh
-      - name: Measure diagnostic-only PowerShell startup paths
+      - name: Measure diagnostic-only PowerShell probe package paths
         timeout-minutes: 5
         env:
           WAYFINDER_POWERSHELL_RUNTIME: pwsh
-        run: python scripts/measure_powershell_startup_paths.py --output "$RUNNER_TEMP/powershell-startup-path-diagnostics.json"
+        run: python scripts/measure_powershell_probe_paths.py --output "$RUNNER_TEMP/powershell-probe-path-diagnostics.json"
       - name: Run full ordinary repository verification with timings
         if: always()
         env:
