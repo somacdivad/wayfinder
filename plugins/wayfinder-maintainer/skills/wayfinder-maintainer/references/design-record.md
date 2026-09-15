@@ -67,7 +67,7 @@ Prefer deterministic scripts for repeatable actions. Keep scripts portable and d
 
 | Workflow | Status | Current decision point |
 | --- | --- | --- |
-| Initialize | Candidate revision 10 local evidence promotion accepted; source publication authorized; runtime disabled | Policy decisions 1–18, Slices 1–5, revision-8 history, and the bounded revision-9 Windows corrections and hosted findings are accepted. The revision-10 correction, exact passing hosted execution, promotion readiness, and 34-path local evidence-promotion implementation are accepted. The exact 27-file source/run/attempt evidence set is durable and hash-pinned. Only a separate new-session source-publication tranche is authorized; protected-environment evidence publication, release-registry changes, certification expansion, runtime guidance, and activation remain pending. Initialize remains disabled. |
+| Initialize | Candidate revision 10 evidence-publication readiness accepted as NOT READY; runtime disabled | Policy decisions 1–18, Slices 1–5, revision-8 history, and the bounded revision-9 Windows corrections and hosted findings are accepted. The revision-10 correction, exact passing hosted execution, promotion readiness, and 34-path local evidence-promotion implementation are accepted. The exact 27-file source/run/attempt evidence set is durable and hash-pinned. Source publication is present at `72da3542f3a7e65f4bcae09943612d8ba09daf3e`, but the accepted readiness review found a decisive workflow/verifier blocker. Evidence publication is not ready or dispatch-eligible; release-registry changes, certification expansion, runtime guidance, and activation remain pending. Initialize remains disabled. |
 | Interview | Not started | Pending completion of initialization workflow design. |
 | Update | Not started | Pending completion of initialization and interview workflow design; scope explicitly includes taxonomy evolution. |
 | Validate | Not started | Pending definition of the project-record contract. |
@@ -75,7 +75,7 @@ Prefer deterministic scripts for repeatable actions. Keep scripts portable and d
 
 ## Stub state
 
-The runtime `SKILL.md` is intentionally non-operational. It identifies planned modes and blocks agents from improvising unfinished workflows. Stage 0 through Slice 5, the exact frozen candidate revision 10 correction, its hosted execution record, the promotion-readiness decision, and the local evidence-promotion implementation are accepted. The runtime skill contains no maintainer-only directory or routing instructions; those live in the explicit companion skill. The package is not a certified runtime. The exact hosted set is accepted durable maintainer evidence. Only its 34-path source publication is authorized; protected-environment evidence publication, release-registry changes, broader certification, runtime routing, and activation remain separate later tranches.
+The runtime `SKILL.md` is intentionally non-operational. It identifies planned modes and blocks agents from improvising unfinished workflows. Stage 0 through Slice 5, the exact frozen candidate revision 10 correction, its hosted execution record, the promotion-readiness decision, the local evidence-promotion implementation, and the not-ready evidence-publication readiness result are accepted. The runtime skill contains no maintainer-only directory or routing instructions; those live in the explicit companion skill. The package is not a certified runtime. The exact hosted set is accepted durable maintainer evidence. Protected-environment evidence publication is not ready or dispatch-eligible; release-registry changes, broader certification, runtime routing, and activation remain separate later tranches.
 
 ## Stage 0 + Slice 1 implementation
 
@@ -614,3 +614,22 @@ The owner accepted the hosted-artifact verification and promotion-readiness pack
 | Checkpoint | Status | Decision |
 |---|---|---|
 | Exact 27-file local evidence-promotion implementation | Accepted 2026-09-14; exact 34-path source publication authorized | The owner accepted the complete local implementation and authorized only a separate new-session source-publication tranche for the enumerated paths. Acceptance did not stage, commit, push, dispatch, publish evidence, create a release, alter the release registry, broaden certification, add runtime guidance, activate Wayfinder, or begin later work. |
+
+## Candidate revision 10 evidence-publication readiness — accepted as not ready
+
+Reviewed and accepted by the skill owner on 2026-09-14 as the separately authorized protected-environment evidence-publication readiness result:
+
+- The owner accepted the readiness result as **NOT READY**. No evidence-publication dispatch is authorized.
+- The decisive blocker is the workflow/verifier handoff. A dispatch of `.github/workflows/publish-evidence.yml` from `candidate-revision-9-certification` would load the corrected workflow at source-publication commit `72da3542f3a7e65f4bcae09943612d8ba09daf3e`, but `actions/checkout` then checks out the evidence source commit `82a2bb994e7ef8d2ffda7317e0687b0c7230aa54`. The subsequent command would therefore invoke that older source commit's verifier, which targets revision 9 and lacks `--expected-run-id` and `--expected-attempt`. It would fail argument parsing before draft-release creation.
+- The `evidence-publication` environment exists. Its sole required reviewer is `somacdivad`; `prevent_self_review` is `false`, so the initiating actor can self-approve; `can_admins_bypass` is `false`; and there is no wait timer or deployment-branch restriction.
+- Immutable releases are enabled at repository level. The environment and immutable-release settings do not overcome the decisive workflow/verifier blocker and do not make publication ready or dispatch-eligible.
+- The canonical local doctor passed 31/32 checks under CPython 3.14.7. Its sole failure was the known unavailable local PowerShell runtime; no runtime was installed or substituted.
+- This acceptance records only the not-ready result and authoritative routing. It does not correct the workflow or verifier, modify GitHub settings, dispatch a workflow, download artifacts, create, modify, publish, or delete a release or tag, change `release.json`, add a release-certification entry, change runtime guidance, activate Wayfinder, perform forward testing or cross-adapter recovery, touch live-project data, or authorize any later tranche.
+- A correction to the publication workflow/verifier handoff may be proposed only as a future separately authorized task. This acceptance does not authorize or begin that correction.
+- The owner explicitly accepted the exact four-file acceptance-record implementation on 2026-09-14. This closes the record tranche without making a correction or later task eligible.
+
+### Revision 10 evidence-publication readiness checkpoint
+
+| Checkpoint | Status | Decision |
+|---|---|---|
+| Protected-environment evidence-publication readiness | Accepted 2026-09-14 as NOT READY; exact four-file record accepted; dispatch unauthorized | The owner accepted the exact environment observations, decisive workflow/verifier blocker, and four-file acceptance-record implementation. Evidence publication is not ready or dispatch-eligible, and no correction or later task begins automatically. |

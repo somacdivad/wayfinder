@@ -18,11 +18,11 @@
 
 ## Approval boundary
 
-The owner explicitly accepted the exact 34-path candidate-revision-10 local evidence-promotion implementation and authorized only a separate new-session source-publication tranche for those enumerated paths on candidate-revision-9-certification. Acceptance records the exact 27-file durable evidence set, maintainer digest bindings, publication-preparation corrections, documentation, and local validation. It does not itself stage, commit, push, dispatch a workflow, publish evidence, create a draft or final release, change the release registry or runtime guidance, activate Wayfinder, perform forward testing or cross-adapter recovery, touch live-project data, or authorize any later tranche.
+The owner explicitly accepted the exact four-file candidate-revision-10 evidence-publication readiness acceptance-record implementation. The recorded protected-environment readiness result is NOT READY. No evidence-publication dispatch is authorized. The decisive blocker is that publish-evidence.yml at source-publication commit 72da3542f3a7e65f4bcae09943612d8ba09daf3e checks out evidence source commit 82a2bb994e7ef8d2ffda7317e0687b0c7230aa54 before invoking scripts/prepare_evidence_release.py; that older verifier lacks --expected-run-id and --expected-attempt, targets revision 9, and would fail argument parsing before draft-release creation. Acceptance records this not-ready result only and authorizes no workflow or verifier correction, GitHub-settings change, workflow dispatch, artifact download, release or tag mutation, release-registry or runtime-guidance change, activation, or later tranche.
 
 ## Pending action and design-record routes
 
-Begin the separately authorized source-publication tranche only from the detailed new-session prompt supplied with the local evidence-promotion acceptance response. Stage exactly the 34 enumerated paths, create one commit, and push only candidate-revision-9-certification without force. Do not dispatch workflows, publish evidence, create a release, alter the release registry or runtime guidance, activate Wayfinder, touch live-project data, or begin any later task automatically.
+Evidence publication is not ready and is not dispatch-eligible. A correction to the publication workflow/verifier handoff is only a possible future separately authorized task. Do not correct the workflow or verifier, modify GitHub settings, dispatch a workflow, download artifacts, create or alter releases or tags, change the release registry or runtime guidance, activate Wayfinder, touch live-project data, or begin any later task automatically.
 
 Read only the relevant exact section of the [chronological design record](design-record.md):
 
@@ -42,5 +42,6 @@ Read only the relevant exact section of the [chronological design record](design
 - `## Candidate revision 10 Windows correction — accepted` for the accepted correction and authorized new-session hosted-rerun boundary.
 - `## Candidate revision 10 hosted certification execution — accepted` for the accepted passing hosted record and its review-only artifact boundary.
 - `## Candidate revision 10 local evidence promotion — accepted` for the accepted durable evidence implementation and authorized source-publication boundary.
+- `## Candidate revision 10 evidence-publication readiness — accepted as not ready` for the accepted protected-environment observations, decisive dispatch blocker, and closed publication boundary.
 
 Read the full record before reopening a decision, changing evidence governance, or recording an accepted outcome.
