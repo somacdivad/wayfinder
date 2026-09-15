@@ -2,6 +2,8 @@
 
 Read for review-packet preparation, final delivery, or owner-return reconciliation. These records belong to repository plans under docs/plans, outside installed plugins. They are not accepted certification evidence or mutable candidate authority. Commands never use the network, send comments, authenticate approval, execute supplied shell commands, commit, or merge.
 
+Current review handoff is chat-only: no PR review-request comments, factual tags, or review notifications. Use review packets and verification reports to prepare the final chat request. Complete local persistence before sending, then stop until the owner returns. The delivery command's comment ID/URL schema remains available for historical receipt inspection and separately authorized reconciliation; it does not represent chat delivery and grants no permission to send new comments. Establish chat delivery from the actual conversation on owner return, without fabricating a comment receipt.
+
 ## Commands
 
 Use maintain.py with Python 3.11+. Inspect selected help. All commands require --plan-id; readers accept --format summary|full|json, --max-bytes, and --cursor. JSON uses maintainer_output.py's existing wayfinder-maintainer-response envelope; human check reporting uses PASS/FAIL/UNAVAILABLE and a final summary.
@@ -23,7 +25,7 @@ Reader chunks expose ordered UTF-8 ranges, full-source digest and digest-bound c
 
 ## Closed schemas
 
-Use the concrete [checkpoint examples](reliability-checkpoint-examples.md) as synthetic templates; do not submit their fictitious identities. Artifact schemaVersion is 1. IDs use nonzero canonical lowercase UUIDs with rr (request), rs (supersession), de (delivery event), or vr (verification) prefixes. Plan IDs retain wp. Dates include a timezone. Git commit identities support lowercase 40/64-digit hex; content digests use SHA-256. Unknown/missing/duplicate JSON fields are errors.
+The preserved [checkpoint examples](reliability-checkpoint-examples.md) are historical synthetic templates. Their former comment/tag handoff is superseded by current chat-only review guidance; do not submit their fictitious identities. Artifact schemaVersion is 1. IDs use nonzero canonical lowercase UUIDs with rr (request), rs (supersession), de (delivery event), or vr (verification) prefixes. Plan IDs retain wp. Dates include a timezone. Git commit identities support lowercase 40/64-digit hex; content digests use SHA-256. Unknown/missing/duplicate JSON fields are errors.
 
 - Packet: format, schemaVersion, id, planId, approvedPlanRevision, approvedPlanSha256, repository, owner, members, verificationIds, limitations, exclusions, requestedAuthority, observedAt. Each member contains number, url, headCommit, baseCommit, mergeBaseCommit, reviewedDiffSha256, dependencies. Dependencies refer to preceding members. Optional retainedApprovals contains memberNumber, requestId, recordId. Retention requires unchanged head/diff and an accepted decision with explicit authority and source review-request:REQUEST_ID/member:NUMBER; a plan approval is insufficient. The caller must substantiate the actual owner decision; the script validates references, not authenticity.
 - Supersession: format, schemaVersion, id, requestId, replacementRequestId, reason, at. Create the replacement first, then supersede the prior packet. Until only one active packet remains for the plan, validation blocks review readiness. Prior packets/events stay immutable; cycles and competing replacements fail.

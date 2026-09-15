@@ -28,6 +28,6 @@ The research includes [coordination experiments](https://arxiv.org/abs/2512.0829
 
 ## Finish and resume
 
-Before requesting owner reviews: make PRs ready, summarize changes and checks, resolve implementation blockers or disclose them, record exact PR order/head identities and progress, and update current-state routing to the review handoff. Use [review and merge](review.md). When expressly included in the approved plan, save returned review-comment receipts or uncertain delivery outcomes within terminal delivery; then stop without polling, background monitoring, scheduling, or further implementation. Otherwise preserve the immediate post-tag stop. Resume only when the owner returns with direction.
+Before requesting owner reviews: make PRs ready, summarize changes and checks, resolve implementation blockers or disclose them, record exact PR order/head identities and progress, and update current-state routing to the review handoff. Use [review and merge](review.md). Keep review requests, feedback, and approval in chat, with no PR comments or factual tags. Finish authorized persistence before the final chat request; then stop without polling, background monitoring, scheduling, or further implementation. Resume only when the owner returns with direction.
 
 Use [local reliability CLI](reliability-cli.md) for version-bound review packets, terminal receipt state and structured verification. Declare required coverage and explicit environment exceptions in the plan; never report a skip as a pass or suite success as complete coverage.
