@@ -42,3 +42,34 @@ a new decision. Diagnostic reports do not promote or alter accepted evidence.
 
 Local PowerShell is unavailable. Hosted pinned-runtime verification and the timing
 checkpoint are required before this PR is ready for owner review.
+
+## Measured findings: revision checkpoint
+
+[Ordinary run 34987046636](https://github.com/somacdivad/wayfinder/actions/runs/34987046636)
+compared the same PR head `28b5d75637d6f30344febb8454de793089e6b07e` and
+tested merge revision `ce65e3733c309d4d0edc458d1fed24074f9e5de6` on Ubuntu 24.04.
+Pinned runtime versions and full coverage stayed unchanged.
+
+| PowerShell workers | Complete job | Setup diagnostic | Doctor | Self-test | Python suite | Node suite | PowerShell suite | Outcome |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | 29m35s | 9.190s | 5.478s | 33.015s | 351.403s | 50.605s | 1318.375s | Full pass |
+| 2 | 15m23s | 8.236s | 4.939s | 24.974s | 270.710s | 41.411s | 567.994s | Full pass |
+| 4 | 14m18s | 8.270s | 4.272s | 25.259s | 267.096s | 39.780s | 508.366s | Full pass |
+
+Repository validation took 0.601s, 0.326s and 0.409s respectively. Complete job
+durations use GitHub job start/completion timestamps and include post-job work;
+setup diagnostics begin at the first workflow step. Each adapter suite passed
+all 305 cases, matched the exact ordered fixture oracle, and recorded 900 invocations.
+This establishes identical serial/parallel PowerShell case coverage and passing
+result data. Hosted doctor passed all 36 checks. Local PowerShell is unavailable.
+
+Four workers shortened PowerShell by 59.628s versus two workers, while both full
+jobs exceeded ten minutes. Serial Python also accounted for 267–351s per job.
+Runner variation means the observed differences do not isolate startup cost.
+PowerShell startup's separate contribution remains unmeasured.
+
+The approved checkpoint requires a pause for plan revision. No fixed worker count
+is selected and no three-run readiness validation is started. Draft PR #9 remains
+not ready. Sharding, reduced coverage, larger runners, adapter changes and other
+adapter parallelism require an explicit revised decision. These logs and timings
+are diagnostic observations, not accepted certification evidence.
