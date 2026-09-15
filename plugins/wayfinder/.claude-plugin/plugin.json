@@ -1,7 +1,7 @@
 {
   "name": "wayfinder",
   "version": "1.0.0-rc.10",
-  "description": "Build, maintain, validate, and selectively consult a durable repository-owned project record.",
+  "description": "Build, maintain, validate, and selectively consult a durable repository-owned project record. Current candidate is unactivated.",
   "author": {
     "name": "David Amos",
     "url": "https://github.com/somacdivad"

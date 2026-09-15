@@ -7,6 +7,7 @@ import ctypes
 import importlib.util
 import json
 import os
+import shutil
 import socket
 import stat
 import subprocess
@@ -356,8 +357,10 @@ class InitializePlanNormalizationTests(unittest.TestCase):
             ), self.assertRaises(runner.CaseFailure):
                 runner.normalize_initialize_plan(plan, "D:\\workspace")
 
-    def test_node_and_powershell_non_link_reparse_rules_are_executable(self) -> None:
-        node = os.environ["WAYFINDER_NODE_RUNTIME"]
+    def test_node_non_link_reparse_rules_are_executable(self) -> None:
+        node = os.environ.get("WAYFINDER_NODE_RUNTIME") or shutil.which("node")
+        if not node:
+            self.skipTest("Node.js unavailable; executable helper check not run")
         node_source = (RUNTIME_ROOT / "scripts/adapters/wayfinder-node.mjs").read_text(encoding="utf-8")
         helper = node_source[node_source.index("function windowsDirent"):node_source.index("function physicalDirectory")]
         program = f'''let lstatCalls=0,readlinkCalls=0,contentReads=0,refreshMode="reparse",readlinkMode="einval";
@@ -378,7 +381,10 @@ refreshMode="reparse";if(lstatKind("C:\\\\work\\\\socket")!=="unsupported-file"|
 if(contentReads)throw new Error("special file content was read");'''
         subprocess.run([node, "-e", program], check=True)
 
-        powershell = os.environ["WAYFINDER_POWERSHELL_RUNTIME"]
+    def test_powershell_non_link_reparse_rules_are_executable(self) -> None:
+        powershell = os.environ.get("WAYFINDER_POWERSHELL_RUNTIME") or shutil.which("pwsh")
+        if not powershell:
+            self.skipTest("PowerShell unavailable; executable helper check not run")
         ps_source = (RUNTIME_ROOT / "scripts/adapters/wayfinder-powershell.ps1").read_text(encoding="utf-8")
         helper = ps_source[ps_source.index("function Get-WfFileType"):ps_source.index("function Get-WfMarkdownCues")]
         program = helper + r'''

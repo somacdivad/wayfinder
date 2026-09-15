@@ -2,6 +2,60 @@
 
 > Compact routing reference. `maintain.py doctor` validates these facts against the package, accepted evidence, and chronological record.
 
+<!-- WAYFINDER-STATUS-OBJECT:BEGIN -->
+```json
+{
+  "format": "wayfinder-maintainer-status",
+  "schemaVersion": 1,
+  "asOf": "2026-09-14",
+  "requirements": {"maintainerPythonMinimum": "3.11"},
+  "candidate": {
+    "releaseId": "v1-candidate-revision-10",
+    "candidateRevision": 10,
+    "packageVersion": "1.0.0-rc.10",
+    "contractStatus": "frozen",
+    "releaseStatus": "unactivated-frozen",
+    "activation": "disabled",
+    "contractSha256": "0d8507c4a8b48fa976c1402b057755da28f896a3feeacf914c35b18a035dc341",
+    "releaseSha256": "581e85c34eb5539d0af0e69128877fe57601600ed59366db13076a366524a083"
+  },
+  "conformance": {"caseCount": 305},
+  "hostedEvidence": {
+    "exists": true,
+    "accepted": true,
+    "runId": "34921918384",
+    "attempt": "1",
+    "sourceCommit": "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54",
+    "path": "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/certification/v1/hosted/run-34921918384-attempt-1",
+    "fileCount": 27,
+    "matrixEntries": 8,
+    "casesPerEntry": 305,
+    "aggregateJsonSha256": "be2d4b8542f9a50c1c446a57b05681bb43529cd4906064c2c354dc1d8b3f8d50",
+    "aggregateMarkdownSha256": "ffe1fe3dc6ae9ed1b21356943ea8f98451221a5e8248043d74cf21c5a0b3cf18",
+    "matrixSha256": "2cc501f45a238d3d6161a89890a33d28fe20aa750558d278d0a69d10bb34a2d0"
+  },
+  "publication": {
+    "readiness": "not-ready",
+    "dispatchAuthorized": false,
+    "published": false,
+    "sourcePublicationCommit": "72da3542f3a7e65f4bcae09943612d8ba09daf3e",
+    "blockerCode": "workflow-verifier-handoff",
+    "checkedOutSourceCommit": "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54",
+    "verifierCandidateRevision": 9,
+    "missingArguments": ["--expected-run-id", "--expected-attempt"],
+    "failureStage": "argument-parsing-before-draft-release"
+  },
+  "releaseRegistry": {"updated": false, "certificationEntries": 0},
+  "runtimes": [
+    {"adapterId": "python-reference-v1", "implementation": "CPython", "version": "3.14.7", "operatingSystems": ["macOS", "Linux", "Windows"]},
+    {"adapterId": "node-v1", "implementation": "Node.js", "version": "24.21.0", "operatingSystems": ["macOS", "Linux", "Windows"]},
+    {"adapterId": "powershell-v1", "implementation": "PowerShell", "version": "7.6.6", "operatingSystems": ["Windows", "Linux"]}
+  ],
+  "claims": {"fullFamilyCertification": false, "crossAdapterRecovery": false}
+}
+```
+<!-- WAYFINDER-STATUS-OBJECT:END -->
+
 ## Current identity
 
 - Candidate: `v1-candidate-revision-10` (contract `frozen`, release `unactivated-frozen`).
@@ -22,7 +76,7 @@ The owner explicitly accepted the exact four-file candidate-revision-10 evidence
 
 ## Pending action and design-record routes
 
-Evidence publication is not ready and is not dispatch-eligible. A correction to the publication workflow/verifier handoff is only a possible future separately authorized task. Do not correct the workflow or verifier, modify GitHub settings, dispatch a workflow, download artifacts, create or alter releases or tags, change the release registry or runtime guidance, activate Wayfinder, touch live-project data, or begin any later task automatically.
+The owner explicitly authorized the combined bounded-context and claim-integrity implementation: Priority 0 and both Priority 1 groups from the bounded-context report, plus Opportunity 1 only from the addendum. The implementation is pending owner review and acceptance. The two authorized preparation commits are local; implementation changes remain uncommitted. Evidence publication remains not ready and not dispatch-eligible. Do not correct the publication workflow/verifier, modify GitHub settings, dispatch workflows, download artifacts, publish or alter releases/tags, change frozen contract/adapters, accepted evidence, release registry, runtime guidance or activation, add dependencies, touch live-project data, push, or begin Priority 2 or another later tranche automatically.
 
 Read only the relevant exact section of the [chronological design record](design-record.md):
 

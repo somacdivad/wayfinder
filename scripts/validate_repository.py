@@ -12,7 +12,9 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_NAMES = ("wayfinder", "wayfinder-maintainer")
-VERSION = "1.0.0-rc.10"
+sys.dont_write_bytecode = True
+sys.path.insert(0, str(ROOT / "plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts"))
+import maintain as maintainer
 EXPECTED_DIGESTS = {
     "plugins/wayfinder/skills/wayfinder/assets/contract-v1/contract.json": "0d8507c4a8b48fa976c1402b057755da28f896a3feeacf914c35b18a035dc341",
     "plugins/wayfinder/skills/wayfinder/assets/contract-v1/release.json": "581e85c34eb5539d0af0e69128877fe57601600ed59366db13076a366524a083",
@@ -69,6 +71,13 @@ def load_json(path: Path) -> Any:
 
 def main() -> int:
     failures: list[str] = []
+    try:
+        status = maintainer.parse_status(maintainer.CURRENT_STATE_PATH)
+        failures.extend("status authority: " + issue for issue in maintainer.status_issues(status))
+        failures.extend("public status projection differs: " + path for path in maintainer.projection_drift(ROOT, status))
+    except Exception as exc:
+        failures.append(f"public status validation failed: {exc}")
+        status = None
 
     agents_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     if "references/current-state.md" not in agents_text:
@@ -124,7 +133,8 @@ def main() -> int:
         for field in ("name", "version", "description", "author", "homepage", "repository", "license"):
             if portable.get(field) != claude.get(field) or portable.get(field) != codex.get(field):
                 failures.append(f"{name}: compatibility manifest differs at {field}")
-        if portable.get("name") != name or portable.get("version") != VERSION:
+        expected_version = status["candidate"]["packageVersion"] if name == "wayfinder" and status else portable.get("version")
+        if portable.get("name") != name or portable.get("version") != expected_version or not portable.get("version"):
             failures.append(f"{name}: portable identity differs")
         if codex.get("skills") != "./skills/":
             failures.append(f"{name}: Codex skills path differs")

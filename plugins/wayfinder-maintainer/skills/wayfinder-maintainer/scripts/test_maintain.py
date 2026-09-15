@@ -56,7 +56,7 @@ class DoctorTests(unittest.TestCase):
         self.assertIn("PASS one: detail", verbose)
         code, raw = capture(maintain._emit_doctor, checks, "json", False)
         self.assertEqual(code, 0)
-        self.assertEqual(json.loads(raw)["summary"], {"passed": 2, "failed": 0, "total": 2})
+        self.assertEqual(json.loads(raw)["data"]["summary"], {"passed": 2, "failed": 0, "total": 2})
         code, failure = capture(maintain._emit_doctor, [("broken", False, "why")], "summary", True)
         self.assertEqual(code, 1)
         self.assertEqual(failure, "FAIL broken: why\nsummary passed=0 failed=1 total=1\n")
@@ -101,7 +101,8 @@ class DoctorTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
-        self.assertEqual(completed.stdout, "summary passed=1 failed=0 total=1\n")
+        self.assertIn("summary passed=1 failed=0 total=1\n", completed.stdout)
+        self.assertIn("response-class=complete-evidence", completed.stdout)
 
     def test_runtime_diagnostics_and_output_budgets(self) -> None:
         code, output = capture(maintain.doctor, "verbose", "python-reference-v1")
@@ -123,13 +124,13 @@ class ContextTests(unittest.TestCase):
         self.assertIn("activation `disabled`", markdown)
         code, raw = capture(maintain.describe_command, "json")
         self.assertEqual(code, 0)
-        value = json.loads(raw)
+        value = json.loads(raw)["data"]
         self.assertEqual(value["candidate"]["releaseId"], "v1-candidate-revision-10")
         self.assertEqual({item["id"] for item in value["adapterRegistry"]}, set(maintain.ACCEPTED_ADAPTER_DIGESTS))
-        self.assertEqual(len(value["bindings"]["promotedRevision10HostedEvidence"]), 27)
+        self.assertTrue(value["routing"])
 
     def test_current_state_is_exact_and_historical_evidence_is_preserved(self) -> None:
-        self.assertEqual(maintain.CURRENT_STATE_PATH.read_text(encoding="utf-8"), maintain.current_state_markdown())
+        self.assertEqual(maintain.status_issues(maintain.parse_status(maintain.CURRENT_STATE_PATH)), [])
         pinned = maintain.load_json(maintain.HISTORICAL_HASHES)["files"]
         for name, digest in pinned.items():
             self.assertEqual(maintain.sha256(maintain.CERTIFICATION_ROOT / name), digest)
@@ -140,7 +141,7 @@ class ContextTests(unittest.TestCase):
     def test_exact_record_section_and_missing_heading(self) -> None:
         code, output = capture(maintain.record_section_command, "Candidate revision 9 Windows corrections — accepted")
         self.assertEqual(code, 0, output)
-        self.assertTrue(output.startswith("## Candidate revision 9 Windows corrections — accepted\n"))
+        self.assertIn("## Candidate revision 9 Windows corrections — accepted\n", output)
         self.assertNotIn("## Candidate revision 9 hosted certification execution", output)
         code, output = capture(maintain.record_section_command, "not a real heading")
         self.assertEqual(code, 2)
@@ -175,7 +176,7 @@ class OperationalEfficiencyTests(unittest.TestCase):
         ):
             code, output = capture(maintain.self_test_command, "json")
         self.assertEqual(code, 0, output)
-        self.assertEqual(json.loads(output)["tests"], 21)
+        self.assertEqual(json.loads(output)["data"]["tests"], 21)
         command = run.call_args.args[0]
         self.assertEqual(command[1:4], ["-m", "unittest", "discover"])
         self.assertIn("test_*.py", command)
@@ -341,7 +342,7 @@ class MatrixReviewTests(unittest.TestCase):
             code, output = capture(maintain.matrix_review_command, root, "json")
             after = {path.name: maintain.sha256(path) for path in root.iterdir()}
         self.assertEqual(code, 0, output)
-        value = json.loads(output)
+        value = json.loads(output)["data"]
         self.assertIn(maintain._matrix_target_id(failing), value["failingCasesByEnvironment"])
         self.assertEqual(value["classification"], "GitHub Actions material; review-only; not accepted evidence")
         self.assertEqual(before, after)
@@ -391,7 +392,7 @@ class MatrixReviewTests(unittest.TestCase):
                     status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8", newline="\n")
                 code, output = capture(maintain.matrix_review_command, root, "json")
                 self.assertEqual(code, 2)
-                issues = json.loads(output)["issues"]
+                issues = json.loads(output)["data"]["issues"]
                 self.assertTrue(any("Markdown report" in issue for issue in issues), issues)
 
     def test_offline_review_rejects_report_hash_mismatch(self) -> None:
@@ -406,7 +407,7 @@ class MatrixReviewTests(unittest.TestCase):
             status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8", newline="\n")
             code, output = capture(maintain.matrix_review_command, root, "json")
         self.assertEqual(code, 2)
-        self.assertTrue(any("Markdown report hash differs" in issue for issue in json.loads(output)["issues"]))
+        self.assertTrue(any("Markdown report hash differs" in issue for issue in json.loads(output)["data"]["issues"]))
 
 
 class EvidenceTests(unittest.TestCase):

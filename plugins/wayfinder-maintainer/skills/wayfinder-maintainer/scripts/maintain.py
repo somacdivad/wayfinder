@@ -5,9 +5,12 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import contextlib
 import datetime as dt
+import difflib
 import hashlib
 import importlib.util
+import io
 import json
 import locale
 import os
@@ -21,6 +24,13 @@ import unicodedata
 from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable
+
+sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from maintainer_checkpoint import create_checkpoint, verify_checkpoint
+from maintainer_output import COMPLETE_MAX_BYTES, PREVIEW_MAX_BYTES, bounded_chunk, emit_json, envelope, make_cursor, read_cursor
+from maintainer_status import parse_status, projection_drift, rendered_targets, write_targets
 
 
 COMPANION_ROOT = Path(__file__).resolve().parents[1]
@@ -124,23 +134,6 @@ RUNTIME_REQUIREMENTS = {
     "node-v1": ("Node.js", "24.21.0", "WAYFINDER_NODE_RUNTIME"),
     "powershell-v1": ("PowerShell", "7.6.6", "WAYFINDER_POWERSHELL_RUNTIME"),
 }
-CURRENT_APPROVAL_BOUNDARY = (
-    "The owner explicitly accepted the exact four-file candidate-revision-10 evidence-publication readiness acceptance-record "
-    "implementation. The recorded protected-environment readiness result is NOT READY. "
-    "No evidence-publication dispatch is authorized. The decisive blocker is that publish-evidence.yml at source-publication commit "
-    "72da3542f3a7e65f4bcae09943612d8ba09daf3e checks out evidence source commit "
-    "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54 before invoking scripts/prepare_evidence_release.py; that older verifier lacks "
-    "--expected-run-id and --expected-attempt, targets revision 9, and would fail argument parsing before draft-release creation. "
-    "Acceptance records this not-ready result only and authorizes no workflow or verifier correction, GitHub-settings change, "
-    "workflow dispatch, artifact download, release or tag mutation, release-registry or runtime-guidance change, activation, or "
-    "later tranche."
-)
-CURRENT_PENDING_ACTION = (
-    "Evidence publication is not ready and is not dispatch-eligible. A correction to the publication workflow/verifier handoff is "
-    "only a possible future separately authorized task. Do not correct the workflow or verifier, modify GitHub settings, dispatch "
-    "a workflow, download artifacts, create or alter releases or tags, change the release registry or runtime guidance, activate "
-    "Wayfinder, touch live-project data, or begin any later task automatically."
-)
 FREEZE_ACCEPTANCE_AUTHORIZATION = (
     "Accept the exact revision-9 frozen bytes and local candidate and parity evidence. "
     "Hosted certification and every later tranche require separate explicit authorization."
@@ -176,6 +169,95 @@ def canonical_sha256(value: Any) -> str:
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
 
 
+def status_issues(status: dict[str, Any]) -> list[str]:
+    issues: list[str] = []
+    contract_path = SKILL_ROOT / "assets/contract-v1/contract.json"
+    release_path = SKILL_ROOT / "assets/contract-v1/release.json"
+    contract = load_json(contract_path)
+    release = load_json(release_path)
+    candidate = status.get("candidate", {})
+    expected_candidate = {
+        "releaseId": release["releaseId"],
+        "candidateRevision": contract["candidateRevision"],
+        "contractStatus": contract["status"],
+        "releaseStatus": release["status"],
+        "contractSha256": sha256(contract_path),
+        "releaseSha256": sha256(release_path),
+    }
+    for key, expected in expected_candidate.items():
+        if candidate.get(key) != expected:
+            issues.append(f"candidate.{key} differs")
+    if status.get("conformance", {}).get("caseCount") != 305:
+        issues.append("conformance case count differs")
+    evidence = status.get("hostedEvidence", {})
+    expected_evidence = {
+        "path": _relative(PROMOTED_REVISION_10_EVIDENCE_ROOT),
+        "runId": "34921918384",
+        "attempt": "1",
+        "sourceCommit": "82a2bb994e7ef8d2ffda7317e0687b0c7230aa54",
+        "fileCount": len(PROMOTED_REVISION_10_EVIDENCE_DIGESTS),
+        "aggregateJsonSha256": PROMOTED_REVISION_10_EVIDENCE_DIGESTS["hosted/run-34921918384-attempt-1/matrix-revision-10-aggregate.json"],
+        "aggregateMarkdownSha256": PROMOTED_REVISION_10_EVIDENCE_DIGESTS["hosted/run-34921918384-attempt-1/matrix-revision-10-aggregate.md"],
+    }
+    for key, expected in expected_evidence.items():
+        if evidence.get(key) != expected:
+            issues.append(f"hostedEvidence.{key} differs")
+    if evidence.get("exists") is not PROMOTED_REVISION_10_EVIDENCE_ROOT.is_dir():
+        issues.append("hosted evidence existence differs")
+    design = (COMPANION_ROOT / "references/design-record.md").read_text(encoding="utf-8")
+    accepted_sections = re.findall(r"^## Candidate revision 10 hosted certification execution — accepted\n(.*?)(?=^## |\Z)", design, flags=re.MULTILINE | re.DOTALL)
+    accepted = len(accepted_sections) == 1 and all(value in accepted_sections[0] for value in (evidence["runId"], evidence["sourceCommit"]))
+    if evidence.get("accepted") is not accepted:
+        issues.append("hosted evidence acceptance differs from design record")
+    for relative, digest in PROMOTED_REVISION_10_EVIDENCE_DIGESTS.items():
+        path = CERTIFICATION_ROOT / relative
+        if not path.is_file() or path.is_symlink() or sha256(path) != digest:
+            issues.append(f"accepted evidence integrity differs: {relative}")
+        elif path.name.startswith("matrix-revision-10-") and path.suffix == ".json":
+            report = load_json(path)
+            if report.get("format") == "wayfinder-environment-certification-evidence":
+                provenance = report.get("executionProvenance", {})
+                for key, field in (("workflowRunId", "runId"), ("workflowRunAttempt", "attempt"), ("sourceCommit", "sourceCommit")):
+                    if provenance.get(key) != evidence.get(field):
+                        issues.append(f"evidence provenance differs: {field}")
+                if report.get("summary", {}).get("passed") != evidence.get("casesPerEntry"):
+                    issues.append("evidence case count differs")
+    aggregate = load_json(PROMOTED_REVISION_10_EVIDENCE_ROOT / "matrix-revision-10-aggregate.json")
+    if evidence.get("matrixSha256") != aggregate.get("matrixSha256") or evidence.get("matrixEntries") != len(aggregate.get("entries", [])):
+        issues.append("aggregate matrix binding differs")
+    if candidate.get("packageVersion") != f"1.0.0-rc.{contract['candidateRevision']}":
+        issues.append("runtime package version differs")
+    if candidate.get("activation") != ("enabled" if release["status"] == "activated-frozen" else "disabled"):
+        issues.append("activation differs from release")
+    if status.get("releaseRegistry", {}).get("certificationEntries") != len(release.get("certifications", [])):
+        issues.append("release registry entry count differs")
+    expected_runtimes = [
+        {"adapterId": adapter, "implementation": implementation, "version": version,
+         "operatingSystems": [family for candidate_adapter, _, _, family in MATRIX_TARGETS if candidate_adapter == adapter]}
+        for adapter, (implementation, version, _) in RUNTIME_REQUIREMENTS.items()
+    ]
+    if status.get("runtimes") != expected_runtimes:
+        issues.append("runtime observations differ")
+    narrative = CURRENT_STATE_PATH.read_text(encoding="utf-8")
+    for expected in (f"- Candidate: `{candidate.get('releaseId')}`", f"- Contract: `{candidate.get('contractSha256')}`.", f"- Release: `{candidate.get('releaseSha256')}`."):
+        if expected not in narrative:
+            issues.append("current-state narrative differs from object")
+    publication = status.get("publication", {})
+    if publication.get("readiness") == "not-ready" and (publication.get("dispatchAuthorized") is not False or "NOT READY" not in narrative):
+        issues.append("publication narrative/object boundary differs")
+    if publication.get("readiness") == "not-ready" and publication.get("published") is not False:
+        issues.append("publication claim exceeds not-ready boundary")
+    if any(value not in narrative for value in (publication.get("sourcePublicationCommit", ""), *publication.get("missingArguments", []))):
+        issues.append("publication blocker facts differ from narrative")
+    if publication.get("checkedOutSourceCommit") != evidence.get("sourceCommit"):
+        issues.append("publication checkout/source binding differs")
+    if status.get("releaseRegistry", {}).get("updated") is not False or status.get("claims") != {"fullFamilyCertification": False, "crossAdapterRecovery": False}:
+        issues.append("claim exceeds accepted bounded evidence")
+    if status.get("requirements", {}).get("maintainerPythonMinimum") != "3.11":
+        issues.append("maintainer Python requirement differs")
+    return issues
+
+
 def expected_outputs_sha256(contract: dict[str, Any]) -> str:
     outputs = [
         {"path": item["path"], "sha256": item["sha256"]}
@@ -187,6 +269,12 @@ def expected_outputs_sha256(contract: dict[str, Any]) -> str:
 
 def _relative(path: Path) -> str:
     return str(path.relative_to(REPOSITORY_ROOT)) if path.is_relative_to(REPOSITORY_ROOT) else str(path)
+
+
+def _state_paragraph(heading: str) -> str:
+    text = CURRENT_STATE_PATH.read_text(encoding="utf-8")
+    section = text.split(f"## {heading}\n\n", 1)[1]
+    return section.split("\n\n", 1)[0]
 
 
 def current_context() -> dict[str, Any]:
@@ -206,16 +294,35 @@ def current_context() -> dict[str, Any]:
             "sha256": adapter["sha256"],
             "runtime": {"implementation": implementation, "requiredVersion": version, "overrideVariable": override},
         })
+    status = parse_status(CURRENT_STATE_PATH)
+    routing_paths = [
+        ("maintainer-skill", COMPANION_ROOT / "SKILL.md", "full"),
+        ("current-state", CURRENT_STATE_PATH, "full"),
+        ("workflow", COMPANION_ROOT / "references/workflow.md", "full"),
+        ("approval-response", COMPANION_ROOT / "references/approval-response.md", "full"),
+        ("bounded-context-research", COMPANION_ROOT / "references/research/2026-09-14-bounded-context-and-tool-output-management.md", "full"),
+        ("opportunities-addendum", COMPANION_ROOT / "references/research/2026-09-14-broader-wayfinder-opportunities-addendum.md", "full"),
+    ]
+    routing = [
+        {
+            "id": identifier, "path": _relative(path), "bytes": path.stat().st_size,
+            "lines": len(path.read_bytes().splitlines()), "sha256": sha256(path),
+            "nextCommand": f"rg -n '^#{{1,3}} ' {_relative(path)!r}",
+        }
+        for identifier, path, mode in routing_paths
+    ]
+    design_path = COMPANION_ROOT / "references/design-record.md"
+    for heading in re.findall(r"^- `## (.+?)` for ", CURRENT_STATE_PATH.read_text(encoding="utf-8"), flags=re.MULTILINE):
+        routing.append({
+            "id": "design-record:" + heading, "path": _relative(design_path),
+            "bytes": design_path.stat().st_size, "lines": len(design_path.read_bytes().splitlines()),
+            "sha256": sha256(design_path),
+            "nextCommand": f"maintain.py record-section --heading {heading!r}",
+        })
     return {
         "format": "wayfinder-maintainer-context",
         "schemaVersion": 1,
-        "candidate": {
-            "releaseId": release["releaseId"],
-            "candidateRevision": contract["candidateRevision"],
-            "contractStatus": contract["status"],
-            "releaseStatus": release["status"],
-            "activation": "disabled",
-        },
+        "candidate": status["candidate"],
         "bindings": {
             **ACCEPTED_MATRIX_BINDINGS,
             "adapters": ACCEPTED_ADAPTER_DIGESTS,
@@ -237,84 +344,48 @@ def current_context() -> dict[str, Any]:
             "workflow": str(COMPANION_ROOT / "references/workflow.md"),
             "certificationRoot": str(CERTIFICATION_ROOT),
         },
-        "approvalBoundary": CURRENT_APPROVAL_BOUNDARY,
-        "pendingAction": CURRENT_PENDING_ACTION,
+        "approvalBoundary": _state_paragraph("Approval boundary"),
+        "pendingAction": _state_paragraph("Pending action and design-record routes"),
+        "routing": sorted(routing, key=lambda item: item["id"]),
     }
 
 
-def current_state_markdown() -> str:
-    context = current_context()
-    candidate = context["candidate"]
-    bindings = context["bindings"]
-    adapters = context["adapterRegistry"]
-    adapter_text = ", ".join(f"`{item['id']}` `{item['sha256']}`" for item in adapters)
-    parity_text = ", ".join(
-        f"`{name}` `{digest}`" for name, digest in sorted(bindings["acceptedParityEvidence"].items())
-    )
-    matrix_text = ", ".join(
-        f"`{name}` `{digest}`" for name, digest in sorted(bindings["acceptedMatrixEvidence"].items())
-    )
-    local_text = ", ".join(
-        f"`{name}` `{digest}`" for name, digest in sorted(bindings["acceptedRevision9Evidence"].items())
-    )
-    promoted = bindings["promotedRevision10HostedEvidence"]
-    lines = [
-        "# Wayfinder current maintainer state",
-        "",
-        "> Compact routing reference. `maintain.py doctor` validates these facts against the package, accepted evidence, and chronological record.",
-        "",
-        "## Current identity",
-        "",
-        f"- Candidate: `{candidate['releaseId']}` (contract `{candidate['contractStatus']}`, release `{candidate['releaseStatus']}`).",
-        "- Activation: **disabled**. The runtime skill remains non-operational.",
-        f"- Contract: `{bindings['contractSha256']}`.",
-        f"- Release: `{bindings['releaseSha256']}`.",
-        f"- Fixture index: `{bindings['fixtureIndexSha256']}`; expected-output set: `{bindings['expectedOutputsSha256']}`.",
-        f"- Registered adapters: {adapter_text}.",
-        f"- Historical revision-8 accepted parity evidence: {parity_text}.",
-        f"- Historical revision-8 accepted macOS matrix evidence: {matrix_text}.",
-        f"- Accepted revision-9 local evidence, proposal, and freeze acceptance: {local_text}.",
-        f"- Durable revision-10 hosted evidence: `{_relative(PROMOTED_REVISION_10_EVIDENCE_ROOT)}`; {len(promoted)} exact files pinned by `maintain.py describe` and doctor; aggregate JSON `{promoted['hosted/run-34921918384-attempt-1/matrix-revision-10-aggregate.json']}`; aggregate Markdown `{promoted['hosted/run-34921918384-attempt-1/matrix-revision-10-aggregate.md']}`; matrix `2cc501f45a238d3d6161a89890a33d28fe20aa750558d278d0a69d10bb34a2d0`.",
-        f"- Accepted historical evidence is hash-pinned by [`historical-sha256.json`](../certification/v1/historical-sha256.json).",
-        "",
-        "## Approval boundary",
-        "",
-        CURRENT_APPROVAL_BOUNDARY,
-        "",
-        "## Pending action and design-record routes",
-        "",
-        CURRENT_PENDING_ACTION,
-        "",
-        "Read only the relevant exact section of the [chronological design record](design-record.md):",
-        "",
-        "- `## Candidate revision 8 freeze — accepted` for frozen identity and invalidation rules.",
-        "- `## Candidate revision 8 adapter parity — accepted` for adapter and parity authority.",
-        "- `## Candidate revision 8 bounded certification matrix — accepted` for matrix requirements.",
-        "- `## Candidate revision 8 hosted certification execution — accepted with failed aggregate` for hosted evidence bindings.",
-        "- `## Candidate revision 8 Windows certification investigation and correction — accepted` for current blockers.",
-        "- `## Candidate revision 8 maintainer-efficiency tranche — accepted` for the current maintainer workflow and tooling baseline.",
-        "- `## Candidate revision 9 Windows corrections — accepted` for the current implementation and approval boundary.",
-        "- `## Candidate revision 9 hosted certification execution — accepted with failed aggregate` for the accepted bounded hosted result.",
-        "- `## Candidate revision 9 maintainer reliability and efficiency — accepted` for the accepted maintainer-only tranche.",
-        "- `## Candidate revision 9 Windows failure investigation — accepted` for the active correction authority and unresolved hosted obligations.",
-        "- `## Candidate revision 9 maintainer-only Windows correction — accepted` for the accepted correction and authorized hosted-rerun boundary.",
-        "- `## Candidate revision 9 corrected-source hosted execution and residual Windows investigation — accepted` for the latest hosted result, accepted root causes, and the candidate-revision-10 correction authority.",
-        "- `## Maintainer approval-response governance — accepted` for the accepted governance implementation and its preserved boundaries.",
-        "- `## Candidate revision 10 Windows correction — accepted` for the accepted correction and authorized new-session hosted-rerun boundary.",
-        "- `## Candidate revision 10 hosted certification execution — accepted` for the accepted passing hosted record and its review-only artifact boundary.",
-        "- `## Candidate revision 10 local evidence promotion — accepted` for the accepted durable evidence implementation and authorized source-publication boundary.",
-        "- `## Candidate revision 10 evidence-publication readiness — accepted as not ready` for the accepted protected-environment observations, decisive dispatch blocker, and closed publication boundary.",
-        "",
-        "Read the full record before reopening a decision, changing evidence governance, or recording an accepted outcome.",
-        "",
-    ]
-    return "\n".join(lines)
+def _project_items(items: list[dict[str, Any]], fields: list[str], sort_field: str | None) -> list[dict[str, Any]]:
+    allowed = set().union(*(item.keys() for item in items)) if items else set()
+    if len(fields) != len(set(fields)) or any(field not in allowed for field in fields):
+        raise ValueError("unknown or duplicate field projection")
+    if sort_field is not None and sort_field not in allowed:
+        raise ValueError("unknown sort field")
+    ordered = sorted(items, key=lambda item: str(item.get(sort_field, ""))) if sort_field else items
+    return [{field: item.get(field) for field in fields} for item in ordered] if fields else ordered
 
 
-def describe_command(output_format: str) -> int:
+def describe_command(output_format: str, response_class: str = "discovery-preview", max_bytes: int = PREVIEW_MAX_BYTES, fields: list[str] | None = None, sort_field: str | None = None) -> int:
     context = current_context()
+    context["bindings"] = {key: value for key, value in context["bindings"].items() if key not in {
+        "acceptedParityEvidence", "acceptedMatrixEvidence", "acceptedRevision9Evidence", "promotedRevision10HostedEvidence"
+    }}
+    try:
+        context["routing"] = _project_items(context["routing"], fields or [], sort_field)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     if output_format == "json":
-        print(json.dumps(context, sort_keys=True, separators=(",", ":")))
+        raw = json.dumps(context, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        if len(raw) > max_bytes:
+            emit_json(command="describe", response_class=response_class, scope={"kind": "maintainer-routing", "id": "current"},
+                      data=None, complete=False, truncated=True, source_bytes=len(raw), source_sha256=hashlib.sha256(raw).hexdigest(),
+                      error={"code": "output.incomplete", "message": f"use --max-bytes {len(raw)} or a narrower --field projection"})
+            print(f"output bound exceeded; use --max-bytes {len(raw)} or --field id --field path --field nextCommand", file=sys.stderr)
+            return 2
+        emit_json(command="describe", response_class=response_class, scope={"kind": "maintainer-routing", "id": "current"},
+                  data=context, complete=response_class == "complete-evidence", returned_items=len(context["routing"]), total_items=len(context["routing"]),
+                  returned_bytes=len(raw), source_bytes=len(raw), source_sha256=hashlib.sha256(raw).hexdigest())
+        return 0
+    if output_format == "summary":
+        candidate = context["candidate"]
+        print(f"response-class={response_class} complete={str(response_class == 'complete-evidence').lower()} scope=maintainer-routing candidate={candidate['releaseId']} activation={candidate['activation']} routes={len(context['routing'])}")
+        print("next-command: maintain.py describe --format json --field id --field path --field nextCommand")
         return 0
     candidate = context["candidate"]
     print("# Wayfinder maintainer context\n")
@@ -326,13 +397,14 @@ def describe_command(output_format: str) -> int:
     for adapter in context["adapterRegistry"]:
         runtime = adapter["runtime"]
         print(f"- `{adapter['id']}` — `{adapter['sha256']}` — {runtime['implementation']} `{runtime['requiredVersion']}`; override `{runtime['overrideVariable']}`.")
-    print("\n## Promoted revision-10 hosted evidence\n")
-    for path, digest in sorted(context["bindings"]["promotedRevision10HostedEvidence"].items()):
-        print(f"- `{path}` — `{digest}`.")
+    print(f"\nresponse-class={response_class}; routing is not source authority")
     print("\n## Approval boundary\n")
     print(context["approvalBoundary"])
     print("\n## Pending action\n")
     print(context["pendingAction"])
+    print("\n## Routed sources\n")
+    for item in context["routing"]:
+        print(f"- `{item.get('id')}` — `{item.get('path')}` — next: `{item.get('nextCommand')}`")
     return 0
 
 
@@ -509,7 +581,10 @@ def self_test_command(output_format: str) -> int:
     before = repository_bytecode_artifacts()
     if before:
         result = {"ok": False, "code": "self-test.bytecode-present", "artifacts": before}
-        print(json.dumps(result, sort_keys=True, separators=(",", ":")) if output_format == "json" else f"FAIL self-test bytecode-present: {', '.join(before)}")
+        if output_format == "json":
+            emit_json(command="self-test", response_class="complete-evidence", scope={"kind": "maintainer-regressions", "id": "all"}, data=result)
+        else:
+            print(f"FAIL self-test bytecode-present: {', '.join(before)}")
         return 1
     with tempfile.TemporaryDirectory(prefix="wayfinder-maintainer-cache-") as cache_root:
         completed = subprocess.run(
@@ -527,26 +602,37 @@ def self_test_command(output_format: str) -> int:
     combined = completed.stdout + completed.stderr
     match = re.search(r"Ran ([0-9]+) tests?", combined)
     discovered = int(match.group(1)) if match else 0
+    skip_match = re.search(r"skipped=([0-9]+)", combined)
+    skipped = int(skip_match.group(1)) if skip_match else 0
+    skip_reasons = re.findall(r"\.\.\. skipped ['\"](.+?)['\"]", combined)
     after = repository_bytecode_artifacts()
     ok = completed.returncode == 0 and discovered > 0 and not after
     result = {
         "ok": ok,
         "code": "ok" if ok else "self-test.failed",
         "tests": discovered,
+        "skipped": skipped,
+        "skipReasons": skip_reasons,
         "exitCode": completed.returncode,
         "bytecodeArtifacts": after,
     }
     if output_format == "json":
-        print(json.dumps(result, sort_keys=True, separators=(",", ":")))
+        emit_json(command="self-test", response_class="complete-evidence", scope={"kind": "maintainer-regressions", "id": "all"}, data=result,
+                  returned_items=discovered, total_items=discovered)
     elif output_format == "verbose" or not ok:
         print(combined, end="" if combined.endswith("\n") else "\n")
-        print(f"summary passed={str(ok).lower()} tests={discovered} bytecode={len(after)}")
+        print(f"summary passed={str(ok).lower()} tests={discovered} skipped={skipped} bytecode={len(after)}")
     else:
-        print(f"OK self-test tests={discovered} bytecode=0")
+        print(f"OK self-test tests={discovered} skipped={skipped} bytecode=0")
+        for reason in skip_reasons:
+            print(f"UNAVAILABLE {reason}")
     return 0 if ok else 1
 
 
-def record_section_command(heading: str) -> int:
+def record_section_command(heading: str, output_format: str = "full", response_class: str = "complete-evidence", max_bytes: int = COMPLETE_MAX_BYTES, cursor: str | None = None) -> int:
+    if max_bytes < 4:
+        print("--max-bytes must be at least 4 for UTF-8-safe chunks", file=sys.stderr)
+        return 2
     normalized = heading if heading.startswith("## ") else f"## {heading}"
     lines = (COMPANION_ROOT / "references/design-record.md").read_text(encoding="utf-8").splitlines(keepends=True)
     matches = [index for index, line in enumerate(lines) if line.rstrip("\r\n") == normalized]
@@ -556,8 +642,50 @@ def record_section_command(heading: str) -> int:
         return 2
     start = matches[0]
     end = next((index for index in range(start + 1, len(lines)) if lines[index].startswith("## ")), len(lines))
-    sys.stdout.write("".join(lines[start:end]).rstrip("\r\n") + "\n")
-    return 0
+    source = ("".join(lines[start:end]).rstrip("\r\n") + "\n").encode("utf-8")
+    digest = hashlib.sha256(source).hexdigest()
+    boundaries = [0]
+    while boundaries[-1] < len(source):
+        _, boundary = bounded_chunk(source, boundaries[-1], max_bytes)
+        boundaries.append(boundary)
+    offset = 0
+    if cursor:
+        try:
+            binding = read_cursor(cursor)
+        except ValueError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        expected = {"command": "record-section", "scope": normalized, "sourceSha256": digest, "maxBytes": max_bytes}
+        if any(binding.get(key) != value for key, value in expected.items()) or not isinstance(binding.get("offset"), int):
+            print("stale or mismatched cursor", file=sys.stderr)
+            return 2
+        offset = binding["offset"]
+        if offset not in boundaries[:-1]:
+            print("cursor offset is not a stable chunk boundary", file=sys.stderr)
+            return 2
+    chunk, next_offset = bounded_chunk(source, offset, max_bytes)
+    complete = next_offset == len(source)
+    next_cursor = None if complete else make_cursor({
+        "command": "record-section", "scope": normalized, "sourceSha256": digest,
+        "maxBytes": max_bytes, "offset": next_offset,
+    })
+    data = {"heading": normalized, "startByte": offset, "endByte": next_offset, "text": chunk.decode("utf-8"),
+            "chunkIndex": boundaries.index(offset), "chunkCount": len(boundaries) - 1,
+            "reconstructionRequired": len(boundaries) > 2,
+            "sequenceExhausted": complete,
+            "designRecordSha256": sha256(COMPANION_ROOT / "references/design-record.md")}
+    if output_format == "json":
+        emit_json(command="record-section", response_class=response_class,
+                  scope={"kind": "design-record-section", "id": normalized[3:]}, data=data,
+                  complete=complete and response_class == "complete-evidence", truncated=not complete, returned_items=1, total_items=1,
+                  returned_bytes=len(chunk), source_bytes=len(source), source_sha256=digest, next_cursor=next_cursor,
+                  error=None if complete or response_class == "discovery-preview" else {"code": "output.incomplete", "message": "continue with --cursor"})
+    else:
+        print(f"response-class={response_class} complete={str(complete and response_class == 'complete-evidence').lower()} bytes={offset}:{next_offset}/{len(source)} sha256={digest}")
+        sys.stdout.write(chunk.decode("utf-8"))
+        if next_cursor:
+            print(f"next-command: maintain.py record-section --heading {heading!r} --format {output_format} --response-class {response_class} --max-bytes {max_bytes} --cursor {next_cursor}", file=sys.stderr)
+    return 0 if complete or response_class == "discovery-preview" else 2
 
 
 def run_python(script: Path, arguments: Iterable[str], capture: bool = False) -> subprocess.CompletedProcess[str]:
@@ -653,7 +781,7 @@ def _emit_doctor(checks: list[tuple[str, bool, str]], output_mode: str, yaml_ava
     failures = [(name, detail) for name, passed, detail in checks if not passed]
     summary = {"passed": len(checks) - len(failures), "failed": len(failures), "total": len(checks)}
     if output_mode == "json":
-        print(json.dumps({
+        data = {
             "format": "wayfinder-maintainer-doctor",
             "schemaVersion": 1,
             "ok": not failures,
@@ -663,7 +791,9 @@ def _emit_doctor(checks: list[tuple[str, bool, str]], output_mode: str, yaml_ava
                 for name, passed, detail in checks
             ],
             "summary": summary,
-        }, sort_keys=True, separators=(",", ":")))
+        }
+        emit_json(command="doctor", response_class="complete-evidence", scope={"kind": "maintainer-checks", "id": "all"},
+                  data=data, returned_items=len(checks), total_items=len(checks))
     elif output_mode == "verbose":
         print(f"INFO optional-pyyaml={'available' if yaml_available else 'unavailable; dependency-free checks used'}")
         for name, passed, detail in checks:
@@ -777,12 +907,11 @@ def doctor(output_mode: str = "summary", selected_adapter: str | None = None) ->
             "## Candidate revision 10 local evidence promotion — accepted",
             "## Candidate revision 10 evidence-publication readiness — accepted as not ready",
         )
-        current_state_matches = (
-            CURRENT_STATE_PATH.is_file()
-            and CURRENT_STATE_PATH.read_text(encoding="utf-8") == current_state_markdown()
-            and all(anchor in design_text for anchor in required_current_anchors)
-        )
+        status = parse_status(CURRENT_STATE_PATH)
+        current_state_matches = not status_issues(status) and all(anchor in design_text for anchor in required_current_anchors)
         add("current-state-drift", current_state_matches, _relative(CURRENT_STATE_PATH))
+        drift = projection_drift(REPOSITORY_ROOT, status)
+        add("public-status-projection", not drift, ", ".join(drift))
 
         freeze_path = CERTIFICATION_ROOT / f"proposed-freeze-revision-{revision}.json"
         if freeze_path.exists():
@@ -1057,6 +1186,16 @@ def test_command(case_ids: list[str], categories: list[str], selected_adapter: s
         arguments.extend(["--case", case_id])
     for category in categories:
         arguments.extend(["--category", category])
+    if output_mode == "json":
+        completed = run_python(CONFORMANCE_RUNNER, arguments, capture=True)
+        if completed.stderr:
+            print(completed.stderr, end="", file=sys.stderr)
+        try:
+            data = json.loads(completed.stdout)
+        except json.JSONDecodeError:
+            data = {"stdout": completed.stdout}
+        emit_json(command="test", response_class="complete-evidence", scope={"kind": "conformance-selection", "id": selected_adapter}, data=data)
+        return completed.returncode
     return run_python(CONFORMANCE_RUNNER, arguments).returncode
 
 
@@ -2383,7 +2522,8 @@ def matrix_review_command(artifact_dir: Path, output_format: str) -> int:
         "promotionPerformed": False,
     }
     if output_format == "json":
-        print(json.dumps(result, sort_keys=True, separators=(",", ":")))
+        emit_json(command="matrix-review", response_class="complete-evidence", scope={"kind": "matrix-artifact-review", "id": str(root)},
+                  data=result, returned_items=len(reports), total_items=len(MATRIX_TARGETS))
     elif output_format == "markdown":
         print("# Wayfinder matrix artifact review\n")
         print(f"- Status: {'valid review material' if not issues else 'invalid'}.")
@@ -2461,7 +2601,7 @@ def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
     print(f"- Runtime status: {release['status']}; activation disabled")
     print("\nRequired preparation\n")
     print("1. Read the repository instructions, `$wayfinder-maintainer`, and `references/current-state.md`; load only routed chronology unless governance changes.")
-    print("2. Resolve runtimes once and run `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py doctor --verbose` with Python 3.11+ before editing.")
+    print("2. Resolve runtimes once and run `plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py doctor --format full` with Python 3.11+ before editing.")
     print("3. Apply the action-authorization gate before authentication, downloads, dispatch, publication, destructive work, or another consequential external action.")
     print("4. Use `maintain.py self-test` for maintainer regressions and `maintain.py record-section --heading HEADING` for exact chronology retrieval.")
     print("\nTranche mode\n")
@@ -2486,38 +2626,197 @@ def handoff_command(kind: str, objective: str, exclusions: list[str]) -> int:
     return 0
 
 
+def status_command(output_format: str, write: bool, max_bytes: int = COMPLETE_MAX_BYTES) -> int:
+    try:
+        status = parse_status(CURRENT_STATE_PATH)
+        issues = status_issues(status)
+        if issues:
+            raise ValueError("; ".join(issues))
+        drift = projection_drift(REPOSITORY_ROOT, status)
+        prospective = {"status": status, "projectionDrift": drift, "plannedChanges": drift, "written": drift if write else []}
+        if len(json.dumps(prospective, ensure_ascii=False).encode("utf-8")) > max_bytes:
+            raise ValueError("output bound cannot establish complete status before writing; increase --max-bytes")
+        changed = write_targets(REPOSITORY_ROOT, status) if write else []
+        data = {"status": status, "projectionDrift": drift, "plannedChanges": drift, "written": changed}
+        if output_format == "json":
+            raw = json.dumps(data, sort_keys=True, separators=(",", ":")).encode()
+            emit_json(command="status", response_class="complete-evidence", scope={"kind": "public-status", "id": "current"},
+                      data=data, returned_items=len(drift), total_items=len(rendered_targets(REPOSITORY_ROOT, status)),
+                      returned_bytes=len(raw), source_bytes=CURRENT_STATE_PATH.stat().st_size, source_sha256=sha256(CURRENT_STATE_PATH))
+        elif output_format == "full":
+            print(f"response-class=complete-evidence authority={_relative(CURRENT_STATE_PATH)}")
+            print(f"- Candidate: {status['candidate']['releaseId']}; activation: {status['candidate']['activation']}")
+            print(f"- Hosted evidence exists: {status['hostedEvidence']['exists']}; accepted: {status['hostedEvidence']['accepted']}")
+            print(f"- Publication: {status['publication']['readiness']}; published: {status['publication']['published']}; registry updated: {status['releaseRegistry']['updated']}")
+            for path, expected in rendered_targets(REPOSITORY_ROOT, status).items():
+                before = path.read_text(encoding="utf-8").splitlines(keepends=True)
+                after = expected.decode("utf-8").splitlines(keepends=True)
+                sys.stdout.writelines(difflib.unified_diff(before, after, fromfile=_relative(path), tofile=_relative(path) + " (generated)"))
+            print(f"planned-changes={len(drift)} written={len(changed)}")
+        else:
+            action = f"written={len(changed)}" if write else f"drift={len(drift)}"
+            print(f"{'OK' if write or not drift else 'FAIL'} status {action} activation={status['candidate']['activation']} publication={status['publication']['readiness']}")
+            for path in drift:
+                print(f"DRIFT {path}")
+        return 0 if write or not drift else 1
+    except Exception as exc:
+        if output_format == "json":
+            emit_json(command="status", response_class="complete-evidence", scope={"kind": "public-status", "id": "current"},
+                      data=None, complete=False, truncated=False, error={"code": "status.invalid", "message": str(exc)})
+        else:
+            print(f"status invalid: {exc}", file=sys.stderr)
+        return 2
+
+
+def _checkpoint_output_path(value: Path | None) -> Path | None:
+    if value is None:
+        return None
+    resolved = value.resolve()
+    if resolved.is_relative_to(REPOSITORY_ROOT.resolve()) or value.exists() or value.is_symlink():
+        raise ValueError("checkpoint output must be a new path outside the repository")
+    return resolved
+
+
+def checkpoint_create_command(input_path: str, output_path: Path | None, output_format: str, max_bytes: int = COMPLETE_MAX_BYTES) -> int:
+    try:
+        supplied = json.load(sys.stdin) if input_path == "-" else load_json(Path(input_path))
+        checkpoint = create_checkpoint(REPOSITORY_ROOT, supplied, CURRENT_STATE_PATH)
+        destination = _checkpoint_output_path(output_path)
+        raw = (json.dumps(checkpoint, indent=2, sort_keys=True) + "\n").encode("utf-8")
+        if len(raw) > max_bytes:
+            raise ValueError(f"checkpoint exceeds output bound before writing; use --max-bytes {len(raw)}")
+        if destination:
+            with destination.open("xb") as handle:
+                handle.write(raw)
+        if output_format == "json":
+            emit_json(command="checkpoint create", response_class="complete-evidence", scope={"kind": "session-checkpoint", "id": "created"},
+                      data={"checkpoint": checkpoint, "output": str(destination) if destination else None},
+                      returned_items=1, total_items=1, returned_bytes=len(raw), source_bytes=len(raw), source_sha256=hashlib.sha256(raw).hexdigest())
+        else:
+            if destination:
+                print(f"OK checkpoint created output={destination} authority=derived-non-authoritative")
+            else:
+                sys.stdout.write(raw.decode("utf-8"))
+        return 0
+    except Exception as exc:
+        print(f"checkpoint create failed: {exc}", file=sys.stderr)
+        return 2
+
+
+def checkpoint_verify_command(checkpoint_path: Path, output_format: str) -> int:
+    try:
+        checkpoint = load_json(checkpoint_path)
+        issues = verify_checkpoint(REPOSITORY_ROOT, checkpoint, CURRENT_STATE_PATH)
+        data = {"valid": not issues, "issues": issues, "authority": "derived-non-authoritative"}
+        if output_format == "json":
+            emit_json(command="checkpoint verify", response_class="complete-evidence", scope={"kind": "session-checkpoint", "id": str(checkpoint_path)},
+                      data=data, returned_items=len(issues), total_items=len(issues), source_bytes=checkpoint_path.stat().st_size,
+                      source_sha256=sha256(checkpoint_path), error=None if not issues else {"code": "checkpoint.stale", "message": "; ".join(issues)})
+        else:
+            print(f"{'OK' if not issues else 'FAIL'} checkpoint verify issues={len(issues)} authority=derived-non-authoritative")
+            for issue in issues:
+                print(f"STALE {issue}")
+        return 0 if not issues else 1
+    except Exception as exc:
+        print(f"checkpoint verify failed: {exc}", file=sys.stderr)
+        return 2
+
+
+def _bounded_command(args: argparse.Namespace, function: Any, *values: Any) -> int:
+    stream = io.StringIO()
+    with contextlib.redirect_stdout(stream):
+        code = function(*values)
+    rendered = stream.getvalue()
+    raw = rendered.encode("utf-8")
+    maximum = args.max_bytes or (PREVIEW_MAX_BYTES if args.response_class == "discovery-preview" else COMPLETE_MAX_BYTES)
+    if maximum <= 0:
+        print("--max-bytes must be positive", file=sys.stderr)
+        return 2
+    parsed = None
+    if args.format == "json":
+        try:
+            parsed = json.loads(rendered)
+        except json.JSONDecodeError:
+            parsed = {"text": rendered}
+        if not isinstance(parsed, dict) or parsed.get("format") != "wayfinder-maintainer-response":
+            parsed = envelope(command=args.command, response_class=args.response_class, scope={"kind": "command-result", "id": args.command}, data=parsed)
+    payload_bytes = len(raw)
+    if isinstance(parsed, dict) and parsed.get("format") == "wayfinder-maintainer-response":
+        parsed["responseClass"] = args.response_class
+        if args.response_class == "discovery-preview":
+            parsed["complete"] = False
+        data_raw = json.dumps(parsed.get("data"), sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        payload_bytes = parsed.get("returnedBytes") or len(data_raw)
+        for key, default in (("returnedItems", 1), ("totalItems", 1), ("returnedBytes", payload_bytes), ("sourceBytes", len(data_raw)), ("sourceSha256", hashlib.sha256(data_raw).hexdigest())):
+            if parsed[key] is None:
+                parsed[key] = default
+    if payload_bytes > maximum:
+        message = f"output exceeds bound; retry with --max-bytes {max(payload_bytes, len(raw))} or a narrower projection"
+        print(message, file=sys.stderr)
+        chunk, _ = bounded_chunk(raw, 0, maximum)
+        preview = args.response_class == "discovery-preview"
+        if args.format == "json":
+            emit_json(command=args.command, response_class=args.response_class, scope={"kind": "command-output", "id": args.command},
+                      data={"preview": chunk.decode("utf-8"), "encoding": "rendered-output"} if preview else None,
+                      complete=False, truncated=True, returned_bytes=len(chunk) if preview else 0, source_bytes=len(raw),
+                      source_sha256=hashlib.sha256(raw).hexdigest(), error={"code": "output.incomplete", "message": message})
+        else:
+            print(f"response-class={args.response_class} complete=false truncated=true source-bytes={len(raw)}")
+            if preview:
+                sys.stdout.write(chunk.decode("utf-8"))
+        return code if preview and code != 0 else (0 if preview else 2)
+    if parsed is not None:
+        print(json.dumps(parsed, sort_keys=True, separators=(",", ":"), ensure_ascii=False))
+    else:
+        print(f"response-class={args.response_class} complete={str(args.response_class == 'complete-evidence').lower()} truncated=false")
+        sys.stdout.write(rendered)
+    return code
+
+
+def _output_options(parser: argparse.ArgumentParser, response_class: str = "complete-evidence") -> None:
+    parser.add_argument("--max-bytes", type=int)
+    parser.set_defaults(response_class=response_class)
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         description="Offline, dependency-free maintenance commands for the frozen Wayfinder candidate.",
         epilog=(
             "Examples:\n"
-            "  maintain.py doctor --verbose\n"
+            "  maintain.py doctor --format full\n"
             "  maintain.py self-test\n"
             "  maintain.py test --adapter python-reference-v1 --case package-valid --case inventory-files-roots\n"
             "  maintain.py describe --format json\n"
             "  maintain.py record-section --heading 'Candidate revision 9 Windows corrections — accepted'\n"
-            "  maintain.py matrix-review --artifact-dir downloaded --format markdown"
+            "  maintain.py matrix-review --artifact-dir downloaded --format full"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
     doctor_parser = subparsers.add_parser("doctor", help="Check maintainer, package, adapter, and evidence integrity.")
-    doctor_modes = doctor_parser.add_mutually_exclusive_group()
-    doctor_modes.add_argument("--summary", action="store_const", dest="output_mode", const="summary", help="Emit failures and one compact summary (default).")
-    doctor_modes.add_argument("--verbose", action="store_const", dest="output_mode", const="verbose", help="Emit every canonical doctor check and runtime diagnostic.")
-    doctor_modes.add_argument("--json", action="store_const", dest="output_mode", const="json", help="Emit stable compact JSON.")
-    doctor_parser.set_defaults(output_mode="summary")
+    doctor_parser.add_argument("--format", choices=("summary", "json", "full"), default="summary")
+    _output_options(doctor_parser)
     self_test_parser = subparsers.add_parser("self-test", help="Run every maintainer regression without repository bytecode.")
-    self_test_parser.add_argument("--format", choices=("summary", "verbose", "json"), default="summary")
+    self_test_parser.add_argument("--format", choices=("summary", "full", "json"), default="summary")
+    _output_options(self_test_parser)
     test_parser = subparsers.add_parser("test", help="Run the full or focused unchanged conformance suite.")
     test_parser.add_argument("--case", action="append", default=[], help="Select one case; repeat in the same invocation to batch cases.")
     test_parser.add_argument("--category", action="append", default=[], help="Select one category; repeat to batch categories.")
     test_parser.add_argument("--adapter", default="python-reference-v1", choices=sorted(ACCEPTED_ADAPTER_DIGESTS), help="Registered adapter to validate.")
-    test_parser.add_argument("--output", choices=("summary", "verbose", "json"), default="summary", help="Conformance output mode (default: summary).")
+    test_parser.add_argument("--format", choices=("summary", "full", "json"), default="summary")
+    _output_options(test_parser)
     describe_parser = subparsers.add_parser("describe", aliases=["context"], help="Show canonical paths, identities, runtimes, cases, and approval boundary.")
-    describe_parser.add_argument("--format", choices=("markdown", "json"), default="markdown")
+    describe_parser.add_argument("--format", choices=("summary", "full", "json"), default="summary")
+    describe_parser.add_argument("--response-class", choices=("discovery-preview", "complete-evidence"), default="discovery-preview")
+    describe_parser.add_argument("--max-bytes", type=int)
+    describe_parser.add_argument("--field", action="append", default=[])
+    describe_parser.add_argument("--sort")
     record_section_parser = subparsers.add_parser("record-section", help="Print one exact level-two design-record section.")
     record_section_parser.add_argument("--heading", required=True)
+    record_section_parser.add_argument("--format", choices=("summary", "full", "json"), default="full")
+    record_section_parser.add_argument("--response-class", choices=("discovery-preview", "complete-evidence"), default="complete-evidence")
+    record_section_parser.add_argument("--max-bytes", type=int)
+    record_section_parser.add_argument("--cursor")
     evidence_parser = subparsers.add_parser("evidence", help="Create new local evidence without overwrite.")
     evidence_parser.add_argument("--output", type=Path, required=True)
     freeze_proposal_parser = subparsers.add_parser("freeze-proposal", help="Create a revision-scoped freeze proposal without overwrite.")
@@ -2536,7 +2835,23 @@ def main(argv: list[str]) -> int:
     matrix_aggregate_parser.add_argument("--output", type=Path, required=True)
     matrix_review_parser = subparsers.add_parser("matrix-review", help="Read and verify an already-downloaded Actions artifact directory without writes or network access.")
     matrix_review_parser.add_argument("--artifact-dir", type=Path, required=True)
-    matrix_review_parser.add_argument("--format", choices=("summary", "markdown", "json"), default="summary")
+    matrix_review_parser.add_argument("--format", choices=("summary", "full", "json"), default="summary")
+    _output_options(matrix_review_parser)
+    status_parser = subparsers.add_parser("status", help="Check or explicitly write public status projections.")
+    status_parser.add_argument("--format", choices=("summary", "full", "json"), default="summary")
+    status_parser.add_argument("--write", action="store_true")
+    _output_options(status_parser)
+    checkpoint_parser = subparsers.add_parser("checkpoint", help="Create or verify ephemeral non-authoritative session state.")
+    checkpoint_commands = checkpoint_parser.add_subparsers(dest="checkpoint_command", required=True)
+    checkpoint_create = checkpoint_commands.add_parser("create")
+    checkpoint_create.add_argument("--input", required=True, help="Structured JSON input file, or - for stdin.")
+    checkpoint_create.add_argument("--output", type=Path)
+    checkpoint_create.add_argument("--format", choices=("summary", "full", "json"), default="json")
+    _output_options(checkpoint_create)
+    checkpoint_verify = checkpoint_commands.add_parser("verify")
+    checkpoint_verify.add_argument("--checkpoint", type=Path, required=True)
+    checkpoint_verify.add_argument("--format", choices=("summary", "full", "json"), default="summary")
+    _output_options(checkpoint_verify)
     expect_parser = subparsers.add_parser("expect")
     expect_parser.add_argument("--exit", dest="expected_exit", type=int, required=True)
     expect_parser.add_argument("--code", dest="expected_code", required=True)
@@ -2546,17 +2861,23 @@ def main(argv: list[str]) -> int:
     handoff_parser.add_argument("--objective", required=True)
     handoff_parser.add_argument("--exclude", action="append", default=[])
     args = parser.parse_args(argv)
+    if hasattr(args, "max_bytes") and args.max_bytes is not None and args.max_bytes < 4:
+        parser.error("--max-bytes must be at least 4 for UTF-8-safe output")
+    if getattr(args, "response_class", None) == "discovery-preview" and (getattr(args, "write", False) or (args.command == "checkpoint" and getattr(args, "output", None) is not None)):
+        parser.error("file-writing modes require --response-class complete-evidence")
 
     if args.command == "doctor":
-        return doctor(args.output_mode)
+        return _bounded_command(args, doctor, "verbose" if args.format == "full" else args.format)
     if args.command == "self-test":
-        return self_test_command(args.format)
+        return _bounded_command(args, self_test_command, "verbose" if args.format == "full" else args.format)
     if args.command == "test":
-        return test_command(args.case, args.category, args.adapter, args.output)
+        return _bounded_command(args, test_command, args.case, args.category, args.adapter, "verbose" if args.format == "full" else args.format)
     if args.command in {"describe", "context"}:
-        return describe_command(args.format)
+        maximum = args.max_bytes or (PREVIEW_MAX_BYTES if args.response_class == "discovery-preview" else COMPLETE_MAX_BYTES)
+        return _bounded_command(args, describe_command, args.format, args.response_class, maximum, args.field, args.sort)
     if args.command == "record-section":
-        return record_section_command(args.heading)
+        maximum = args.max_bytes or (PREVIEW_MAX_BYTES if args.response_class == "discovery-preview" else COMPLETE_MAX_BYTES)
+        return record_section_command(args.heading, args.format, args.response_class, maximum, args.cursor)
     if args.command == "evidence":
         return evidence_command(args.output)
     if args.command == "freeze-proposal":
@@ -2570,7 +2891,13 @@ def main(argv: list[str]) -> int:
     if args.command == "matrix-aggregate":
         return matrix_aggregate_command(args.entry, args.output)
     if args.command == "matrix-review":
-        return matrix_review_command(args.artifact_dir, args.format)
+        return _bounded_command(args, matrix_review_command, args.artifact_dir, "markdown" if args.format == "full" else args.format)
+    if args.command == "status":
+        return _bounded_command(args, status_command, args.format, args.write, args.max_bytes or COMPLETE_MAX_BYTES)
+    if args.command == "checkpoint":
+        if args.checkpoint_command == "create":
+            return _bounded_command(args, checkpoint_create_command, args.input, args.output, args.format, args.max_bytes or COMPLETE_MAX_BYTES)
+        return _bounded_command(args, checkpoint_verify_command, args.checkpoint, args.format)
     if args.command == "expect":
         return expect_command(args.expected_exit, args.expected_code, args.target)
     if args.command == "handoff":

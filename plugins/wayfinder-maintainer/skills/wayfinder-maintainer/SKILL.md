@@ -12,7 +12,7 @@ Maintain the Wayfinder skill without treating passing hashes or fixture counts a
 1. Read the applicable repository instructions and [current maintainer state](references/current-state.md).
 2. Resolve the requested CPython, Node.js, and PowerShell executables once, record unavailable runtimes honestly, and reuse the resolved paths. Do not install dependencies without authorization.
 3. Inspect `maintain.py --help` and the selected subcommand help instead of reconstructing commands.
-4. Run the canonical pre-edit doctor with a verified Python 3.11+ interpreter: `maintain.py doctor --verbose`. Use the same interpreter for the tranche.
+4. Run the canonical pre-edit doctor with a verified Python 3.11+ interpreter: `maintain.py doctor --format full`. Use the same interpreter for the tranche.
 5. Read [the maintenance workflow](references/workflow.md) when changing, testing, certifying, freezing, or preparing activation.
 
 Routine maintenance does not require the full chronological record. Read the exact routed sections in `current-state.md` when prior rationale affects the task. Read the complete [design record](references/design-record.md) only when reopening a decision, changing evidence governance, or recording an accepted outcome; use bounded non-overlapping reads if necessary.
@@ -22,6 +22,14 @@ Before asking the owner for acceptance, authorization, or approval, and when pro
 ## Efficient execution
 
 - Use `maintain.py describe` (or `context`) for canonical paths, candidate identity, case counts, adapter registry, runtime requirements, and the current approval boundary.
+- Treat `describe/context` as a discovery preview: routing is not source authority. Use the exact next read command and read every decisive source completely before a consequential conclusion.
+- Interactive output uses `--format summary|json|full`; JSON has a versioned response envelope with named scope, response class, completeness, truncation, counts, bytes, source hash, and continuation. Defaults are 16 KiB for previews and 64 KiB for complete output, configurable with `--max-bytes`.
+- A `discovery-preview` may be partial only for routing. A `complete-evidence` response must be complete for its named scope or expose digest-bound chunks; reconstruct all chunks and verify the source SHA-256 before relying on a chunked source.
+- Never use a truncated or incomplete response to support authorization, mutation, certification, publication, evidence promotion, or activation. Classify truncation, mark dependent conclusions unproven, and use the supplied narrower command or cursor; never repeat the identical broad call.
+- `record-section --format json --max-bytes N` reports stable chunk index/count, exact byte range, section hash, and next cursor. Continue with the same heading, byte budget, and response class; a changed source or cursor binding fails closed.
+- `describe --format json --field FIELD --sort FIELD` projects its curated routing inventory without source bodies. Repeat `--field`; unknown or duplicate fields are errors.
+- `status` checks public projections against the canonical JSON object embedded in `current-state.md`. `status --format full` previews exact changes; only explicitly authorized `status --write` replaces declared regions/fields. Doctor and repository validation never rewrite drift.
+- For compaction, use `checkpoint create --input FILE|- [--output PATH]` with explicit session facts. Output files must be new and outside the repository. Checkpoints are ephemeral, derived, non-authoritative, contain no source bodies or secrets, and never enter accepted evidence or current state. Run `checkpoint verify --checkpoint PATH` before reuse; stale checks must be rerun against refreshed authoritative sources.
 - Batch focused cases in one invocation: `maintain.py test --case ID --case ID`. Select one adapter with `--adapter ID`; an unavailable unrelated runtime does not block that focused run.
 - Prefer summary or JSON output. Use verbose output when per-check or per-case detail is required.
 - Bound parallel read output and keep chunks non-overlapping. Do not repeat a successful check unless inputs changed, scope increased, or a failure creates a new risk.
@@ -38,7 +46,7 @@ Keep every change inside the user's authorization. Passing a tranche does not au
 
 Before authentication, artifact download, hosted dispatch, publication, destructive work, or another consequential external action, explicitly check the exact action and target against the active authorization and exclusions. Use the least-powerful applicable tool. If a call fails, classify the failure before choosing a materially different next action; refresh interface documentation after reset, compaction, or an interface error and never retry through a prohibited route merely to obtain diagnostics.
 
-Run `maintain.py doctor --verbose` as the canonical full post-edit doctor after relevant focused and complete-suite checks. Stop when the authorized deliverable and approval packet are complete, when a required runtime is unavailable, or before any separately approval-gated action. Present material behavior or contract changes for explicit approval and record only an accepted outcome.
+Run `maintain.py doctor --format full` as the canonical full post-edit doctor after relevant focused and complete-suite checks. Stop when the authorized deliverable and approval packet are complete, when a required runtime is unavailable, or before any separately approval-gated action. Present material behavior or contract changes for explicit approval and record only an accepted outcome.
 
 Use `maintain.py expect` for demonstrations that are supposed to return nonzero. Do not mask failures with unconditional success operators.
 

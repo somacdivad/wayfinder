@@ -9,7 +9,7 @@ The canonical source-repository entry point is `plugins/wayfinder-maintainer/ski
 - Read `references/current-state.md` for current status, identities, approval boundaries, pending action, and routes into the chronology. Read only the routed design-record sections relevant to ordinary work. Read the full chronological record only when reopening a decision, changing evidence governance, or recording an accepted outcome.
 - Resolve interpreter and adapter runtime paths once, export `WAYFINDER_NODE_RUNTIME` and `WAYFINDER_POWERSHELL_RUNTIME` when needed, and reuse them. Record the requested path, resolved path, observed version, and override variable. Do not retry a known-unsupported interpreter or install an unavailable runtime.
 - Inspect `maintain.py --help` and selected subcommand help before assembling a command. `maintain.py describe --format json` provides stable machine-readable paths and identities. Reuse help, resolved runtimes, describe output, and unchanged pre-edit hashes within an uninterrupted session; refresh them after compaction, tool reset, checkout change, or a relevant file edit.
-- Run `maintain.py doctor --verbose` before feature work. A red baseline is maintenance work, not evidence for a new feature. Routine successful calls use summary output; internal preflight is quiet.
+- Run `maintain.py doctor --format full` before feature work. A red baseline is maintenance work, not evidence for a new feature. Routine successful calls use summary output; internal preflight is quiet. A named owner-authorized maintainer-only tranche may compare against a recorded unavailable-runtime baseline; never report that runtime check as passed.
 - Do not use `py_compile` for syntax-only checks; the canonical doctor compiles sources in memory and creates no bytecode cache.
 - Use `maintain.py self-test` for the complete maintainer-owned regression suite. It sets no-bytecode controls, discovers every maintainer `test_*.py` module, and fails if repository bytecode exists before or after the run.
 - Use `maintain.py record-section --heading HEADING` to retrieve one exact level-two chronology section. Do not combine large ad hoc reads that can truncate and force repetition.
@@ -29,7 +29,7 @@ The canonical source-repository entry point is `plugins/wayfinder-maintainer/ski
 Run in this order:
 
 ```text
-maintain.py doctor --verbose
+maintain.py doctor --format full
 maintain.py self-test
 maintain.py test [--adapter ID] [--case ID --case ID]
 maintain.py evidence --output DIR
@@ -41,12 +41,12 @@ maintain.py freeze-acceptance --output DIR --accept-option-a
 `freeze-proposal` requires passing revision-scoped candidate and parity reports, validates their exact package bindings, and exclusively creates a pending proposal pair without recording owner acceptance.
 `freeze-acceptance` is permitted only after an explicit owner Option A response. It validates and binds the exact proposal, exclusively creates a new acceptance pair, and does not authorize or begin any later tranche.
 
-Repeat `--case` or `--category` in one `test` invocation rather than launching one process per selection. Summary output is the default; use `--output verbose` only for per-case detail or `--output json` for stable structured results. A focused adapter run still checks all registered adapter bytes and identities, but its quiet preflight probes only the selected adapter runtime, so an unavailable unrelated runtime does not block it. `--case-file` is intentionally omitted because repeated arguments are sufficient for the current 305-case suite and avoid another input format.
+Repeat `--case` or `--category` in one `test` invocation rather than launching one process per selection. Summary output is the default; use `--format full` only for per-case detail or `--format json` for stable structured results. A focused adapter run still checks all registered adapter bytes and identities, but its quiet preflight probes only the selected adapter runtime, so an unavailable unrelated runtime does not block it. `--case-file` is intentionally omitted because repeated arguments are sufficient for the current 305-case suite and avoid another input format.
 
 For already-downloaded hosted artifacts, use:
 
 ```text
-maintain.py matrix-review --artifact-dir DIR [--format summary|markdown|json]
+maintain.py matrix-review --artifact-dir DIR [--format summary|full|json]
 ```
 
 This command performs no network access and no writes. It verifies source/run bindings, exact registered adapters and report hashes, exact 305-case result sets, result-set digests, distinct aggregate invocation-digest metadata, and coverage summaries. It labels Actions artifacts review-only and never publishes, promotes, or replaces accepted evidence.
@@ -60,7 +60,27 @@ It does not create an environment-certification entry or a full-family claim.
 
 Use `maintain.py expect --exit N --code CODE -- COMMAND...` for a negative demonstration. The wrapper succeeds only when the command returns the expected exit and result code.
 
-Bound parallel file reads by line range and output budget. Once a check passes, repeat or broaden it only after changed inputs, increased scope, or a failure that creates a new risk. Run one full `maintain.py doctor --verbose` after the final changed input.
+Bound parallel file reads by line range and output budget. Once a check passes, repeat or broaden it only after changed inputs, increased scope, or a failure that creates a new risk. Run one full `maintain.py doctor --format full` after the final changed input.
+
+## Bounded reads and public projections
+
+Read in stages: current state and tranche, inventory/size metadata, headings or projected fields, one exact source section, then adjacent material only when needed. `describe/context` is a discovery preview and supplies a curated routing catalog rather than source bodies. Repeat `--field` for projection; use an allowlisted `--sort` for stable ordering.
+
+Potentially large interactive commands use `--format summary|json|full` and `--max-bytes`. Partial-capable `describe/context` and `record-section` also expose `--response-class discovery-preview|complete-evidence`; checks, status, and checkpoints always declare complete evidence for their named result scope. A preview explicitly reports incomplete and is safe only for routing. A complete response is complete for its named scope; an unmet completeness request returns nonzero and an actionable recovery command. Byte budgets apply to UTF-8 payload bytes, excluding the fixed envelope, and must be at least four bytes. JSON payload schemas are nested under the common `wayfinder-maintainer-response` version-1 envelope. Artifact and adapter schemas are unchanged.
+
+`record-section` defaults to complete evidence and full human text. JSON chunks carry section ID/hash, design-record hash, byte range, chunk index/count, and digest-bound cursor. `complete` on a cursor sequence means the sequence is exhausted, not that the final chunk alone contains the source. Collect every chunk in order, verify contiguous ranges and chunk count, concatenate `data.text` as UTF-8, and compare its SHA-256 with `sourceSha256`. The cursor binds heading, source hash, offset, and byte budget. Changed sources, invalid offsets, or changed budgets fail closed.
+
+On truncation: classify the failure, mark conclusions depending on unseen output unproven, do not repeat the same broad request, and use a narrower projection/range or the supplied cursor. Stop before authorization, mutation, certification, publication, promotion, or activation unless every decisive source is complete. Initial budgets are 16 KiB for previews and 64 KiB for complete responses; calibrate against representative traces rather than treating them as universal limits.
+
+`current-state.md` contains the sole canonical mutable status object. `status --format full` previews exact public-region/field changes; `status --write` is explicit, bounded, and mutating. Both doctor and repository validation cross-check the authority against frozen release and accepted evidence, then reject public drift. Neither validator repairs it automatically. Runtime metadata exposes activation state; installation is not activation.
+
+## Ephemeral checkpoints
+
+Use `checkpoint create --input FILE|- [--output PATH]` before compaction or a new-session handoff. Required input fields are `objective`, `tranche`, `exclusions`, `sources`, `validations`, `mutations`, `failures`, `unresolved`, `nextSafeAction`, and `cursor`. Repository sources name `path` and exact `scope`; external sources name `locator`, `scope`, and caller-supplied `sha256` and are never fetched. Validation entries should record exact command, exit code, result, and input provenance. Do not include secrets, bodies, diffs, or environment credentials.
+
+The command adds current-state hash, source hashes, HEAD, and an aggregate worktree fingerprint over staged/unstaged diffs and sorted untracked path/content digests. It stores aggregate counts, not untracked names. File output is exclusive and outside the repository; stdout is the default. Checkpoints are derived, non-authoritative, never auto-committed or promoted to evidence, and never replace governed reads.
+
+Before reuse, run `checkpoint verify --checkpoint PATH`. Changed HEAD, worktree, current-state hash, or repository source hash makes the checkpoint stale. Verification never refreshes it or reruns old validations; refresh sources and rerun affected checks explicitly.
 
 ## External-action authorization gate
 
