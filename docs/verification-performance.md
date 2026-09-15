@@ -74,7 +74,7 @@ not ready. Sharding, reduced coverage, larger runners, adapter changes and other
 adapter parallelism require an explicit revised decision. These logs and timings
 are diagnostic observations, not accepted certification evidence.
 
-## Proposed startup diagnostic checkpoint
+## Startup diagnostic checkpoint
 
 `scripts/measure_powershell_startup.py --samples 16 --output /new/report.json`
 compares an empty `pwsh`, adapter invalid-command rejection, package `probe`, and
@@ -100,8 +100,81 @@ the diagnostic step at five minutes and still runs ordinary full coverage with
 two PowerShell workers, even after diagnostic failure. This is a diagnostic
 configuration, not selection of the final worker count or an under-ten-minute claim.
 
-Hosted execution awaits approval of the complete diagnostic revision. That approval
-would permit one branch update and ordinary validation attempt, log inspection and
-local findings persistence, followed by a pause for the next measured plan decision.
+The complete diagnostic revision was approved and preserved as snapshot revision 9.
+That approval permits one branch update and ordinary validation attempt, log inspection
+and local findings persistence, followed by a pause for the next measured plan decision.
 The performance acceptance target and frozen/evidence/certification exclusions stay
 unchanged. Local PowerShell coverage remains unavailable.
+
+## Startup diagnostic observations: run 35009583443
+
+The owner approved the complete diagnostic revision with "yes, I approve";
+approval snapshot revision 9 preserves that scope. Commit
+`56907814b177425ce5b2b0f06a3ed10c1c29105b` triggered exactly one
+[ordinary run](https://github.com/somacdivad/wayfinder/actions/runs/35009583443).
+The diagnostic step completed successfully in 119 seconds. Its live step logs
+reported all 196 expected observations and unchanged adapter bytes; full ordinary
+verification also completed successfully. The completed log was reconciled to all
+196 observations, all 305 passing cases per adapter and 900 invocations per suite.
+Hosted doctor passed 36/36 and self-test passed 127/127 without skips or bytecode.
+Complete job duration was 22m27s, including the 119-second diagnostic step.
+Two-worker PowerShell took 786.580s, Python 344.497s and Node 49.312s.
+Driver precheck time (126.589s) includes diagnostics, not just runtime setup.
+No under-ten-minute success is claimed. Further work is paused pending a new
+complete approved revision; no additional run or push is authorized.
+
+| Scenario | Median, 1 worker | Median, 2 workers | Median, 4 workers |
+| --- | ---: | ---: | ---: |
+| Empty PowerShell | 0.163s | 0.218s | 0.383s |
+| Adapter invalid-command rejection | 0.892s | 1.030s | 1.652s |
+| Adapter probe | 1.222s | 1.519s | 2.439s |
+| Adapter discovery | 1.111s | 1.352s | 2.173s |
+
+For the serial observations, adapter rejection adds approximately 0.729s over an
+empty process; probe adds another 0.330s and discovery another 0.220s over rejection.
+Bare startup therefore explains about 13% of the probe median. The rejection path
+already accounts for roughly 73% of probe and 80% of discovery elapsed time. These
+are cross-scenario estimates, not a precise component decomposition or a measurement
+of every suite command.
+
+The adapter rejection path parses/loads the complete script, runs top-level
+initialization, rejects the command and formats a structured failure. It does not
+perform probe's governed-resource verification or discovery's fixture traversal.
+The measurements point to repeated adapter loading/initialization and baseline
+execution as a larger overhead than starting an otherwise empty PowerShell process.
+Further attribution among script parsing, compilation/JIT, module loading,
+top-level .NET setup and result formatting remains unmeasured.
+
+At four workers, probe's 16-process batch consumed 38.306 child CPU seconds in
+10.022 wall seconds, averaging 3.822 CPU cores. Its median invocation latency
+doubled from 1.222s to 2.439s, and involuntary context switches increased from
+2,366 to 37,340. Discovery averaged 3.818 cores and also nearly doubled latency.
+These observations support CPU contention as the reason additional workers give
+diminishing throughput improvements. Repeated groups reported zero input blocks;
+output blocks were nonzero. The resource counters do not establish a specific
+cache, memory, disk or runtime-internal cause.
+
+Every conformance adapter call still starts a fresh PowerShell process, so this
+overhead repeats across 900 invocations. No adapter process reuse, frozen-byte
+modification or further optimization is introduced by this diagnostic checkpoint.
+
+## Component diagnostic checkpoint
+
+The approved follow-up runs 27 serial fresh processes: one first observation and
+eight repeated samples each for empty PowerShell, a minimal result payload, and
+the existing probe payload. An independent wrapper parses the unchanged source,
+checks its final dispatch statements, and loads only an in-memory initialization
+prefix under the original source path. Path/scoping disagreements fail closed.
+
+Stopwatch intervals cover byte read/decode, full-source parsing, extra diagnostic
+prefix parsing, script-block creation, loading/initialization, probe work, first
+and three repeated formatter calls, and private UTF-8 file output. Loaded module
+inventories and per-process wall/child CPU accompany the timings. Formatter text
+and file bytes are checked; registered adapter bytes are checked before/after.
+
+These are diagnostic components, not an exact decomposition of ordinary startup:
+compilation can be deferred, the wrapper changes cache/JIT state, a derived script
+block differs from `-File`, and private-file output does not measure stdout latency.
+The hosted check still runs all 305 cases per adapter, with Python/Node serial and
+two PowerShell workers, even if diagnostics fail. One attempt is authorized, then
+findings are persisted locally and work pauses. The ten-minute target is unmet.
