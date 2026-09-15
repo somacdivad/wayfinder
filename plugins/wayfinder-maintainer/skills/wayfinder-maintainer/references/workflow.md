@@ -51,6 +51,14 @@ maintain.py freeze-acceptance --output DIR --accept-option-a
 
 Repeat `--case` or `--category` in one `test` invocation rather than launching one process per selection. Summary output is the default; use `--format full` only for per-case detail or `--format json` for stable structured results. A focused adapter run still checks all registered adapter bytes and identities, but its quiet preflight probes only the selected adapter runtime, so an unavailable unrelated runtime does not block it. `--case-file` is intentionally omitted because repeated arguments are sufficient for the current 305-case suite and avoid another input format.
 
+Ordinary verification may opt into `maintain.py test --jobs N` whole-case spawned
+process workers; the default remains serial. Invocations within each case stay
+sequential, results remain in suite order, and worker failures fail the run.
+`--timings PATH` exclusively creates a separate non-certification diagnostic report.
+Parallel evidence writing or observation collection is rejected; evidence, parity,
+and certification commands keep their serial paths. See the repository
+[performance checkpoint](../../../../../docs/verification-performance.md).
+
 For already-downloaded hosted artifacts, use:
 
 ```text

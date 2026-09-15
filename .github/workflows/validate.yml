@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
+      - name: Record verification start
+        run: echo "WAYFINDER_VERIFICATION_STARTED=$(date +%s.%N)" >> "$GITHUB_ENV"
       - name: Check out exact revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -30,23 +32,20 @@ jobs:
           package-manager-cache: false
       - name: Install checksum-verified PowerShell 7.6.6
         run: bash .github/scripts/install-powershell.sh
-      - name: Validate repository and package manifests
-        run: python scripts/validate_repository.py
-      - name: Run maintainer doctor
+      - name: Run full ordinary repository verification with timings
         env:
           WAYFINDER_NODE_RUNTIME: node
           WAYFINDER_POWERSHELL_RUNTIME: pwsh
-        run: python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py doctor
-      - name: Run canonical maintainer regressions
-        env:
-          WAYFINDER_NODE_RUNTIME: node
-          WAYFINDER_POWERSHELL_RUNTIME: pwsh
-        run: python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py self-test
-      - name: Run all registered adapters against the common suite
-        env:
-          WAYFINDER_NODE_RUNTIME: node
-          WAYFINDER_POWERSHELL_RUNTIME: pwsh
+          # Temporary same-revision baseline comparison: rerun attempts 1/2/3 use 1/2/4.
+          # Replace with the selected fixed worker count after the measurement checkpoint.
+          WAYFINDER_PERFORMANCE_BENCHMARK: 'true'
         run: |
-          python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py test --adapter python-reference-v1
-          python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py test --adapter node-v1
-          python plugins/wayfinder-maintainer/skills/wayfinder-maintainer/scripts/maintain.py test --adapter powershell-v1
+          jobs=2
+          if [ "$WAYFINDER_PERFORMANCE_BENCHMARK" = true ]; then
+            case "$GITHUB_RUN_ATTEMPT" in
+              1) jobs=1 ;;
+              2) jobs=2 ;;
+              3) jobs=4 ;;
+            esac
+          fi
+          python scripts/run_repository_verification.py --powershell-jobs "$jobs" --output "$RUNNER_TEMP/verification-timings"

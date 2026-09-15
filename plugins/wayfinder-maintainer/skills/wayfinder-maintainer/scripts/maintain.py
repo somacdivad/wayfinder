@@ -1148,7 +1148,13 @@ def adapter_path(adapter_id: str) -> Path:
     return SKILL_ROOT / matches[0]["path"]
 
 
-def test_command(case_ids: list[str], categories: list[str], selected_adapter: str, output_mode: str = "summary") -> int:
+def test_command(case_ids: list[str], categories: list[str], selected_adapter: str, output_mode: str = "summary", jobs: int = 1, timings: Path | None = None) -> int:
+    if jobs < 1:
+        print("jobs must be a positive integer", file=sys.stderr)
+        return 2
+    if timings is not None and (timings.exists() or timings.is_symlink()):
+        print(f"timing target already exists: {timings}", file=sys.stderr)
+        return 2
     if doctor("quiet", selected_adapter=selected_adapter) != 0:
         print("maintainer doctor failed; conformance run not started", file=sys.stderr)
         return 1
@@ -1158,6 +1164,10 @@ def test_command(case_ids: list[str], categories: list[str], selected_adapter: s
         print(str(exc), file=sys.stderr)
         return 2
     arguments: list[str] = ["--adapter", str(selected_path), "--output", output_mode]
+    if jobs != 1:
+        arguments.extend(["--jobs", str(jobs)])
+    if timings is not None:
+        arguments.extend(["--timings", str(timings)])
     for case_id in case_ids:
         arguments.extend(["--case", case_id])
     for category in categories:
@@ -2776,6 +2786,16 @@ def _output_options(parser: argparse.ArgumentParser, response_class: str = "comp
     parser.set_defaults(response_class=response_class)
 
 
+def positive_jobs(value: str) -> int:
+    try:
+        jobs = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("jobs must be a positive integer") from exc
+    if jobs < 1:
+        raise argparse.ArgumentTypeError("jobs must be a positive integer")
+    return jobs
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         description="Offline, dependency-free maintenance commands for the frozen Wayfinder candidate.",
@@ -2803,6 +2823,8 @@ def main(argv: list[str]) -> int:
     self_test_parser.add_argument("--format", choices=("summary", "full", "json"), default="summary")
     _output_options(self_test_parser)
     test_parser = subparsers.add_parser("test", help="Run the full or focused unchanged conformance suite.")
+    test_parser.add_argument("--jobs", type=positive_jobs, default=1, help="Whole-case process workers for ordinary tests; default: serial.")
+    test_parser.add_argument("--timings", type=Path, help="New non-certification timing report, separate from conformance results.")
     test_parser.add_argument("--case", action="append", default=[], help="Select one case; repeat in the same invocation to batch cases.")
     test_parser.add_argument("--category", action="append", default=[], help="Select one category; repeat to batch categories.")
     test_parser.add_argument("--adapter", default="python-reference-v1", choices=sorted(ACCEPTED_ADAPTER_DIGESTS), help="Registered adapter to validate.")
@@ -2935,7 +2957,7 @@ def main(argv: list[str]) -> int:
     if args.command == "self-test":
         return _bounded_command(args, self_test_command, "verbose" if args.format == "full" else args.format)
     if args.command == "test":
-        return _bounded_command(args, test_command, args.case, args.category, args.adapter, "verbose" if args.format == "full" else args.format)
+        return _bounded_command(args, test_command, args.case, args.category, args.adapter, "verbose" if args.format == "full" else args.format, args.jobs, args.timings)
     if args.command in {"describe", "context"}:
         maximum = args.max_bytes or (PREVIEW_MAX_BYTES if args.response_class == "discovery-preview" else COMPLETE_MAX_BYTES)
         return _bounded_command(args, describe_command, args.format, args.response_class, maximum, args.field, args.sort)

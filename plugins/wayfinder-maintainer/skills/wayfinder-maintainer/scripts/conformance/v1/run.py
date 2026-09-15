@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import argparse
 import copy
+import concurrent.futures
+import multiprocessing
 import ctypes
 import datetime as dt
 import hashlib
@@ -20,6 +22,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import time
 from collections import Counter
 from pathlib import Path
 from typing import Any, Callable
@@ -33,6 +36,7 @@ OBSERVATIONS: list[dict[str, Any]] | None = None
 OBSERVATION_ROOT: Path | None = None
 OBSERVATION_CASE: str | None = None
 DIFFERENTIAL_MODE = False
+INVOCATION_COUNT = 0
 
 
 class CaseFailure(Exception):
@@ -80,6 +84,8 @@ def adapter_command(adapter: Path) -> list[str]:
 
 
 def invoke(adapter: Path, args: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None) -> tuple[subprocess.CompletedProcess[bytes], dict[str, Any]]:
+    global INVOCATION_COUNT
+    INVOCATION_COUNT += 1
     process_env = os.environ.copy()
     if env:
         process_env.update(env)
@@ -2523,6 +2529,77 @@ def execute_case(skill_root: Path, adapter: Path, case: dict[str, Any]) -> None:
         dispatch[case["category"]](skill_root, adapter, case, temporary)
 
 
+
+def positive_jobs(value: str) -> int:
+    try:
+        jobs = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("jobs must be a positive integer") from exc
+    if jobs < 1:
+        raise argparse.ArgumentTypeError("jobs must be a positive integer")
+    return jobs
+
+
+def failed_case(case: dict[str, Any], detail: str) -> dict[str, Any]:
+    return {"id": case["id"], "category": case["category"], "rules": case["rules"], "status": "failed", "detail": detail}
+
+
+def measured_case(skill_root: Path, adapter: Path, case: dict[str, Any], differential_mode: bool) -> tuple[dict[str, Any], dict[str, Any]]:
+    # Spawn isolates globals between workers; reset these between each worker's tasks.
+    global OBSERVATION_CASE, OBSERVATION_ROOT, DIFFERENTIAL_MODE, INVOCATION_COUNT
+    OBSERVATION_CASE = OBSERVATION_ROOT = None
+    DIFFERENTIAL_MODE = differential_mode
+    INVOCATION_COUNT = 0
+    started = time.perf_counter()
+    try:
+        execute_case(skill_root, adapter, case)
+        result = {"id": case["id"], "category": case["category"], "rules": case["rules"], "status": "passed"}
+    except Exception as exc:
+        result = failed_case(case, str(exc))
+    finally:
+        OBSERVATION_CASE = OBSERVATION_ROOT = None
+    timing = {"id": case["id"], "seconds": time.perf_counter() - started, "adapterInvocations": INVOCATION_COUNT}
+    return result, timing
+
+
+def selected_results(skill_root: Path, adapter: Path, selected: list[dict[str, Any]], jobs: int,
+                     differential_mode: bool, worker: Callable = measured_case):
+    """Yield exactly one result per selected case, in suite order, including pool failures."""
+    if jobs == 1:
+        for case in selected:
+            yield worker(skill_root, adapter, case, differential_mode)
+        return
+    if not selected:
+        return
+    try:
+        pool = concurrent.futures.ProcessPoolExecutor(
+            max_workers=min(jobs, len(selected)), mp_context=multiprocessing.get_context("spawn"))
+    except Exception as exc:
+        for case in selected:
+            yield failed_case(case, f"case worker unavailable: {exc}"), {"id": case["id"], "seconds": None, "adapterInvocations": None}
+        return
+    with pool:
+        futures = []
+        for case in selected:
+            try:
+                futures.append(pool.submit(worker, skill_root, adapter, case, differential_mode))
+            except Exception as exc:
+                futures.append(exc)
+        for case, future in zip(selected, futures):
+            try:
+                if isinstance(future, Exception):
+                    raise future
+                result, timing = future.result()
+                if (result.get("id") != case["id"] or result.get("category") != case["category"]
+                        or result.get("rules") != case["rules"] or result.get("status") not in {"passed", "failed"}
+                        or timing.get("id") != case["id"]):
+                    raise CaseFailure("case worker returned an invalid or mismatched result")
+            except Exception as exc:
+                result = failed_case(case, f"case worker failed: {exc}")
+                timing = {"id": case["id"], "seconds": None, "adapterInvocations": None}
+            yield result, timing
+
+
 def write_evidence(skill_root: Path, adapter: Path, cases_path: Path, results: list[dict[str, Any]], evidence_dir: Path) -> tuple[Path, Path]:
     release_path = skill_root / "assets/contract-v1/release.json"
     contract_path = skill_root / "assets/contract-v1/contract.json"
@@ -2631,6 +2708,8 @@ def main(argv: list[str]) -> int:
     global DIFFERENTIAL_MODE, OBSERVATIONS
     parser = argparse.ArgumentParser()
     parser.add_argument("--adapter", type=Path)
+    parser.add_argument("--jobs", type=positive_jobs, default=1)
+    parser.add_argument("--timings", type=Path, help="Write a new, non-certification timing report separately from results.")
     parser.add_argument("--evidence-dir", type=Path)
     parser.add_argument("--write-evidence", action="store_true")
     parser.add_argument("--case", action="append", dest="case_ids")
@@ -2641,6 +2720,12 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv)
     if sys.version_info < (3, 11):
         print("conformance runner requires Python 3.11 or newer", file=sys.stderr)
+        return 2
+    if args.jobs > 1 and (args.write_evidence or args.observations is not None):
+        print("parallel runs cannot write evidence or collect observations", file=sys.stderr)
+        return 2
+    if args.timings is not None and (args.timings.exists() or args.timings.is_symlink()):
+        print(f"timing target already exists: {args.timings}", file=sys.stderr)
         return 2
     maintainer_root = Path(__file__).resolve().parents[3]
     packaged_root = maintainer_root.parents[2] / "wayfinder" / "skills" / "wayfinder"
@@ -2683,16 +2768,21 @@ def main(argv: list[str]) -> int:
         if missing:
             print(f"unknown cases: {', '.join(missing)}", file=sys.stderr)
             return 2
-    for case in selected:
-        try:
-            execute_case(skill_root, adapter, case)
-            results.append({"id": case["id"], "category": case["category"], "rules": case["rules"], "status": "passed"})
-            if args.output == "verbose":
-                print(f"PASS {case['id']}")
-        except Exception as exc:
-            results.append({"id": case["id"], "category": case["category"], "rules": case["rules"], "status": "failed", "detail": str(exc)})
-            if args.output != "json":
-                print(f"FAIL {case['id']}: {exc}")
+    timings: list[dict[str, Any]] = []
+    started = time.perf_counter()
+    for result, timing in selected_results(skill_root, adapter, selected, args.jobs, DIFFERENTIAL_MODE):
+        results.append(result)
+        timings.append(timing)
+        if result["status"] == "passed" and args.output == "verbose":
+            print(f"PASS {result['id']}")
+        elif result["status"] == "failed" and args.output != "json":
+            print(f"FAIL {result['id']}: {result['detail']}")
+    elapsed = time.perf_counter() - started
+    if args.timings is not None:
+        args.timings.parent.mkdir(parents=True, exist_ok=True)
+        with args.timings.open("xb") as handle:
+            handle.write(pretty({"format": "wayfinder-test-timings", "schemaVersion": 1,
+                                 "jobs": args.jobs, "seconds": elapsed, "cases": timings}))
     failed = [result for result in results if result["status"] == "failed"]
     if args.observations is not None:
         args.observations.parent.mkdir(parents=True, exist_ok=True)
